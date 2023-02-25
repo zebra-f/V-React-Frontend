@@ -11,12 +11,30 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
-const pages = ["Vees", "About"];
+import { useTheme } from "@mui/material/styles";
+
+const pages = ["Home", "Vees", "About"];
 const settings = ["Profile", "Account", "Logout"];
 
 function Navbar() {
+  const myTheme = useTheme();
+  const activeStyle = {
+    backgroundColor: myTheme.palette.action.selected,
+    textDecoration: "none",
+  };
+  const CustomNavLink = React.forwardRef<any, any>((props, ref) => (
+    <NavLink
+      style={({ isActive }) => (isActive ? activeStyle : undefined)}
+      ref={ref}
+      {...props}
+      className={({ isActive }) =>
+        isActive ? props.className + " Mui-selected" : props.className
+      }
+    />
+  ));
+
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
   );
@@ -92,9 +110,9 @@ function Navbar() {
             >
               {pages.map((page) => (
                 <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Link to={page}>
+                  <NavLink to={page}>
                     <Typography textAlign="center">{page}</Typography>
-                  </Link>
+                  </NavLink>
                 </MenuItem>
               ))}
             </Menu>
@@ -118,23 +136,26 @@ function Navbar() {
           >
             SOVERTIS
           </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
+          <Box
+            height={70}
+            sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}
+          >
             {pages.map((page) => (
-              <Link to={page}>
-                <Button
-                  key={page}
-                  onClick={handleCloseNavMenu}
-                  sx={{
-                    my: 2,
-                    color: "white",
-                    display: "block",
-                    pt: 1.5,
-                    px: 2,
-                  }}
-                >
-                  {page}
-                </Button>
-              </Link>
+              <Button
+                component={CustomNavLink}
+                to={page.toLowerCase() === "home" ? "/" : page.toLowerCase()}
+                key={page}
+                onClick={handleCloseNavMenu}
+                sx={{
+                  // my: 2,
+                  color: "white",
+                  display: "block",
+                  pt: 3.2,
+                  px: 2.4,
+                }}
+              >
+                {page}
+              </Button>
             ))}
           </Box>
 
@@ -143,7 +164,7 @@ function Navbar() {
               <Avatar
                 alt="Remy Sharp"
                 src="/static/images/avatar/2.jpg"
-                variant="square"
+                variant="rounded"
               />
             </IconButton>
             <Menu
@@ -159,6 +180,7 @@ function Navbar() {
                 vertical: "top",
                 horizontal: "right",
               }}
+              transitionDuration={120}
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >

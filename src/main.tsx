@@ -26,6 +26,7 @@ const getDesignTokens = (mode: PaletteMode) => ({
       ? {
           // palette values for light mode
           primary: blue,
+          secondary: blue,
           divider: blue[200],
           text: {
             primary: grey[900],
@@ -35,6 +36,7 @@ const getDesignTokens = (mode: PaletteMode) => ({
       : {
           // palette values for dark mode
           primary: grey,
+          secondary: grey,
           divider: pink[500],
           background: {
             default: "#111111",
@@ -51,6 +53,12 @@ const getDesignTokens = (mode: PaletteMode) => ({
 const theme = createTheme({
   // palette
   ...getDesignTokens("dark"),
+  transitions: {
+    duration: {
+      enteringScreen: 2000,
+      leavingScreen: 100,
+    },
+  },
 });
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(

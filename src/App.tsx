@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import Container from "@mui/material/Container";
 
 import Navbar from "./components/Navbar";
+import Home from "./components/Home";
 import Vees from "./components/Vees";
 import About from "./components/About";
 import Length from "./components/Length";
@@ -14,6 +15,7 @@ function App() {
       <Navbar />
       <Container maxWidth="xl">
         <Routes>
+          <Route path="" element={<Home />} />
           <Route path="vees" element={<Vees />}>
             <Route path="length" element={<Length />} />
             <Route path="" element={<Speed />} />
