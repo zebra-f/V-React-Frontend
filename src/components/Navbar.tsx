@@ -11,29 +11,22 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
-import { NavLink } from "react-router-dom";
 import Divider from "@mui/material/Divider";
 import Drawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
-
 import { useTheme } from "@mui/material/styles";
+import { NavLink } from "react-router-dom";
 
 const pages = ["Home", "Vees", "About"];
 const settings = ["Profile", "Account", "Logout"];
-interface Props {
-  /**
-   * Injected by the documentation to work in an iframe.
-   * You won't need it on your project.
-   */
-  window?: () => Window;
-}
 
-function Navbar(props: Props) {
+function Navbar() {
   const myTheme = useTheme();
 
+  // NavLink highlight
   const activeStyle = {
     backgroundColor: myTheme.palette.action.selected,
     textDecoration: "none",
@@ -60,10 +53,6 @@ function Navbar(props: Props) {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
-
-  const { window } = props;
-  const container =
-    window !== undefined ? () => window().document.body : undefined;
 
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
@@ -207,7 +196,6 @@ function Navbar(props: Props) {
       </AppBar>
       <Box component="nav">
         <Drawer
-          container={container}
           variant="temporary"
           open={mobileOpen}
           onClose={handleDrawerToggle}
