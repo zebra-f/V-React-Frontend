@@ -37,7 +37,7 @@ const getDesignTokens = (mode: PaletteMode) => ({
           // palette values for dark mode
           primary: grey,
           secondary: grey,
-          divider: pink[500],
+          divider: grey[600],
           background: {
             default: "#111111",
             paper: grey[900],
@@ -55,8 +55,8 @@ const theme = createTheme({
   ...getDesignTokens("dark"),
   transitions: {
     duration: {
-      enteringScreen: 2000,
-      leavingScreen: 100,
+      enteringScreen: 600,
+      leavingScreen: 200,
     },
   },
 });
