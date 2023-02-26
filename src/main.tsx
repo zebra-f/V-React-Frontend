@@ -9,8 +9,10 @@ import {
 } from "@mui/material";
 import {
   amber,
+  brown,
   grey,
   deepOrange,
+  blueGrey,
   blue,
   pink,
   teal,
@@ -25,9 +27,9 @@ const getDesignTokens = (mode: PaletteMode) => ({
     ...(mode === "light"
       ? {
           // palette values for light mode
-          primary: blue,
+          primary: amber,
           secondary: blue,
-          divider: blue[200],
+          divider: pink[600],
           text: {
             primary: grey[900],
             secondary: grey[800],

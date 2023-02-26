@@ -2,6 +2,9 @@ import * as React from "react";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import CircularProgress from "@mui/material/CircularProgress";
+import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
+import Slider from "@mui/material/Slider";
 
 interface Film {
   title: string;
@@ -12,6 +15,10 @@ function sleep(delay = 0) {
   return new Promise((resolve) => {
     setTimeout(resolve, delay);
   });
+}
+
+function valuetext(value: number) {
+  return `${value}°C`;
 }
 
 function Speed() {
@@ -47,39 +54,63 @@ function Speed() {
 
   return (
     <>
-      <h1>Speed</h1>
-      <Autocomplete
-        id="asynchronous-demo"
-        sx={{ width: 400 }}
-        open={open}
-        onOpen={() => {
-          setOpen(true);
-        }}
-        onClose={() => {
-          setOpen(false);
-        }}
-        isOptionEqualToValue={(option, value) => option.title === value.title}
-        getOptionLabel={(option) => option.title}
-        options={options}
-        loading={loading}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            label="Search"
-            InputProps={{
-              ...params.InputProps,
-              endAdornment: (
-                <React.Fragment>
-                  {loading ? (
-                    <CircularProgress color="inherit" size={20} />
-                  ) : null}
-                  {params.InputProps.endAdornment}
-                </React.Fragment>
-              ),
-            }}
-          />
-        )}
-      />
+      <Box display="flex" justifyContent="center" mt={2}>
+        <Autocomplete
+          id="asynchronous-demo"
+          sx={{ width: 400 }}
+          open={open}
+          onOpen={() => {
+            setOpen(true);
+          }}
+          onClose={() => {
+            setOpen(false);
+          }}
+          isOptionEqualToValue={(option, value) => option.title === value.title}
+          getOptionLabel={(option) => option.title}
+          options={options}
+          loading={loading}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Search"
+              InputProps={{
+                ...params.InputProps,
+                endAdornment: (
+                  <React.Fragment>
+                    {loading ? (
+                      <CircularProgress color="inherit" size={20} />
+                    ) : null}
+                    {params.InputProps.endAdornment}
+                  </React.Fragment>
+                ),
+              }}
+            />
+          )}
+        />
+      </Box>
+      <svg
+        id="speed-chart"
+        viewBox="0 0 960 400"
+        preserveAspectRatio="xMidYMid meet"
+      >
+        {" "}
+        <circle
+          cx="480"
+          cy="200"
+          r="50"
+          stroke="darkgrey"
+          stroke-width="4"
+          fill="black"
+        />
+      </svg>
+      <Box display="flex" justifyContent="center">
+        <Slider
+          aria-label="Temperature"
+          defaultValue={30}
+          getAriaValueText={valuetext}
+          color="secondary"
+        />
+      </Box>
     </>
   );
 }
