@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useState, useEffect } from "react";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -21,7 +22,20 @@ function valuetext(value: number) {
   return `${value}°C`;
 }
 
-function Speed() {
+export default function Speed() {
+  const [width, setWidth] = useState(window.innerWidth);
+  const [height, setHeight] = useState(window.innerHeight);
+  const updateDimensions = () => {
+    setWidth(window.innerWidth);
+    setHeight(window.innerHeight);
+  };
+  useEffect(() => {
+    window.addEventListener("resize", updateDimensions);
+    return () => window.removeEventListener("resize", updateDimensions);
+  }, []);
+
+  console.log(height, width);
+
   const [open, setOpen] = React.useState(false);
   const [options, setOptions] = React.useState<readonly Film[]>([]);
   const loading = open && options.length === 0;
@@ -54,7 +68,7 @@ function Speed() {
 
   return (
     <>
-      <Box display="flex" justifyContent="center" mt={2}>
+      <Box display="flex" justifyContent="center" my={2}>
         <Autocomplete
           id="asynchronous-demo"
           sx={{ width: 400 }}
@@ -90,18 +104,11 @@ function Speed() {
       </Box>
       <svg
         id="speed-chart"
-        viewBox="0 0 960 400"
+        viewBox={`0 0 ${960} ${400}`}
         preserveAspectRatio="xMidYMid meet"
       >
         {" "}
-        <circle
-          cx="480"
-          cy="200"
-          r="50"
-          stroke="darkgrey"
-          stroke-width="4"
-          fill="black"
-        />
+        <circle cx="480" cy="200" r="50" stroke="darkgrey" fill="black" />
       </svg>
       <Box display="flex" justifyContent="center">
         <Slider
@@ -114,8 +121,6 @@ function Speed() {
     </>
   );
 }
-
-export default Speed;
 
 // Top films as rated by IMDb users. http://www.imdb.com/chart/top
 const topFilms = [

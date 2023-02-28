@@ -15,16 +15,18 @@ import Drawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
-import Badge from "@mui/material/Badge";
-import NotificationsIcon from "@mui/icons-material/Notifications";
 import AccountCircle from "@mui/icons-material/AccountCircle";
-import MailIcon from "@mui/icons-material/Mail";
 import ListItemText from "@mui/material/ListItemText";
 import { useTheme } from "@mui/material/styles";
 import { NavLink } from "react-router-dom";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import { styled } from "@mui/material/styles";
 import Switch from "@mui/material/Switch";
+import Slide from "@mui/material/Slide";
+import useScrollTrigger from "@mui/material/useScrollTrigger";
+
+import ColorModeContext from "../App";
+// const colorMode = React.useContext(ColorModeContext)
 
 const MaterialUISwitch = styled(Switch)(({ theme }) => ({
   width: 62,
@@ -156,10 +158,13 @@ function Navbar() {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem>
+      <MenuItem sx={{ justifyContent: "center" }}>
         <MaterialUISwitch />
       </MenuItem>
-      <MenuItem onClick={handleProfileMenuOpen}>
+      <MenuItem
+        onClick={handleProfileMenuOpen}
+        sx={{ justifyContent: "center" }}
+      >
         <IconButton
           size="large"
           aria-label="account of current user"
@@ -169,7 +174,6 @@ function Navbar() {
         >
           <AccountCircle />
         </IconButton>
-        <p>Profile</p>
       </MenuItem>
     </Menu>
   );
@@ -200,118 +204,123 @@ function Navbar() {
     </Menu>
   );
 
+  const trigger = useScrollTrigger();
   return (
     <>
-      <AppBar position="sticky" sx={{ pt: 0 }}>
-        <Container maxWidth="xl">
-          <Toolbar disableGutters>
-            <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
-            <Typography
-              variant="h6"
-              noWrap
-              component="a"
-              href="/"
-              sx={{
-                mr: 2,
-                display: { xs: "none", md: "flex" },
-                fontFamily: "monospace",
-                fontWeight: 700,
-                letterSpacing: ".3rem",
-                color: "inherit",
-                textDecoration: "none",
-              }}
-            >
-              SOVERTIS
-            </Typography>
-
-            {/* drawer icon */}
-            <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
-              <IconButton
-                color="inherit"
-                aria-label="open drawer"
-                edge="start"
-                onClick={handleDrawerToggle}
-                sx={{ mr: 2, display: { sm: "none" } }}
+      <Slide appear={false} direction="down" in={!trigger}>
+        <AppBar position="sticky" sx={{ pt: 0 }}>
+          <Container maxWidth="xl">
+            <Toolbar disableGutters>
+              <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
+              <Typography
+                variant="h6"
+                noWrap
+                component="a"
+                href="/"
+                sx={{
+                  mr: 2,
+                  display: { xs: "none", md: "flex" },
+                  fontFamily: "monospace",
+                  fontWeight: 700,
+                  letterSpacing: ".3rem",
+                  color: "inherit",
+                  textDecoration: "none",
+                }}
               >
-                <MenuIcon />
-              </IconButton>
-            </Box>
+                SOVERTIS
+              </Typography>
 
-            <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
-            <Typography
-              variant="h5"
-              noWrap
-              component="a"
-              href=""
-              sx={{
-                mr: 2,
-                display: { xs: "flex", md: "none" },
-                flexGrow: 1,
-                fontFamily: "monospace",
-                fontWeight: 700,
-                letterSpacing: ".3rem",
-                color: "inherit",
-                textDecoration: "none",
-              }}
-            >
-              SOVERTIS
-            </Typography>
-            <Box
-              height={70}
-              sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}
-            >
-              {pages.map((page) => (
-                <Button
-                  component={CustomNavLink}
-                  to={page.toLowerCase() === "home" ? "/" : page.toLowerCase()}
-                  key={page}
-                  sx={{
-                    // my: 2,
-                    color: "white",
-                    display: "block",
-                    pt: 3.2,
-                    px: 2.4,
-                  }}
+              {/* drawer icon */}
+              <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
+                <IconButton
+                  color="inherit"
+                  aria-label="open drawer"
+                  edge="start"
+                  onClick={handleDrawerToggle}
+                  sx={{ mr: 2, display: { sm: "none" } }}
                 >
-                  <Typography variant="button" sx={{ fontWeight: "bold" }}>
-                    {page}
-                  </Typography>
-                </Button>
-              ))}
-            </Box>
+                  <MenuIcon />
+                </IconButton>
+              </Box>
 
-            {/* Top left */}
-            <Box sx={{ display: { xs: "none", md: "flex" } }}>
-              <MaterialUISwitch sx={{ m: 1 }} defaultChecked />
-              <IconButton
-                size="large"
-                edge="end"
-                aria-label="account of current user"
-                aria-controls={menuId}
-                aria-haspopup="true"
-                onClick={handleProfileMenuOpen}
-                color="inherit"
+              <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
+              <Typography
+                variant="h5"
+                noWrap
+                component="a"
+                href=""
+                sx={{
+                  mr: 2,
+                  display: { xs: "flex", md: "none" },
+                  flexGrow: 1,
+                  fontFamily: "monospace",
+                  fontWeight: 700,
+                  letterSpacing: ".3rem",
+                  color: "inherit",
+                  textDecoration: "none",
+                }}
               >
-                <AccountCircle />
-              </IconButton>
-            </Box>
+                SOVERTIS
+              </Typography>
+              <Box
+                height={70}
+                sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}
+              >
+                {pages.map((page) => (
+                  <Button
+                    component={CustomNavLink}
+                    to={
+                      page.toLowerCase() === "home" ? "/" : page.toLowerCase()
+                    }
+                    key={page}
+                    sx={{
+                      // my: 2,
+                      color: "white",
+                      display: "block",
+                      pt: 3.2,
+                      px: 2.4,
+                    }}
+                  >
+                    <Typography variant="button" sx={{ fontWeight: "bold" }}>
+                      {page}
+                    </Typography>
+                  </Button>
+                ))}
+              </Box>
 
-            {/* Top left mobile */}
-            <Box sx={{ display: { xs: "flex", md: "none" } }}>
-              <IconButton
-                size="large"
-                aria-label="show more"
-                aria-controls={mobileMenuId}
-                aria-haspopup="true"
-                onClick={handleMobileMenuOpen}
-                color="inherit"
-              >
-                <MoreIcon />
-              </IconButton>
-            </Box>
-          </Toolbar>
-        </Container>
-      </AppBar>
+              {/* Top left */}
+              <Box sx={{ display: { xs: "none", md: "flex" } }}>
+                <MaterialUISwitch sx={{ m: 1 }} defaultChecked />
+                <IconButton
+                  size="large"
+                  edge="end"
+                  aria-label="account of current user"
+                  aria-controls={menuId}
+                  aria-haspopup="true"
+                  onClick={handleProfileMenuOpen}
+                  color="inherit"
+                >
+                  <AccountCircle />
+                </IconButton>
+              </Box>
+
+              {/* Top left mobile */}
+              <Box sx={{ display: { xs: "flex", md: "none" } }}>
+                <IconButton
+                  size="large"
+                  aria-label="show more"
+                  aria-controls={mobileMenuId}
+                  aria-haspopup="true"
+                  onClick={handleMobileMenuOpen}
+                  color="inherit"
+                >
+                  <MoreIcon />
+                </IconButton>
+              </Box>
+            </Toolbar>
+          </Container>
+        </AppBar>
+      </Slide>
 
       {/* Mobile drawer */}
       <Box component="nav">
