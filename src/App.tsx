@@ -10,6 +10,7 @@ import {
   CssBaseline,
 } from "@mui/material";
 import { amber, grey, blue, pink } from "@mui/material/colors";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 import Navbar from "./components/Navbar";
 import Home from "./components/Home";
@@ -18,12 +19,17 @@ import About from "./components/About";
 import Length from "./components/Length";
 import Speed from "./components/Speed";
 
+import useLocalStorageState from "use-local-storage-state";
+
 import "./App.css";
 
-function App() {
+function App(props: any) {
   return (
     <div className="App">
-      <Navbar />
+      <Navbar
+        setSessionThemeMode={props.setSessionThemeMode}
+        sessionThemeMode={props.sessionThemeMode}
+      />
       <Container maxWidth="xl">
         <Routes>
           <Route path="" element={<Home />} />
@@ -37,23 +43,30 @@ function App() {
     </div>
   );
 }
+
 export const ColorModeContext = React.createContext({
   toggleColorMode: () => {},
 });
+
 export default function AppColorMode() {
-  const [mode, setMode] = React.useState<PaletteMode>("light");
+  const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
+  const [sessionThemeMode, setSessionThemeMode] = useLocalStorageState(
+    "themeMode",
+    {
+      defaultValue: prefersDarkMode ? "dark" : "light",
+    }
+  );
+  const [mode, setMode] = React.useState<"light" | "dark">(
+    sessionThemeMode === "dark" ? "dark" : "light"
+  );
   const colorMode = React.useMemo(
     () => ({
-      // The dark mode switch would invoke this method
       toggleColorMode: () => {
-        setMode((prevMode: PaletteMode) =>
-          prevMode === "light" ? "dark" : "light"
-        );
+        setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
       },
     }),
     []
   );
-  console.log(colorMode, "\n", typeof colorMode);
   const getDesignTokens = (mode: PaletteMode) => ({
     palette: {
       mode,
@@ -102,7 +115,10 @@ export default function AppColorMode() {
     <ColorModeContext.Provider value={colorMode}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <App />
+        <App
+          setSessionThemeMode={setSessionThemeMode}
+          sessionThemeMode={sessionThemeMode}
+        />
       </ThemeProvider>
     </ColorModeContext.Provider>
   );
