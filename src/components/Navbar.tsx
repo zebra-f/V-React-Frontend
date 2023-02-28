@@ -120,7 +120,7 @@ export default function Navbar(props: any) {
     >
       <MenuItem sx={{ justifyContent: "center" }}>
         <MaterialUISwitch
-          defaultChecked={theme.palette.mode == "light" ? true : false}
+          checked={theme.palette.mode == "light" ? true : false}
           onClick={changeColorMode}
         />
       </MenuItem>
@@ -173,17 +173,44 @@ export default function Navbar(props: any) {
         <AppBar position="sticky" sx={{ pt: 0 }}>
           <Container maxWidth="xl">
             <Toolbar disableGutters>
-              <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
+              <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
+              <Typography
+                variant="h6"
+                noWrap
+                component="a"
+                href="/"
+                sx={{
+                  mr: 2,
+                  display: { xs: "none", md: "flex" },
+                  fontFamily: "monospace",
+                  fontWeight: 700,
+                  letterSpacing: ".3rem",
+                  color: "inherit",
+                  textDecoration: "none",
+                }}
+              >
+                SOVERTIS
+              </Typography>
+
+              {/* drawer icon */}
+              <Box
+                sx={{
+                  flexGrow: 1,
+                  display: { xs: "flex", md: "none" },
+                }}
+              >
                 <IconButton
                   color="inherit"
                   aria-label="open drawer"
                   edge="start"
                   onClick={handleDrawerToggle}
-                  sx={{ mr: 2, display: { sm: "none" } }}
+                  sx={{ mr: 2 }}
                 >
                   <MenuIcon />
                 </IconButton>
               </Box>
+
+              {/* mobile title and logo */}
               <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
               <Typography
                 variant="h5"
@@ -203,9 +230,14 @@ export default function Navbar(props: any) {
               >
                 SOVERTIS
               </Typography>
+
+              {/* top left */}
               <Box
                 height={70}
-                sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}
+                sx={{
+                  flexGrow: 1,
+                  display: { xs: "none", md: "flex" },
+                }}
               >
                 {pages.map((page) => (
                   <Button
@@ -228,11 +260,12 @@ export default function Navbar(props: any) {
                   </Button>
                 ))}
               </Box>
-              {/* Top left */}
+
+              {/* top right */}
               <Box sx={{ display: { xs: "none", md: "flex" } }}>
                 <MaterialUISwitch
                   sx={{ m: 1 }}
-                  defaultChecked={theme.palette.mode == "light" ? true : false}
+                  checked={theme.palette.mode == "light" ? true : false}
                   onClick={changeColorMode}
                 />
                 <IconButton
@@ -247,7 +280,8 @@ export default function Navbar(props: any) {
                   <AccountCircle />
                 </IconButton>
               </Box>
-              {/* Top left mobile */}
+
+              {/* top right mobile */}
               <Box sx={{ display: { xs: "flex", md: "none" } }}>
                 <IconButton
                   size="large"
@@ -265,7 +299,7 @@ export default function Navbar(props: any) {
         </AppBar>
       </Slide>
 
-      {/* Mobile drawer */}
+      {/* mobile drawer */}
       <Box component="nav">
         <Drawer
           variant="temporary"
@@ -275,7 +309,7 @@ export default function Navbar(props: any) {
             keepMounted: true, // Better open performance on mobile.
           }}
           sx={{
-            display: { xs: "block", sm: "none" },
+            display: { xs: "block", md: "none" },
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
               width: drawerWidth,
