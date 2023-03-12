@@ -5,6 +5,8 @@ import Autocomplete from "@mui/material/Autocomplete";
 import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Unstable_Grid2";
+import Button from "@mui/material/Button";
+import SendIcon from "@mui/icons-material/Send";
 import Container from "@mui/material/Container";
 import Slider from "@mui/material/Slider";
 import * as d3 from "d3";
@@ -21,36 +23,66 @@ function sleep(delay = 0) {
   });
 }
 
-const placeholderData = [
+const placeholderSpeedData = [
   {
     name: "Mistsubishi 3000GT",
     speed: 257.5,
-    color: "lime",
   },
   {
     name: "Human",
     speed: 37,
-    color: "NavajoWhite ",
   },
   {
     name: "Lockheed Martin F-22 Raptor",
     speed: 2414,
-    color: "pink",
   },
 
   {
     name: "Earth",
     speed: 107226,
-    color: "lightblue",
   },
   {
     name: "Cheetah",
     speed: 112,
-    color: "yellow",
   },
 ];
 
 export default function Speed() {
+  const [speedData, setSpeedData] = useState(placeholderSpeedData);
+  const [speedDataForm, setSpeedDataForm] = useState({
+    name: "",
+    speed: "",
+  });
+  const handleSpeedDataForm = (e: any) => {
+    setSpeedDataForm({
+      ...speedDataForm,
+      [e.target.name]: e.target.value.trim(),
+    });
+    console.log(e.target.name, e.target.value.trim());
+    console.log(speedDataForm);
+  };
+  const handleAddSpeedDataForm = (e: any) => {
+    if (speedDataForm.name.length < 1) {
+      // pass
+    } else if (isNaN(speedDataForm.speed as any)) {
+      // pass
+    } else {
+      addSpeedData("Form");
+    }
+  };
+
+  const addSpeedData = (calledBy: string) => {
+    if (calledBy === "Form") {
+      setSpeedData((prev) => {
+        return [
+          ...prev,
+          { name: speedDataForm.name, speed: Number(speedDataForm.speed) },
+        ];
+      });
+      console.log(speedData);
+    }
+  };
+
   const svgRef = useRef<SVGSVGElement | null>(null);
   const [selection, setSelection] = useState<null | d3.Selection<
     any,
@@ -62,41 +94,38 @@ export default function Speed() {
     if (!selection) {
       setSelection(select(svgRef.current));
     } else {
-      const s = selection
-        .selectAll(".bar")
-        .data(placeholderData)
+      console.log("Evoked");
+      selection.attr("style", "outline: thin solid #000000;");
+      const speedChart = selection.select(".SpeedChart");
+      const speedChartBars = speedChart
+        .selectAll("rect")
+        .data(speedData)
+        .join("rect")
         .attr("width", 0)
         .attr("height", 20)
-        .attr("fill", (d) => d.color)
+        .attr("fill", (_) => {
+          return "#" + Math.floor(Math.random() * 16777215).toString(16);
+        })
         .attr("y", (_, i) => i * 50)
         .attr("x", 80)
-        .attr("style", "outline: thin solid red;")
-        .text((d) => d.color)
+        // .attr("style", "outline: thin solid red;")
+        .style("pointer-events", "visible")
+        .on("click", (e, d) => {
+          console.log("Hello");
+        });
+      const speedChartBarsTransition = speedChartBars
         .transition()
         .ease(d3.easeLinear)
         .duration((d) => {
           // km
-          const distance = 0.1;
+          const distance = 1;
           const timeHours = distance / d.speed;
-          console.log(timeHours);
           const timeMiliseconds = timeHours * 3600000;
           return timeMiliseconds;
         })
         .attr("width", 960);
     }
-    // d3.select(svgRef.current)
-    //   .append("rect")
-    //   .attr("width", 20)
-    //   .attr("height", 20)
-    //   .attr("fill", "lightblue");
-    // d3.selectAll("rect")
-    //   .attr("width", 20)
-    //   .attr("height", 20)
-    //   .attr("fill", "lightblue")
-    //   .attr("y", (_, i) => {
-    //     return i * 25;
-    //   });
-  }, [selection]);
+  }, [selection, speedData]);
 
   const [width, setWidth] = useState(window.innerWidth);
   const [height, setHeight] = useState(window.innerHeight);
@@ -150,9 +179,11 @@ export default function Speed() {
               preserveAspectRatio="xMidYMid meet"
               ref={svgRef}
             >
+              <g className="SpeedChart"></g>
               <rect className={"bar"}></rect>
               <rect className={"bar"}></rect>
-              <defs>
+              <text>A</text>
+              {/* <defs>
                 <pattern
                   id="smallGrid"
                   width="8"
@@ -181,12 +212,46 @@ export default function Speed() {
                   />
                 </pattern>
               </defs>
-              <rect width="100%" height="100%" fill="url(#grid)" />
+              <rect width="100%" height="100%" fill="url(#grid)" /> */}
             </svg>
           </Box>
         </Grid>
 
         <Grid xs={4} sm={8} md={4}>
+          <Box
+            display="flex"
+            justifyContent="center"
+            my={2}
+            component="form"
+            sx={{
+              "& .MuiTextField-root": { m: 1, width: "25ch" },
+            }}
+            noValidate
+            autoComplete="off"
+          >
+            <TextField
+              id="outlined-basic"
+              label="Name"
+              variant="outlined"
+              name="name"
+              onChange={handleSpeedDataForm}
+            />
+            <TextField
+              id="outlined-basic"
+              label="Speed (km/h)"
+              variant="outlined"
+              name="speed"
+              onChange={handleSpeedDataForm}
+            />
+            <Button
+              variant="contained"
+              endIcon={<SendIcon />}
+              size={"small"}
+              onClick={handleAddSpeedDataForm}
+            >
+              Add
+            </Button>
+          </Box>
           <Box display="flex" justifyContent="center" my={2}>
             <Autocomplete
               id="asynchronous-demo"
