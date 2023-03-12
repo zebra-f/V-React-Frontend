@@ -9,7 +9,17 @@ import {
   PaletteMode,
   CssBaseline,
 } from "@mui/material";
-import { amber, grey, blue, pink } from "@mui/material/colors";
+import {
+  amber,
+  grey,
+  blue,
+  pink,
+  brown,
+  red,
+  lightBlue,
+  orange,
+  deepOrange,
+} from "@mui/material/colors";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
 import Navbar from "./components/Navbar";
@@ -73,12 +83,17 @@ export default function AppColorMode() {
       ...(mode === "light"
         ? {
             // palette values for light mode
-            primary: amber,
-            secondary: blue,
+            // color: "#7371FC"
+            primary: pink,
+            secondary: pink,
             divider: pink[600],
             text: {
-              primary: grey[900],
+              primary: grey[800],
               secondary: grey[800],
+            },
+            background: {
+              default: "#edf2f4",
+              paper: "#f2f4f3",
             },
           }
         : {
