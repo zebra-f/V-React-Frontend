@@ -7,10 +7,13 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/Unstable_Grid2";
 import Button from "@mui/material/Button";
 import SendIcon from "@mui/icons-material/Send";
-import Container from "@mui/material/Container";
-import Slider from "@mui/material/Slider";
 import * as d3 from "d3";
 import { select } from "d3";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemText from "@mui/material/ListItemText";
+import IconButton from "@mui/material/IconButton";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 interface Film {
   title: string;
@@ -22,26 +25,30 @@ function sleep(delay = 0) {
     setTimeout(resolve, delay);
   });
 }
-
 const placeholderSpeedData = [
   {
+    id: 0,
     name: "Mistsubishi 3000GT",
     speed: 257.5,
   },
   {
+    id: 1,
     name: "Human",
     speed: 37,
   },
   {
+    id: 2,
     name: "Lockheed Martin F-22 Raptor",
     speed: 2414,
   },
 
   {
+    id: 3,
     name: "Earth",
     speed: 107226,
   },
   {
+    id: 4,
     name: "Cheetah",
     speed: 112,
   },
@@ -49,17 +56,18 @@ const placeholderSpeedData = [
 
 export default function Speed() {
   const [speedData, setSpeedData] = useState(placeholderSpeedData);
-  const [speedDataForm, setSpeedDataForm] = useState({
-    name: "",
-    speed: "",
+  const [speedDataForm, setSpeedDataForm] = useState(() => {
+    return {
+      id: -1,
+      name: "",
+      speed: "",
+    };
   });
   const handleSpeedDataForm = (e: any) => {
     setSpeedDataForm({
       ...speedDataForm,
       [e.target.name]: e.target.value.trim(),
     });
-    console.log(e.target.name, e.target.value.trim());
-    console.log(speedDataForm);
   };
   const handleAddSpeedDataForm = (e: any) => {
     if (speedDataForm.name.length < 1) {
@@ -70,16 +78,26 @@ export default function Speed() {
       addSpeedData("Form");
     }
   };
+  const handleDeleteDataFromList = (id: number, e: any) => {
+    console.log(id);
+    setSpeedData((prev) => {
+      return prev.filter((d) => d.id !== id);
+    });
+  };
 
   const addSpeedData = (calledBy: string) => {
-    if (calledBy === "Form") {
-      setSpeedData((prev) => {
-        return [
-          ...prev,
-          { name: speedDataForm.name, speed: Number(speedDataForm.speed) },
-        ];
-      });
-      console.log(speedData);
+    switch (calledBy) {
+      case "Form":
+        setSpeedData((prev) => {
+          return [
+            ...prev,
+            {
+              id: speedDataForm.id,
+              name: speedDataForm.name,
+              speed: Number(speedDataForm.speed),
+            },
+          ];
+        });
     }
   };
 
@@ -94,7 +112,6 @@ export default function Speed() {
     if (!selection) {
       setSelection(select(svgRef.current));
     } else {
-      console.log("Evoked");
       selection.attr("style", "outline: thin solid #000000;");
       const speedChart = selection.select(".SpeedChart");
       const speedChartBars = speedChart
@@ -102,7 +119,7 @@ export default function Speed() {
         .data(speedData)
         .join("rect")
         .attr("width", 0)
-        .attr("height", 20)
+        .attr("height", 40)
         .attr("fill", (_) => {
           return "#" + Math.floor(Math.random() * 16777215).toString(16);
         })
@@ -111,7 +128,8 @@ export default function Speed() {
         // .attr("style", "outline: thin solid red;")
         .style("pointer-events", "visible")
         .on("click", (e, d) => {
-          console.log("Hello");
+          console.log(e, d);
+          console.log("clicked on bar");
         });
       const speedChartBarsTransition = speedChartBars
         .transition()
@@ -168,6 +186,8 @@ export default function Speed() {
     }
   }, [open]);
 
+  const [dense, setDense] = React.useState(false);
+
   return (
     <>
       <Grid mt={2} container spacing={2} columns={{ xs: 4, sm: 8, md: 12 }}>
@@ -180,9 +200,6 @@ export default function Speed() {
               ref={svgRef}
             >
               <g className="SpeedChart"></g>
-              <rect className={"bar"}></rect>
-              <rect className={"bar"}></rect>
-              <text>A</text>
               {/* <defs>
                 <pattern
                   id="smallGrid"
@@ -194,13 +211,13 @@ export default function Speed() {
                     d="M 8 0 L 0 0 0 8"
                     fill="none"
                     stroke="gray"
-                    stroke-width="0.5"
+                    strokeWidth="0.5"
                   />
                 </pattern>
                 <pattern
                   id="grid"
-                  width="79.92"
-                  height="79.92"
+                  width="79.93"
+                  height="79.93"
                   patternUnits="userSpaceOnUse"
                 >
                   <rect width="80" height="80" fill="url(#smallGrid)" />
@@ -208,11 +225,11 @@ export default function Speed() {
                     d="M 80 0 L 0 0 0 80"
                     fill="none"
                     stroke="gray"
-                    stroke-width="1"
+                    strokeWidth="1"
                   />
                 </pattern>
-              </defs>
-              <rect width="100%" height="100%" fill="url(#grid)" /> */}
+              </defs> */}
+              {/* <rect width="100%" height="100%" fill="url(#grid)" /> */}
             </svg>
           </Box>
         </Grid>
@@ -252,6 +269,7 @@ export default function Speed() {
               Add
             </Button>
           </Box>
+
           <Box display="flex" justifyContent="center" my={2}>
             <Autocomplete
               id="asynchronous-demo"
@@ -288,6 +306,31 @@ export default function Speed() {
               )}
             />
           </Box>
+
+          <Grid>
+            <List dense={dense}>
+              {speedData.map((data, index) => {
+                return (
+                  <ListItem
+                    key={index}
+                    secondaryAction={
+                      <IconButton
+                        edge="end"
+                        aria-label="delete"
+                        onClick={(e) => handleDeleteDataFromList(data.id, e)}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    }
+                  >
+                    <ListItemText
+                      primary={`${data.id} ${data.name} ${data.speed}`}
+                    />
+                  </ListItem>
+                );
+              })}
+            </List>
+          </Grid>
         </Grid>
       </Grid>
     </>
