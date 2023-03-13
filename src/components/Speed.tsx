@@ -15,6 +15,8 @@ import ListItemText from "@mui/material/ListItemText";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 
+import { v4 as uuidv4 } from "uuid";
+
 interface Film {
   title: string;
   year: number;
@@ -27,28 +29,28 @@ function sleep(delay = 0) {
 }
 const placeholderSpeedData = [
   {
-    id: 0,
+    id: uuidv4(),
     name: "Mistsubishi 3000GT",
     speed: 257.5,
   },
   {
-    id: 1,
+    id: uuidv4(),
     name: "Human",
     speed: 37,
   },
   {
-    id: 2,
+    id: uuidv4(),
     name: "Lockheed Martin F-22 Raptor",
     speed: 2414,
   },
 
   {
-    id: 3,
+    id: uuidv4(),
     name: "Earth",
     speed: 107226,
   },
   {
-    id: 4,
+    id: uuidv4(),
     name: "Cheetah",
     speed: 112,
   },
@@ -58,7 +60,7 @@ export default function Speed() {
   const [speedData, setSpeedData] = useState(placeholderSpeedData);
   const [speedDataForm, setSpeedDataForm] = useState(() => {
     return {
-      id: -1,
+      id: "",
       name: "",
       speed: "",
     };
@@ -78,7 +80,7 @@ export default function Speed() {
       addSpeedData("Form");
     }
   };
-  const handleDeleteDataFromList = (id: number, e: any) => {
+  const handleDeleteDataFromList = (id: string, e: any) => {
     console.log(id);
     setSpeedData((prev) => {
       return prev.filter((d) => d.id !== id);
@@ -92,7 +94,7 @@ export default function Speed() {
           return [
             ...prev,
             {
-              id: speedDataForm.id,
+              id: uuidv4(),
               name: speedDataForm.name,
               speed: Number(speedDataForm.speed),
             },
@@ -323,9 +325,7 @@ export default function Speed() {
                       </IconButton>
                     }
                   >
-                    <ListItemText
-                      primary={`${data.id} ${data.name} ${data.speed}`}
-                    />
+                    <ListItemText primary={`${data.name} ${data.speed}`} />
                   </ListItem>
                 );
               })}
