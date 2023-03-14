@@ -6,14 +6,16 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Unstable_Grid2";
 import Button from "@mui/material/Button";
-import SendIcon from "@mui/icons-material/Send";
 import * as d3 from "d3";
-import { select } from "d3";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ButtonGroup from "@mui/material/ButtonGroup";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import Slider from "@mui/material/Slider";
 
 import { v4 as uuidv4 } from "uuid";
 
@@ -57,6 +59,7 @@ const placeholderSpeedData = [
 ];
 
 export default function Speed() {
+  console.log("render!");
   const [speedData, setSpeedData] = useState(placeholderSpeedData);
   const [speedDataForm, setSpeedDataForm] = useState(() => {
     return {
@@ -81,7 +84,6 @@ export default function Speed() {
     }
   };
   const handleDeleteDataFromList = (id: string, e: any) => {
-    console.log(id);
     setSpeedData((prev) => {
       return prev.filter((d) => d.id !== id);
     });
@@ -110,9 +112,56 @@ export default function Speed() {
     null,
     undefined
   >>(null);
+  const [barsSelection, setBarsSelection] = useState<null | d3.Selection<
+    d3.BaseType | SVGRectElement,
+    {
+      id: string;
+      name: string;
+      speed: number;
+    },
+    d3.BaseType,
+    unknown
+  >>(null);
+
+  const t = () => {
+    function stopWatch(elapsed: number) {
+      let minutes = Math.floor(elapsed / 60000);
+      let seconds = ((elapsed % 60000) / 1000).toFixed(2);
+      let oneHundredth = seconds.slice(-2);
+      seconds = seconds[1] === "." ? seconds[0] : seconds.slice(0, 2);
+      return seconds === "60"
+        ? minutes < 10
+          ? "0" + minutes + 1 + ":00" + ":" + oneHundredth
+          : minutes + 1 + ":00" + ":" + oneHundredth
+        : minutes < 10
+        ? "0" +
+          minutes +
+          ":" +
+          (Number(seconds) < 10 ? "0" : "") +
+          seconds +
+          ":" +
+          oneHundredth
+        : minutes +
+          ":" +
+          (Number(seconds) < 10 ? "0" : "") +
+          seconds +
+          ":" +
+          oneHundredth;
+    }
+    const t = d3.timer((elapsed) => {
+      if (elapsed > 2000000) {
+        t.stop();
+      } else {
+        d3.select(".timer").text(stopWatch(elapsed));
+      }
+    }, 150);
+    return t;
+  };
+  const [timer, setTimer] = useState<d3.Timer | null>(null);
+
   useEffect(() => {
     if (!selection) {
-      setSelection(select(svgRef.current));
+      setSelection(d3.select(svgRef.current));
     } else {
       selection.attr("style", "outline: thin solid #000000;");
       const speedChart = selection.select(".SpeedChart");
@@ -130,10 +179,36 @@ export default function Speed() {
         // .attr("style", "outline: thin solid red;")
         .style("pointer-events", "visible")
         .on("click", (e, d) => {
-          console.log(e, d);
           console.log("clicked on bar");
         });
-      const speedChartBarsTransition = speedChartBars
+
+      // const timer = selection.select(".timer");
+
+      setBarsSelection(speedChartBars);
+    }
+  }, [selection, speedData]);
+
+  function handleResetButton() {
+    if (barsSelection) {
+      barsSelection
+        .transition()
+        .ease(d3.easeLinear)
+        .duration(400)
+        .attr("width", 0);
+    }
+    if (timer) {
+      timer.stop();
+      setTimer(null);
+      // d3.select(".timer").text("00:00");
+    }
+  }
+
+  function handleStartButton() {
+    if (timer) {
+      // pass
+    } else if (barsSelection) {
+      setTimer(t());
+      barsSelection
         .transition()
         .ease(d3.easeLinear)
         .duration((d) => {
@@ -143,20 +218,20 @@ export default function Speed() {
           const timeMiliseconds = timeHours * 3600000;
           return timeMiliseconds;
         })
-        .attr("width", 960);
+        .attr("width", 960)
+        .on("end", () => {});
     }
-  }, [selection, speedData]);
+  }
 
-  const [width, setWidth] = useState(window.innerWidth);
-  const [height, setHeight] = useState(window.innerHeight);
-  const updateDimensions = () => {
-    setWidth(window.innerWidth);
-    setHeight(window.innerHeight);
-  };
-  useEffect(() => {
-    window.addEventListener("resize", updateDimensions);
-    return () => window.removeEventListener("resize", updateDimensions);
-  }, []);
+  // Seatching
+  // Seatching
+  // Seatching
+  // Seatching
+  // Seatching
+  // Seatching
+  // Seatching
+  // Seatching
+  // Seatching
 
   const [open, setOpen] = React.useState(false);
   const [options, setOptions] = React.useState<readonly Film[]>([]);
@@ -190,6 +265,10 @@ export default function Speed() {
 
   const [dense, setDense] = React.useState(false);
 
+  function test() {
+    console.log(222222);
+  }
+
   return (
     <>
       <Grid mt={2} container spacing={2} columns={{ xs: 4, sm: 8, md: 12 }}>
@@ -202,7 +281,9 @@ export default function Speed() {
               ref={svgRef}
             >
               <g className="SpeedChart"></g>
+              <text fontSize={50} x="700" y="370" className="timer"></text>
               {/* <defs>
+              
                 <pattern
                   id="smallGrid"
                   width="8"
@@ -230,9 +311,46 @@ export default function Speed() {
                     strokeWidth="1"
                   />
                 </pattern>
-              </defs> */}
-              {/* <rect width="100%" height="100%" fill="url(#grid)" /> */}
+              </defs>
+              <rect width="100%" height="100%" fill="url(#grid)" /> */}
             </svg>
+          </Box>
+
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              p: 1,
+              m: 1,
+              bgcolor: "background.paper",
+              borderRadius: 1,
+            }}
+          >
+            <ButtonGroup
+              size="small"
+              disableElevation
+              variant="contained"
+              aria-label="Disabled elevation buttons"
+            >
+              <Button size="small" onClick={handleStartButton}>
+                Start
+                <PlayArrowIcon />
+              </Button>
+              <Button size="small" onClick={handleResetButton}>
+                Reset
+                <RestartAltIcon />
+              </Button>
+            </ButtonGroup>
+
+            <Slider
+              sx={{ ml: 2 }}
+              aria-label="Always visible"
+              defaultValue={80}
+              // getAriaValueText={valuetext}
+              step={10}
+              // marks={marks}
+              valueLabelDisplay="on"
+            />
           </Box>
         </Grid>
 
@@ -264,8 +382,13 @@ export default function Speed() {
             />
             <Button
               variant="contained"
-              endIcon={<SendIcon />}
-              size={"small"}
+              sx={{
+                mt: 2,
+                minHeight: "20px",
+                minWidth: "70px",
+                height: "100%",
+                width: "20%",
+              }}
               onClick={handleAddSpeedDataForm}
             >
               Add
