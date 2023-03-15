@@ -17,8 +17,11 @@ import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import Slider from "@mui/material/Slider";
+import SettingsIcon from "@mui/icons-material/Settings";
 
 import { v4 as uuidv4 } from "uuid";
+
+import SpeedSVG from "./SpeedSVG";
 
 interface Film {
   title: string;
@@ -30,7 +33,7 @@ function sleep(delay = 0) {
     setTimeout(resolve, delay);
   });
 }
-const placeholderSpeedData = [
+const placeholderSpeedData: any[] = [
   {
     id: uuidv4(),
     name: "Mistsubishi 3000GT",
@@ -60,8 +63,13 @@ const placeholderSpeedData = [
 ];
 
 export default function Speed() {
-  console.log("render!");
-  const [speedData, setSpeedData] = useState(placeholderSpeedData);
+  const [speedData, setSpeedData] = useState<
+    | {
+        id: string;
+        name: string;
+        speed: number;
+      }[]
+  >(placeholderSpeedData);
   const [speedDataForm, setSpeedDataForm] = useState(() => {
     return {
       id: "",
@@ -105,7 +113,6 @@ export default function Speed() {
         });
     }
   };
-
   const svgRef = useRef<SVGSVGElement | null>(null);
   const [selection, setSelection] = useState<null | d3.Selection<
     any,
@@ -124,32 +131,36 @@ export default function Speed() {
     unknown
   >>(null);
 
+  const elapsedRef = useRef<number>(0);
+  const elapsedRestartRef = useRef<number>(0);
+  function stopWatch(elapsed: number) {
+    let minutes = Math.floor(elapsed / 60000);
+    let seconds = ((elapsed % 60000) / 1000).toFixed(2);
+    let oneHundredth = seconds.slice(-2);
+    seconds = seconds[1] === "." ? seconds[0] : seconds.slice(0, 2);
+    return seconds === "60"
+      ? minutes < 10
+        ? "0" + minutes + 1 + ":00" + ":" + oneHundredth
+        : minutes + 1 + ":00" + ":" + oneHundredth
+      : minutes < 10
+      ? "0" +
+        minutes +
+        ":" +
+        (Number(seconds) < 10 ? "0" : "") +
+        seconds +
+        ":" +
+        oneHundredth
+      : minutes +
+        ":" +
+        (Number(seconds) < 10 ? "0" : "") +
+        seconds +
+        ":" +
+        oneHundredth;
+  }
+
   const t = () => {
-    function stopWatch(elapsed: number) {
-      let minutes = Math.floor(elapsed / 60000);
-      let seconds = ((elapsed % 60000) / 1000).toFixed(2);
-      let oneHundredth = seconds.slice(-2);
-      seconds = seconds[1] === "." ? seconds[0] : seconds.slice(0, 2);
-      return seconds === "60"
-        ? minutes < 10
-          ? "0" + minutes + 1 + ":00" + ":" + oneHundredth
-          : minutes + 1 + ":00" + ":" + oneHundredth
-        : minutes < 10
-        ? "0" +
-          minutes +
-          ":" +
-          (Number(seconds) < 10 ? "0" : "") +
-          seconds +
-          ":" +
-          oneHundredth
-        : minutes +
-          ":" +
-          (Number(seconds) < 10 ? "0" : "") +
-          seconds +
-          ":" +
-          oneHundredth;
-    }
     const t = d3.timer((elapsed) => {
+      elapsedRef.current = elapsed;
       if (elapsed > 2000000) {
         t.stop();
       } else {
@@ -185,14 +196,10 @@ export default function Speed() {
         .attr("fill", (_) => {
           return "#" + Math.floor(Math.random() * 16777215).toString(16) + "40";
         })
+        .attr("stroke", "black")
+        .attr("stroke-width", 1)
         .attr("y", (_, i) => i * 50 + 20)
         .attr("x", 20)
-        // .attr(
-        //   "style",
-        //   `outline: thin solid ${
-        //     "#" + Math.floor(Math.random() * 16777215).toString(16)
-        //   };`
-        // )
         .style("pointer-events", "visible")
         .on("click", (e, d) => {
           console.log("clicked on bar");
@@ -201,9 +208,26 @@ export default function Speed() {
     }
   }, [selection, speedData]);
 
+  const pausedTimerRef = useRef<boolean>(false);
+  const [inProgress, setInProgress] = useState<boolean>(false);
+  const inProgressRef = useRef<boolean>(false);
   function handleStartButton() {
+    inProgressRef.current = true;
+    setInProgress(true);
     if (timer) {
-      // pass
+      if (pausedTimerRef) {
+        pausedTimerRef.current = false;
+
+        timer.restart((elapsed) => {
+          elapsed = elapsed + elapsedRef.current;
+          elapsedRestartRef.current = elapsed;
+          if (elapsed > 2000000) {
+            timer.stop();
+          } else {
+            d3.select(".timer").text(stopWatch(elapsed));
+          }
+        }, 150);
+      }
     } else if (barsSelection) {
       setTimer(t());
       barsSelection
@@ -217,16 +241,26 @@ export default function Speed() {
           return timeMiliseconds;
         })
         .attr("width", 960)
-        .on("end", () => {});
+        .on("end", () => {
+          // d3.select(this: any).attrs({ fill: "yellow" });
+        });
     }
   }
   function handlePauseButton() {
+    inProgressRef.current = false;
+    setInProgress(false);
     if (timer) {
+      pausedTimerRef.current = true;
+      elapsedRef.current =
+        elapsedRestartRef.current > 0
+          ? elapsedRestartRef.current
+          : elapsedRef.current;
       timer.stop();
     }
-    console.log("fdfdfd");
   }
   function handleResetButton() {
+    inProgressRef.current = false;
+    setInProgress(false);
     if (barsSelection) {
       barsSelection
         .transition()
@@ -236,11 +270,13 @@ export default function Speed() {
     }
     if (timer) {
       timer.stop();
+      pausedTimerRef.current = false;
+      elapsedRef.current = 0;
+      elapsedRestartRef.current = 0;
       setTimer(null);
       d3.select(".timer").text("00:00:00");
     }
   }
-
   // Seatching
   // Seatching
   // Seatching
@@ -283,15 +319,16 @@ export default function Speed() {
 
   const [dense, setDense] = React.useState(false);
 
-  function test() {
-    console.log(222222);
-  }
-
   return (
     <>
       <Grid mt={2} container spacing={2} columns={{ xs: 4, sm: 8, md: 12 }}>
         <Grid xs={4} sm={8} md={8}>
-          <Box display="flex" justifyContent="center" my={2}>
+          {/* <Box
+            my={0}
+            display="flex"
+            justifyContent="center"
+            flexDirection={"column"}
+          >
             <svg
               id="speed-chart"
               viewBox={`0 0 ${960} ${400}`}
@@ -299,8 +336,8 @@ export default function Speed() {
               ref={svgRef}
             >
               <g className="SpeedChart"></g>
-              <text fontSize={50} x="700" y="370" className="timer"></text>
-              {/* <defs>
+              <text fontSize={50} x="700" y="370" className="timer"></text> */}
+          {/* <defs>
               
                 <pattern
                   id="smallGrid"
@@ -331,50 +368,38 @@ export default function Speed() {
                 </pattern>
               </defs>
               <rect width="100%" height="100%" fill="url(#grid)" /> */}
-            </svg>
-          </Box>
-
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              p: 1,
-              m: 1,
-              bgcolor: "background.paper",
-              borderRadius: 1,
-            }}
-          >
-            <ButtonGroup
-              size="small"
-              disableElevation
-              variant="contained"
-              aria-label="Disabled elevation buttons"
+          {/* </svg>
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              sx={{
+                p: 0,
+                m: 0.5,
+              }}
             >
-              <Button size="small" onClick={handleStartButton}>
-                Start
-                <PlayArrowIcon />
-              </Button>
-              <Button size="small" onClick={handlePauseButton}>
-                Pause
-                <PauseIcon />
-              </Button>
+              <ButtonGroup size="small" disableElevation>
+                {!inProgressRef.current ? (
+                  <Button onClick={handleStartButton}>
+                    <PlayArrowIcon />
+                  </Button>
+                ) : (
+                  <Button size="small" onClick={handlePauseButton}>
+                    <PauseIcon />
+                  </Button>
+                )}
 
-              <Button size="small" onClick={handleResetButton}>
-                Reset
-                <RestartAltIcon />
-              </Button>
-            </ButtonGroup>
-
-            <Slider
-              sx={{ ml: 2 }}
-              aria-label="Always visible"
-              defaultValue={80}
-              // getAriaValueText={valuetext}
-              step={10}
-              // marks={marks}
-              valueLabelDisplay="on"
-            />
-          </Box>
+                <Button size="small" onClick={handleResetButton}>
+                  <RestartAltIcon />
+                </Button>
+              </ButtonGroup>
+              <ButtonGroup size="small" disableElevation>
+                <Button>
+                  <SettingsIcon />
+                </Button>
+              </ButtonGroup>
+            </Box>
+          </Box> */}
+          <SpeedSVG speedData={speedData} />
         </Grid>
 
         <Grid xs={4} sm={8} md={4}>
@@ -472,7 +497,11 @@ export default function Speed() {
                     }
                   >
                     <ListItemText
-                      primary={`${data.name.slice(0, 40)} ${data.speed}`}
+                      primary={`${
+                        data.name.length > 25
+                          ? data.name.slice(0, 25) + "..."
+                          : data.name
+                      } ${data.speed}`}
                     />
                   </ListItem>
                 );
