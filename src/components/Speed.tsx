@@ -1,4 +1,3 @@
-import * as React from "react";
 import { useState, useEffect, useRef } from "react";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
@@ -6,18 +5,11 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Unstable_Grid2";
 import Button from "@mui/material/Button";
-import * as d3 from "d3";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
-import ButtonGroup from "@mui/material/ButtonGroup";
-import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import PauseIcon from "@mui/icons-material/Pause";
-import RestartAltIcon from "@mui/icons-material/RestartAlt";
-import Slider from "@mui/material/Slider";
-import SettingsIcon from "@mui/icons-material/Settings";
 
 import { v4 as uuidv4 } from "uuid";
 
@@ -64,11 +56,11 @@ const placeholderSpeedData: any[] = [
 
 export default function Speed() {
   const [speedData, setSpeedData] = useState<
-    | {
-        id: string;
-        name: string;
-        speed: number;
-      }[]
+    {
+      id: string;
+      name: string;
+      speed: number;
+    }[]
   >(placeholderSpeedData);
   const [speedDataForm, setSpeedDataForm] = useState(() => {
     return {
@@ -97,7 +89,6 @@ export default function Speed() {
       return prev.filter((d) => d.id !== id);
     });
   };
-
   const addSpeedData = (calledBy: string) => {
     switch (calledBy) {
       case "Form":
@@ -113,185 +104,16 @@ export default function Speed() {
         });
     }
   };
-  const svgRef = useRef<SVGSVGElement | null>(null);
-  const [selection, setSelection] = useState<null | d3.Selection<
-    any,
-    unknown,
-    null,
-    undefined
-  >>(null);
-  const [barsSelection, setBarsSelection] = useState<null | d3.Selection<
-    d3.BaseType | SVGRectElement,
-    {
-      id: string;
-      name: string;
-      speed: number;
-    },
-    d3.BaseType,
-    unknown
-  >>(null);
 
-  const elapsedRef = useRef<number>(0);
-  const elapsedRestartRef = useRef<number>(0);
-  function stopWatch(elapsed: number) {
-    let minutes = Math.floor(elapsed / 60000);
-    let seconds = ((elapsed % 60000) / 1000).toFixed(2);
-    let oneHundredth = seconds.slice(-2);
-    seconds = seconds[1] === "." ? seconds[0] : seconds.slice(0, 2);
-    return seconds === "60"
-      ? minutes < 10
-        ? "0" + minutes + 1 + ":00" + ":" + oneHundredth
-        : minutes + 1 + ":00" + ":" + oneHundredth
-      : minutes < 10
-      ? "0" +
-        minutes +
-        ":" +
-        (Number(seconds) < 10 ? "0" : "") +
-        seconds +
-        ":" +
-        oneHundredth
-      : minutes +
-        ":" +
-        (Number(seconds) < 10 ? "0" : "") +
-        seconds +
-        ":" +
-        oneHundredth;
-  }
-
-  const t = () => {
-    const t = d3.timer((elapsed) => {
-      elapsedRef.current = elapsed;
-      if (elapsed > 2000000) {
-        t.stop();
-      } else {
-        d3.select(".timer").text(stopWatch(elapsed));
-      }
-    }, 150);
-    return t;
-  };
-  const [timer, setTimer] = useState<d3.Timer | null>(null);
-
-  useEffect(() => {
-    if (!selection) {
-      setSelection(d3.select(svgRef.current));
-    } else {
-      selection.attr("style", "outline: thin solid #000000;");
-      const speedChart = selection.select(".SpeedChart");
-      const speedChartBarsName = speedChart
-        .selectAll("text")
-        .data(speedData)
-        .join("text")
-        .attr("font-size", 25)
-        .text((d) => {
-          return d.name.slice(0, 60);
-        })
-        .attr("y", (_, i) => i * 50 + 49)
-        .attr("x", 30);
-      const speedChartBars = speedChart
-        .selectAll("rect")
-        .data(speedData)
-        .join("rect")
-        .attr("width", 0)
-        .attr("height", 40)
-        .attr("fill", (_) => {
-          return "#" + Math.floor(Math.random() * 16777215).toString(16) + "40";
-        })
-        .attr("stroke", "black")
-        .attr("stroke-width", 1)
-        .attr("y", (_, i) => i * 50 + 20)
-        .attr("x", 20)
-        .style("pointer-events", "visible")
-        .on("click", (e, d) => {
-          console.log("clicked on bar");
-        });
-      setBarsSelection(speedChartBars);
-    }
-  }, [selection, speedData]);
-
-  const pausedTimerRef = useRef<boolean>(false);
-  const [inProgress, setInProgress] = useState<boolean>(false);
-  const inProgressRef = useRef<boolean>(false);
-  function handleStartButton() {
-    inProgressRef.current = true;
-    setInProgress(true);
-    if (timer) {
-      if (pausedTimerRef) {
-        pausedTimerRef.current = false;
-
-        timer.restart((elapsed) => {
-          elapsed = elapsed + elapsedRef.current;
-          elapsedRestartRef.current = elapsed;
-          if (elapsed > 2000000) {
-            timer.stop();
-          } else {
-            d3.select(".timer").text(stopWatch(elapsed));
-          }
-        }, 150);
-      }
-    } else if (barsSelection) {
-      setTimer(t());
-      barsSelection
-        .transition()
-        .ease(d3.easeLinear)
-        .duration((d) => {
-          // km
-          const distance = 1;
-          const timeHours = distance / d.speed;
-          const timeMiliseconds = timeHours * 3600000;
-          return timeMiliseconds;
-        })
-        .attr("width", 960)
-        .on("end", () => {
-          // d3.select(this: any).attrs({ fill: "yellow" });
-        });
-    }
-  }
-  function handlePauseButton() {
-    inProgressRef.current = false;
-    setInProgress(false);
-    if (timer) {
-      pausedTimerRef.current = true;
-      elapsedRef.current =
-        elapsedRestartRef.current > 0
-          ? elapsedRestartRef.current
-          : elapsedRef.current;
-      timer.stop();
-    }
-  }
-  function handleResetButton() {
-    inProgressRef.current = false;
-    setInProgress(false);
-    if (barsSelection) {
-      barsSelection
-        .transition()
-        .ease(d3.easeLinear)
-        .duration(400)
-        .attr("width", 0);
-    }
-    if (timer) {
-      timer.stop();
-      pausedTimerRef.current = false;
-      elapsedRef.current = 0;
-      elapsedRestartRef.current = 0;
-      setTimer(null);
-      d3.select(".timer").text("00:00:00");
-    }
-  }
-  // Seatching
-  // Seatching
-  // Seatching
-  // Seatching
-  // Seatching
-  // Seatching
   // Seatching
   // Seatching
   // Seatching
 
-  const [open, setOpen] = React.useState(false);
-  const [options, setOptions] = React.useState<readonly Film[]>([]);
+  const [open, setOpen] = useState(false);
+  const [options, setOptions] = useState<readonly Film[]>([]);
   const loading = open && options.length === 0;
 
-  React.useEffect(() => {
+  useEffect(() => {
     let active = true;
 
     if (!loading) {
@@ -311,13 +133,13 @@ export default function Speed() {
     };
   }, [loading]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!open) {
       setOptions([]);
     }
   }, [open]);
 
-  const [dense, setDense] = React.useState(false);
+  const [dense, setDense] = useState(false);
 
   return (
     <>
@@ -467,12 +289,12 @@ export default function Speed() {
                   InputProps={{
                     ...params.InputProps,
                     endAdornment: (
-                      <React.Fragment>
+                      <>
                         {loading ? (
                           <CircularProgress color="inherit" size={20} />
                         ) : null}
                         {params.InputProps.endAdornment}
-                      </React.Fragment>
+                      </>
                     ),
                   }}
                 />

@@ -6,7 +6,6 @@ import ButtonGroup from "@mui/material/ButtonGroup";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
-import Slider from "@mui/material/Slider";
 import SettingsIcon from "@mui/icons-material/Settings";
 
 export default function SpeedSVG(props: any) {
