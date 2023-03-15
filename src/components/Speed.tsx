@@ -14,6 +14,7 @@ import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import PauseIcon from "@mui/icons-material/Pause";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import Slider from "@mui/material/Slider";
 
@@ -165,6 +166,16 @@ export default function Speed() {
     } else {
       selection.attr("style", "outline: thin solid #000000;");
       const speedChart = selection.select(".SpeedChart");
+      const speedChartBarsName = speedChart
+        .selectAll("text")
+        .data(speedData)
+        .join("text")
+        .attr("font-size", 25)
+        .text((d) => {
+          return d.name.slice(0, 60);
+        })
+        .attr("y", (_, i) => i * 50 + 49)
+        .attr("x", 30);
       const speedChartBars = speedChart
         .selectAll("rect")
         .data(speedData)
@@ -172,36 +183,23 @@ export default function Speed() {
         .attr("width", 0)
         .attr("height", 40)
         .attr("fill", (_) => {
-          return "#" + Math.floor(Math.random() * 16777215).toString(16);
+          return "#" + Math.floor(Math.random() * 16777215).toString(16) + "40";
         })
-        .attr("y", (_, i) => i * 50)
-        .attr("x", 80)
-        // .attr("style", "outline: thin solid red;")
+        .attr("y", (_, i) => i * 50 + 20)
+        .attr("x", 20)
+        // .attr(
+        //   "style",
+        //   `outline: thin solid ${
+        //     "#" + Math.floor(Math.random() * 16777215).toString(16)
+        //   };`
+        // )
         .style("pointer-events", "visible")
         .on("click", (e, d) => {
           console.log("clicked on bar");
         });
-
-      // const timer = selection.select(".timer");
-
       setBarsSelection(speedChartBars);
     }
   }, [selection, speedData]);
-
-  function handleResetButton() {
-    if (barsSelection) {
-      barsSelection
-        .transition()
-        .ease(d3.easeLinear)
-        .duration(400)
-        .attr("width", 0);
-    }
-    if (timer) {
-      timer.stop();
-      setTimer(null);
-      // d3.select(".timer").text("00:00");
-    }
-  }
 
   function handleStartButton() {
     if (timer) {
@@ -220,6 +218,26 @@ export default function Speed() {
         })
         .attr("width", 960)
         .on("end", () => {});
+    }
+  }
+  function handlePauseButton() {
+    if (timer) {
+      timer.stop();
+    }
+    console.log("fdfdfd");
+  }
+  function handleResetButton() {
+    if (barsSelection) {
+      barsSelection
+        .transition()
+        .ease(d3.easeLinear)
+        .duration(400)
+        .attr("width", 0);
+    }
+    if (timer) {
+      timer.stop();
+      setTimer(null);
+      d3.select(".timer").text("00:00:00");
     }
   }
 
@@ -336,6 +354,11 @@ export default function Speed() {
                 Start
                 <PlayArrowIcon />
               </Button>
+              <Button size="small" onClick={handlePauseButton}>
+                Pause
+                <PauseIcon />
+              </Button>
+
               <Button size="small" onClick={handleResetButton}>
                 Reset
                 <RestartAltIcon />
@@ -448,7 +471,9 @@ export default function Speed() {
                       </IconButton>
                     }
                   >
-                    <ListItemText primary={`${data.name} ${data.speed}`} />
+                    <ListItemText
+                      primary={`${data.name.slice(0, 40)} ${data.speed}`}
+                    />
                   </ListItem>
                 );
               })}
