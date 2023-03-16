@@ -8,12 +8,17 @@ import PauseIcon from "@mui/icons-material/Pause";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import SettingsIcon from "@mui/icons-material/Settings";
 
-export default function SpeedSVG(props: any) {
-  const speedData: {
+interface SpeedProps {
+  speedData: {
     id: string;
     name: string;
-    speed: number;
-  }[] = props.speedData;
+    kmph: number;
+    mph: number;
+  }[];
+  measurementSystem: "metric" | "imperial";
+}
+
+export default function SpeedSVG(props: SpeedProps) {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const [selection, setSelection] = useState<null | d3.Selection<
     any,
@@ -26,51 +31,12 @@ export default function SpeedSVG(props: any) {
     {
       id: string;
       name: string;
-      speed: number;
+      kmph: number;
+      mph: number;
     },
     d3.BaseType,
     unknown
   >>(null);
-
-  const elapsedRef = useRef<number>(0);
-  const elapsedRestartRef = useRef<number>(0);
-  function stopWatch(elapsed: number) {
-    let minutes = Math.floor(elapsed / 60000);
-    let seconds = ((elapsed % 60000) / 1000).toFixed(2);
-    let oneHundredth = seconds.slice(-2);
-    seconds = seconds[1] === "." ? seconds[0] : seconds.slice(0, 2);
-    return seconds === "60"
-      ? minutes < 10
-        ? "0" + minutes + 1 + ":00" + ":" + oneHundredth
-        : minutes + 1 + ":00" + ":" + oneHundredth
-      : minutes < 10
-      ? "0" +
-        minutes +
-        ":" +
-        (Number(seconds) < 10 ? "0" : "") +
-        seconds +
-        ":" +
-        oneHundredth
-      : minutes +
-        ":" +
-        (Number(seconds) < 10 ? "0" : "") +
-        seconds +
-        ":" +
-        oneHundredth;
-  }
-
-  const t = () => {
-    const t = d3.timer((elapsed) => {
-      elapsedRef.current = elapsed;
-      if (elapsed > 2000000) {
-        t.stop();
-      } else {
-        d3.select(".timer").text(stopWatch(elapsed));
-      }
-    }, 150);
-    return t;
-  };
-  const [timer, setTimer] = useState<d3.Timer | null>(null);
 
   useEffect(() => {
     if (!selection) {
@@ -80,7 +46,7 @@ export default function SpeedSVG(props: any) {
       const speedChart = selection.select(".SpeedChart");
       const speedChartBarsName = speedChart
         .selectAll("text")
-        .data(speedData)
+        .data(props.speedData)
         .join("text")
         .attr("font-size", 25)
         .text((d) => {
@@ -90,7 +56,7 @@ export default function SpeedSVG(props: any) {
         .attr("x", 30);
       const speedChartBars = speedChart
         .selectAll("rect")
-        .data(speedData)
+        .data(props.speedData)
         .join("rect")
         .attr("width", 0)
         .attr("height", 40)
@@ -107,22 +73,84 @@ export default function SpeedSVG(props: any) {
         });
       setBarsSelection(speedChartBars);
     }
-  }, [selection, speedData]);
+  }, [selection, props.speedData]);
+
+  const [distance, setDistance] = useState<number>(1);
+  const elapsedRef = useRef<number>(0);
+  const elapsedRestartRef = useRef<number>(0);
+
+  const [elapsedMax, setElapsedMax] = useState<number>(0);
+  useEffect(() => {
+    let tempElapsedMax = 0;
+    for (const index in props.speedData) {
+      tempElapsedMax = Math.max(
+        tempElapsedMax,
+        calcualteTransitionDuration(props.speedData[index])
+      );
+    }
+    setElapsedMax(tempElapsedMax);
+  }, [props.speedData, props.measurementSystem]);
+
+  const t = () => {
+    const t = d3.timer((elapsed) => {
+      elapsedRef.current = elapsed;
+      if (elapsed > elapsedMax) {
+        t.stop();
+      } else {
+        d3.select(".timer").text(stopWatch(elapsed));
+      }
+    });
+    return t;
+  };
+  const [timer, setTimer] = useState<d3.Timer | null>(null);
+  useEffect(() => {
+    return () => {
+      if (timer) {
+        timer.stop();
+      }
+    };
+  }, [timer]);
+
+  function calcualteTransitionDuration(d: {
+    id: string;
+    name: string;
+    kmph: number;
+    mph: number;
+  }) {
+    let timeHours: null | number = null;
+    if (props.measurementSystem === "metric") {
+      timeHours = distance / d.kmph;
+    } else {
+      timeHours = distance / d.mph;
+    }
+    const timeMiliseconds = timeHours * 3600000;
+    return timeMiliseconds - elapsedRef.current;
+  }
 
   const pausedTimerRef = useRef<boolean>(false);
   const [inProgress, setInProgress] = useState<boolean>(false);
-  const inProgressRef = useRef<boolean>(false);
   function handleStartButton() {
-    inProgressRef.current = true;
     setInProgress(true);
     if (timer) {
-      if (pausedTimerRef) {
+      if (pausedTimerRef && barsSelection) {
         pausedTimerRef.current = false;
+
+        barsSelection
+          .transition()
+          .ease(d3.easeLinear)
+          .duration((d) => {
+            const transitionDuration = calcualteTransitionDuration(d);
+            return transitionDuration + transitionDuration * 0.0186;
+          })
+          .attr("width", 960)
+          .on("end", (d) => {
+            console.log("aaaaaaa", d.name);
+          });
 
         timer.restart((elapsed) => {
           elapsed = elapsed + elapsedRef.current;
           elapsedRestartRef.current = elapsed;
-          if (elapsed > 2000000) {
+          if (elapsed > elapsedMax) {
             timer.stop();
           } else {
             d3.select(".timer").text(stopWatch(elapsed));
@@ -135,20 +163,18 @@ export default function SpeedSVG(props: any) {
         .transition()
         .ease(d3.easeLinear)
         .duration((d) => {
-          // km
-          const distance = 1;
-          const timeHours = distance / d.speed;
-          const timeMiliseconds = timeHours * 3600000;
-          return timeMiliseconds;
+          const transitionDuration = calcualteTransitionDuration(d);
+          console.log(transitionDuration);
+          return transitionDuration + transitionDuration * 0.0186;
         })
         .attr("width", 960)
-        .on("end", () => {
-          // d3.select(this: any).attrs({ fill: "yellow" });
+        .on("end", (d) => {
+          // console.log(d);
         });
     }
   }
   function handlePauseButton() {
-    inProgressRef.current = false;
+    if (barsSelection) barsSelection.interrupt();
     setInProgress(false);
     if (timer) {
       pausedTimerRef.current = true;
@@ -160,7 +186,6 @@ export default function SpeedSVG(props: any) {
     }
   }
   function handleResetButton() {
-    inProgressRef.current = false;
     setInProgress(false);
     if (barsSelection) {
       barsSelection
@@ -189,6 +214,7 @@ export default function SpeedSVG(props: any) {
       >
         <g className="SpeedChart"></g>
         <text fontSize={50} x="700" y="370" className="timer"></text>
+        {/* <line x1="42" y1="30" x2="42" y2="380" stroke="black" /> */}
         {/* <defs>
     
       <pattern
@@ -229,8 +255,8 @@ export default function SpeedSVG(props: any) {
           m: 0.5,
         }}
       >
-        <ButtonGroup size="small" disableElevation>
-          {!inProgressRef.current ? (
+        <ButtonGroup size="small" disableElevation variant="text">
+          {!inProgress ? (
             <Button onClick={handleStartButton}>
               <PlayArrowIcon />
             </Button>
@@ -244,7 +270,7 @@ export default function SpeedSVG(props: any) {
             <RestartAltIcon />
           </Button>
         </ButtonGroup>
-        <ButtonGroup size="small" disableElevation>
+        <ButtonGroup size="small" disableElevation variant="text">
           <Button>
             <SettingsIcon />
           </Button>
@@ -252,4 +278,29 @@ export default function SpeedSVG(props: any) {
       </Box>
     </Box>
   );
+}
+
+function stopWatch(elapsed: number) {
+  let minutes = Math.floor(elapsed / 60000);
+  let seconds = ((elapsed % 60000) / 1000).toFixed(2);
+  let oneHundredth = seconds.slice(-2);
+  seconds = seconds[1] === "." ? seconds[0] : seconds.slice(0, 2);
+  return seconds === "60"
+    ? minutes < 10
+      ? "0" + minutes + 1 + ":00" + ":" + oneHundredth
+      : minutes + 1 + ":00" + ":" + oneHundredth
+    : minutes < 10
+    ? "0" +
+      minutes +
+      ":" +
+      (Number(seconds) < 10 ? "0" : "") +
+      seconds +
+      ":" +
+      oneHundredth
+    : minutes +
+      ":" +
+      (Number(seconds) < 10 ? "0" : "") +
+      seconds +
+      ":" +
+      oneHundredth;
 }

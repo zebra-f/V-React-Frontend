@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -10,6 +10,13 @@ import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
+import Switch, { SwitchProps } from "@mui/material/Switch";
+import FormGroup from "@mui/material/FormGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormControl from "@mui/material/FormControl";
+import FormLabel from "@mui/material/FormLabel";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
 
 import { v4 as uuidv4 } from "uuid";
 
@@ -28,40 +35,50 @@ function sleep(delay = 0) {
 const placeholderSpeedData: any[] = [
   {
     id: uuidv4(),
-    name: "Mistsubishi 3000GT",
-    speed: 257.5,
+    name: "Mitsubishi 3000GT",
+    kmph: 257.5,
+    mph: 160.0,
   },
   {
     id: uuidv4(),
     name: "Human",
-    speed: 37,
+    kmph: 37.0,
+    mph: 22.99,
   },
   {
     id: uuidv4(),
     name: "Lockheed Martin F-22 Raptor",
-    speed: 2414,
+    kmph: 2414.0,
+    mph: 1499.99,
   },
 
   {
     id: uuidv4(),
     name: "Earth",
-    speed: 107226,
+    kmph: 107226.0,
+    mph: 66627.12,
   },
   {
     id: uuidv4(),
     name: "Cheetah",
-    speed: 112,
+    kmph: 112.0,
+    mph: 69.59,
   },
 ];
 
 export default function Speed() {
+  const [measurementSystem, setMeasurementSystem] = useState<
+    "metric" | "imperial"
+  >("metric");
   const [speedData, setSpeedData] = useState<
     {
       id: string;
       name: string;
-      speed: number;
+      kmph: number;
+      mph: number;
     }[]
   >(placeholderSpeedData);
+
   const [speedDataForm, setSpeedDataForm] = useState(() => {
     return {
       id: "",
@@ -93,14 +110,25 @@ export default function Speed() {
     switch (calledBy) {
       case "Form":
         setSpeedData((prev) => {
-          return [
-            ...prev,
-            {
-              id: uuidv4(),
-              name: speedDataForm.name,
-              speed: Number(speedDataForm.speed),
-            },
-          ];
+          return measurementSystem === "metric"
+            ? [
+                ...prev,
+                {
+                  id: uuidv4(),
+                  name: speedDataForm.name,
+                  kmph: Number(speedDataForm.speed),
+                  mph: Number(speedDataForm.speed) * 0.621371,
+                },
+              ]
+            : [
+                ...prev,
+                {
+                  id: uuidv4(),
+                  name: speedDataForm.name,
+                  kmph: Number(speedDataForm.speed) * 1.60934,
+                  mph: Number(speedDataForm.speed),
+                },
+              ];
         });
     }
   };
@@ -139,89 +167,28 @@ export default function Speed() {
     }
   }, [open]);
 
-  const [dense, setDense] = useState(false);
-
   return (
     <>
+      <FormControl component="fieldset">
+        <FormLabel component="legend">Label placement</FormLabel>
+        <FormGroup aria-label="position" row>
+          <Stack direction="row" spacing={1} alignItems="center">
+            <Typography>Off</Typography>
+            <Switch
+              defaultChecked
+              inputProps={{ "aria-label": "ant design" }}
+            />
+            <Typography>On</Typography>
+          </Stack>
+        </FormGroup>
+      </FormControl>
+
       <Grid mt={2} container spacing={2} columns={{ xs: 4, sm: 8, md: 12 }}>
         <Grid xs={4} sm={8} md={8}>
-          {/* <Box
-            my={0}
-            display="flex"
-            justifyContent="center"
-            flexDirection={"column"}
-          >
-            <svg
-              id="speed-chart"
-              viewBox={`0 0 ${960} ${400}`}
-              preserveAspectRatio="xMidYMid meet"
-              ref={svgRef}
-            >
-              <g className="SpeedChart"></g>
-              <text fontSize={50} x="700" y="370" className="timer"></text> */}
-          {/* <defs>
-              
-                <pattern
-                  id="smallGrid"
-                  width="8"
-                  height="8"
-                  patternUnits="userSpaceOnUse"
-                >
-                  <path
-                    d="M 8 0 L 0 0 0 8"
-                    fill="none"
-                    stroke="gray"
-                    strokeWidth="0.5"
-                  />
-                </pattern>
-                <pattern
-                  id="grid"
-                  width="79.93"
-                  height="79.93"
-                  patternUnits="userSpaceOnUse"
-                >
-                  <rect width="80" height="80" fill="url(#smallGrid)" />
-                  <path
-                    d="M 80 0 L 0 0 0 80"
-                    fill="none"
-                    stroke="gray"
-                    strokeWidth="1"
-                  />
-                </pattern>
-              </defs>
-              <rect width="100%" height="100%" fill="url(#grid)" /> */}
-          {/* </svg>
-            <Box
-              display="flex"
-              justifyContent="space-between"
-              sx={{
-                p: 0,
-                m: 0.5,
-              }}
-            >
-              <ButtonGroup size="small" disableElevation>
-                {!inProgressRef.current ? (
-                  <Button onClick={handleStartButton}>
-                    <PlayArrowIcon />
-                  </Button>
-                ) : (
-                  <Button size="small" onClick={handlePauseButton}>
-                    <PauseIcon />
-                  </Button>
-                )}
-
-                <Button size="small" onClick={handleResetButton}>
-                  <RestartAltIcon />
-                </Button>
-              </ButtonGroup>
-              <ButtonGroup size="small" disableElevation>
-                <Button>
-                  <SettingsIcon />
-                </Button>
-              </ButtonGroup>
-            </Box>
-          </Box> */}
-          <SpeedSVG speedData={speedData} />
+          <SpeedSVG
+            speedData={speedData}
+            measurementSystem={measurementSystem}
+          />
         </Grid>
 
         <Grid xs={4} sm={8} md={4}>
@@ -245,13 +212,15 @@ export default function Speed() {
             />
             <TextField
               id="outlined-basic"
-              label="Speed (km/h)"
+              label={
+                measurementSystem == "metric" ? "Speed (km/h)" : "Speed (mph)"
+              }
               variant="outlined"
               name="speed"
               onChange={handleSpeedDataForm}
             />
             <Button
-              variant="contained"
+              variant="outlined"
               sx={{
                 mt: 2,
                 minHeight: "20px",
@@ -303,7 +272,7 @@ export default function Speed() {
           </Box>
 
           <Grid>
-            <List dense={dense}>
+            <List dense={false}>
               {speedData.map((data, index) => {
                 return (
                   <ListItem
@@ -323,7 +292,9 @@ export default function Speed() {
                         data.name.length > 25
                           ? data.name.slice(0, 25) + "..."
                           : data.name
-                      } ${data.speed}`}
+                      } ${
+                        measurementSystem === "metric" ? data.kmph : data.mph
+                      }`}
                     />
                   </ListItem>
                 );

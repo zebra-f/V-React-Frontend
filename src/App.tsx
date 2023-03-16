@@ -1,14 +1,12 @@
-import React from "react";
-
+import { useState, createContext, useMemo } from "react";
 import { Routes, Route } from "react-router-dom";
 
 import Container from "@mui/material/Container";
-import {
-  ThemeProvider,
-  createTheme,
-  PaletteMode,
-  CssBaseline,
-} from "@mui/material";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+// import {
+//   PaletteMode,
+// } from "@mui/material/";
+import CssBaseline from "@mui/material/CssBaseline";
 import {
   amber,
   grey,
@@ -54,7 +52,7 @@ function App(props: any) {
   );
 }
 
-export const ColorModeContext = React.createContext({
+export const ColorModeContext = createContext({
   toggleColorMode: () => {},
 });
 
@@ -66,10 +64,10 @@ export default function AppColorMode() {
       defaultValue: prefersDarkMode ? "dark" : "light",
     }
   );
-  const [mode, setMode] = React.useState<"light" | "dark">(
+  const [mode, setMode] = useState<"light" | "dark">(
     sessionThemeMode === "dark" ? "dark" : "light"
   );
-  const colorMode = React.useMemo(
+  const colorMode = useMemo(
     () => ({
       toggleColorMode: () => {
         setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
@@ -77,7 +75,7 @@ export default function AppColorMode() {
     }),
     []
   );
-  const getDesignTokens = (mode: PaletteMode) => ({
+  const getDesignTokens = (mode: any) => ({
     palette: {
       mode,
       ...(mode === "light"
@@ -118,7 +116,7 @@ export default function AppColorMode() {
           }),
     },
   });
-  const theme = React.useMemo(
+  const theme = useMemo(
     () =>
       createTheme({
         // palette
