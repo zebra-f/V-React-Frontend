@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import * as d3 from "d3";
@@ -7,7 +7,9 @@ import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import SettingsIcon from "@mui/icons-material/Settings";
-import { Height } from "@mui/icons-material";
+import AddIcon from "@mui/icons-material/Add";
+import StraightenIcon from "@mui/icons-material/Straighten";
+import useTheme from "@mui/material/styles/useTheme";
 
 interface SpeedProps {
   speedData: {
@@ -20,11 +22,15 @@ interface SpeedProps {
 }
 
 export default function SpeedSVG(props: SpeedProps) {
+  const theme = useTheme();
+  const color: string = theme.palette.mode === "light" ? "black" : "silver";
+
   const SVG_WIDTH = 960;
   const SVG_HEIGTH = 400;
   const BAR_X_COORD = 20;
   const BAR_Y_COORD = 20;
   const BAR_HEIGHT = BAR_X_COORD * 2;
+
   const svgRef = useRef<SVGSVGElement | null>(null);
   const [selection, setSelection] = useState<null | d3.Selection<
     any,
@@ -49,7 +55,11 @@ export default function SpeedSVG(props: SpeedProps) {
     if (!selection) {
       setSelection(d3.select(svgRef.current));
     } else {
-      selection.attr("style", "outline: thin solid #000000;");
+      selection.attr(
+        "style",
+        `outline: thin solid ${color}; border-bottom-right-radius: 20px;`
+      );
+
       const speedChart = selection.select(".SpeedChart");
       const SpeedChartBarsNameText = speedChart
         .select(".SpeedChartBarsNameText")
@@ -57,6 +67,7 @@ export default function SpeedSVG(props: SpeedProps) {
         .data(props.speedData)
         .join("text")
         .attr("font-size", 25)
+        .attr("fill", color)
         .text((d) => {
           return d.name.slice(0, 70);
         })
@@ -68,6 +79,7 @@ export default function SpeedSVG(props: SpeedProps) {
         .data(props.speedData)
         .join("text")
         .attr("font-size", 0)
+        .attr("fill", color)
         .attr("id", (d) => {
           return "id" + d.id;
         })
@@ -86,9 +98,9 @@ export default function SpeedSVG(props: SpeedProps) {
         .attr("width", 0)
         .attr("height", BAR_HEIGHT)
         .attr("fill", (_) => {
-          return getColor();
+          return getColor(theme.palette.mode);
         })
-        .attr("stroke", "black")
+        .attr("stroke", color)
         .attr("stroke-width", 1)
         .attr("y", (_, i) => i * (SVG_HEIGTH / 8) + BAR_Y_COORD)
         .attr("x", BAR_X_COORD)
@@ -99,7 +111,7 @@ export default function SpeedSVG(props: SpeedProps) {
 
       setSpeedChartBarsSelection(speedChartBars);
     }
-  }, [selection, props.speedData]);
+  }, [selection, props.speedData, theme]);
 
   const [distance, setDistance] = useState<number>(1);
   const elapsedRef = useRef<number>(0);
@@ -241,12 +253,14 @@ export default function SpeedSVG(props: SpeedProps) {
         </g>
         <text
           fontSize={36}
+          fill={color}
           x={SVG_WIDTH - SVG_HEIGTH / 2}
           y={SVG_HEIGTH - 2 * 20}
           className="timer"
         ></text>
         <text
           fontSize={36}
+          fill={color}
           x={BAR_X_COORD * 2}
           y={SVG_HEIGTH - 2 * 20}
           className="distance"
@@ -259,14 +273,14 @@ export default function SpeedSVG(props: SpeedProps) {
           y1={SVG_HEIGTH - BAR_Y_COORD}
           x2={SVG_WIDTH}
           y2={SVG_HEIGTH - BAR_Y_COORD}
-          stroke="black"
+          stroke={color}
         />
         <line
           x1={BAR_X_COORD}
           y1={SVG_HEIGTH - BAR_Y_COORD * 4}
           x2={BAR_X_COORD}
           y2={SVG_HEIGTH - BAR_Y_COORD}
-          stroke="black"
+          stroke={color}
         />
       </svg>
       <Box
@@ -277,22 +291,33 @@ export default function SpeedSVG(props: SpeedProps) {
           m: 0.5,
         }}
       >
-        <ButtonGroup size="small" disableElevation variant="text">
+        <ButtonGroup size="medium" disableElevation variant="text">
           {!inProgress ? (
             <Button onClick={handleStartButton}>
               <PlayArrowIcon />
             </Button>
           ) : (
-            <Button size="small" onClick={handlePauseButton}>
+            <Button onClick={handlePauseButton}>
               <PauseIcon />
             </Button>
           )}
 
-          <Button size="small" onClick={handleResetButton}>
+          <Button onClick={handleResetButton}>
             <RestartAltIcon />
           </Button>
         </ButtonGroup>
-        <ButtonGroup size="small" disableElevation variant="text">
+        <ButtonGroup
+          sx={{ mr: 2 }}
+          size="medium"
+          disableElevation
+          variant="text"
+        >
+          <Button>
+            <AddIcon />
+          </Button>
+          <Button>
+            <StraightenIcon />
+          </Button>
           <Button>
             <SettingsIcon />
           </Button>
@@ -302,16 +327,28 @@ export default function SpeedSVG(props: SpeedProps) {
   );
 }
 
-function getColor() {
-  return (
-    "hsla(" +
-    360 * Math.random() +
-    "," +
-    (90 + 100 * Math.random()) +
-    "%," +
-    (40 + 20 * Math.random()) +
-    "%, 0.1)"
-  );
+function getColor(themeMode: string) {
+  if (themeMode === "light") {
+    return (
+      "hsla(" +
+      360 * Math.random() +
+      "," +
+      (80 + 20 * Math.random()) +
+      "%," +
+      (40 + 60 * Math.random()) +
+      "%, 0.1)"
+    );
+  } else {
+    return (
+      "hsla(" +
+      360 * Math.random() +
+      "," +
+      0 +
+      "%," +
+      50 * Math.random() +
+      "%, 0.2)"
+    );
+  }
 }
 
 function stopWatch(elapsed: number) {
