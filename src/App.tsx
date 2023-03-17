@@ -83,14 +83,14 @@ export default function AppColorMode() {
             // palette values for light mode
             // color: "#7371FC"
             primary: {
-              main: "#f72585",
-              contrastText: "#fff",
+              main: red[400],
+              contrastText: "#edf6f9",
             },
             secondary: {
-              main: "#4361ee",
-              contrastText: "#000",
+              main: red[400],
+              contrastText: "#edf6f9",
             },
-            divider: pink[600],
+            divider: grey[800],
             text: {
               primary: grey[800],
               secondary: grey[800],

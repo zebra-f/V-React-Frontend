@@ -7,6 +7,7 @@ import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import SettingsIcon from "@mui/icons-material/Settings";
+import { Height } from "@mui/icons-material";
 
 interface SpeedProps {
   speedData: {
@@ -57,10 +58,10 @@ export default function SpeedSVG(props: SpeedProps) {
         .join("text")
         .attr("font-size", 25)
         .text((d) => {
-          return d.name.slice(0, 60);
+          return d.name.slice(0, 70);
         })
         .attr("y", (_, i) => i * 50 + 49)
-        .attr("x", 30);
+        .attr("x", BAR_X_COORD * 2);
       const SpeedChartBarsElapsedText = speedChart
         .select(".SpeedChartBarsElapsedText")
         .selectAll("text")
@@ -85,7 +86,7 @@ export default function SpeedSVG(props: SpeedProps) {
         .attr("width", 0)
         .attr("height", BAR_HEIGHT)
         .attr("fill", (_) => {
-          return "#" + Math.floor(Math.random() * 16777215).toString(16) + "40";
+          return getColor();
         })
         .attr("stroke", "black")
         .attr("stroke-width", 1)
@@ -155,20 +156,31 @@ export default function SpeedSVG(props: SpeedProps) {
   const pausedTimerRef = useRef<boolean>(false);
   const [inProgress, setInProgress] = useState<boolean>(false);
   function handleStartButton() {
-    setInProgress(true);
-    if (timer) {
-      if (pausedTimerRef && speedChartBarsSelection) {
-        pausedTimerRef.current = false;
-
+    const speedChartBarsSelectionTransition = () => {
+      if (speedChartBarsSelection) {
         speedChartBarsSelection
           .transition()
           .ease(d3.easeLinear)
           .duration((d) => {
             return calcualteTransitionDuration(d);
           })
-          .attr("width", SVG_WIDTH - 20)
-          .on("end", (d) => {});
-
+          .attr("width", SVG_WIDTH - BAR_X_COORD + 1)
+          .on("end", (d) => {
+            if (selection) {
+              selection
+                .select(".SpeedChart")
+                .select(".SpeedChartBarsElapsedText")
+                .select(`#id${d.id}`)
+                .attr("font-size", 25);
+            }
+          });
+      }
+    };
+    setInProgress(true);
+    if (timer) {
+      if (pausedTimerRef && speedChartBarsSelection) {
+        pausedTimerRef.current = false;
+        speedChartBarsSelectionTransition();
         timer.restart((elapsed) => {
           elapsed = elapsed + elapsedRef.current;
           elapsedRestartRef.current = elapsed;
@@ -181,22 +193,7 @@ export default function SpeedSVG(props: SpeedProps) {
       }
     } else if (speedChartBarsSelection) {
       setTimer(t());
-      speedChartBarsSelection
-        .transition()
-        .ease(d3.easeLinear)
-        .duration((d) => {
-          return calcualteTransitionDuration(d);
-        })
-        .attr("width", SVG_WIDTH - 20)
-        .on("end", (d) => {
-          if (selection) {
-            selection
-              .select(".SpeedChart")
-              .select(".SpeedChartBarsElapsedText")
-              .select(`#id${d.id}`)
-              .attr("font-size", 25);
-          }
-        });
+      speedChartBarsSelectionTransition();
     }
   }
   function handlePauseButton() {
@@ -243,12 +240,34 @@ export default function SpeedSVG(props: SpeedProps) {
           <g className="SpeedChartBarsElapsedText"></g>
         </g>
         <text
-          fontSize={40}
+          fontSize={36}
           x={SVG_WIDTH - SVG_HEIGTH / 2}
-          y="370"
+          y={SVG_HEIGTH - 2 * 20}
           className="timer"
         ></text>
-        {/* <line x1="42" y1="30" x2="42" y2="380" stroke="black" /> */}
+        <text
+          fontSize={36}
+          x={BAR_X_COORD * 2}
+          y={SVG_HEIGTH - 2 * 20}
+          className="distance"
+        >
+          Distance: {distance}{" "}
+          {props.measurementSystem === "metric" ? "km" : "mi"}
+        </text>
+        <line
+          x1={BAR_X_COORD}
+          y1={SVG_HEIGTH - BAR_Y_COORD}
+          x2={SVG_WIDTH}
+          y2={SVG_HEIGTH - BAR_Y_COORD}
+          stroke="black"
+        />
+        <line
+          x1={BAR_X_COORD}
+          y1={SVG_HEIGTH - BAR_Y_COORD * 4}
+          x2={BAR_X_COORD}
+          y2={SVG_HEIGTH - BAR_Y_COORD}
+          stroke="black"
+        />
       </svg>
       <Box
         display="flex"
@@ -280,6 +299,18 @@ export default function SpeedSVG(props: SpeedProps) {
         </ButtonGroup>
       </Box>
     </Box>
+  );
+}
+
+function getColor() {
+  return (
+    "hsla(" +
+    360 * Math.random() +
+    "," +
+    (90 + 100 * Math.random()) +
+    "%," +
+    (40 + 20 * Math.random()) +
+    "%, 0.1)"
   );
 }
 
