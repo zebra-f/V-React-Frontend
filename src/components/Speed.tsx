@@ -10,13 +10,11 @@ import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
-import Switch, { SwitchProps } from "@mui/material/Switch";
-import FormGroup from "@mui/material/FormGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import FormControl from "@mui/material/FormControl";
-import FormLabel from "@mui/material/FormLabel";
-import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
+import * as React from "react";
+import Stack from "@mui/material/Stack";
+import ToggleButton from "@mui/material/ToggleButton";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 
 import { v4 as uuidv4 } from "uuid";
 
@@ -167,24 +165,47 @@ export default function Speed() {
     }
   }, [open]);
 
+  const [alignment, setAlignment] = React.useState("metric");
+  const handleAlignment = (
+    event: React.MouseEvent<HTMLElement>,
+    newAlignment: "metric" | "imperial" | null
+  ) => {
+    if (newAlignment !== null) {
+      setAlignment(newAlignment);
+      setMeasurementSystem(newAlignment);
+    }
+  };
+
   return (
     <>
-      <FormControl component="fieldset">
-        <FormLabel component="legend">Label placement</FormLabel>
-        <FormGroup aria-label="position" row>
-          <Stack direction="row" spacing={1} alignItems="center">
-            <Typography>Off</Typography>
-            <Switch
-              defaultChecked
-              inputProps={{ "aria-label": "ant design" }}
-            />
-            <Typography>On</Typography>
-          </Stack>
-        </FormGroup>
-      </FormControl>
+      <Stack
+        direction="row"
+        spacing={4}
+        my={4}
+        display="flex"
+        justifyContent="flex-end"
+      >
+        <ToggleButtonGroup
+          value={alignment}
+          exclusive
+          onChange={handleAlignment}
+          aria-label="text alignment"
+        >
+          <ToggleButton value="metric" aria-label="left aligned" size="small">
+            <Typography mt={0.5}>metric</Typography>
+          </ToggleButton>
+          <ToggleButton
+            value="imperial"
+            aria-label="right aligned"
+            size="small"
+          >
+            <Typography mt={0.5}>imperial</Typography>
+          </ToggleButton>
+        </ToggleButtonGroup>
+      </Stack>
 
       <Grid mt={2} container spacing={2} columns={{ xs: 4, sm: 8, md: 12 }}>
-        <Grid xs={4} sm={8} md={8}>
+        <Grid id={"svg"} xs={4} sm={8} md={8}>
           <SpeedSVG
             speedData={speedData}
             measurementSystem={measurementSystem}

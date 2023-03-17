@@ -19,6 +19,11 @@ interface SpeedProps {
 }
 
 export default function SpeedSVG(props: SpeedProps) {
+  const SVG_WIDTH = 960;
+  const SVG_HEIGTH = 400;
+  const BAR_X_COORD = 20;
+  const BAR_Y_COORD = 20;
+  const BAR_HEIGHT = BAR_X_COORD * 2;
   const svgRef = useRef<SVGSVGElement | null>(null);
   const [selection, setSelection] = useState<null | d3.Selection<
     any,
@@ -26,17 +31,18 @@ export default function SpeedSVG(props: SpeedProps) {
     null,
     undefined
   >>(null);
-  const [barsSelection, setBarsSelection] = useState<null | d3.Selection<
-    d3.BaseType | SVGRectElement,
-    {
-      id: string;
-      name: string;
-      kmph: number;
-      mph: number;
-    },
-    d3.BaseType,
-    unknown
-  >>(null);
+  const [speedChartBarsSelection, setSpeedChartBarsSelection] =
+    useState<null | d3.Selection<
+      d3.BaseType | SVGRectElement,
+      {
+        id: string;
+        name: string;
+        kmph: number;
+        mph: number;
+      },
+      d3.BaseType,
+      unknown
+    >>(null);
 
   useEffect(() => {
     if (!selection) {
@@ -44,7 +50,8 @@ export default function SpeedSVG(props: SpeedProps) {
     } else {
       selection.attr("style", "outline: thin solid #000000;");
       const speedChart = selection.select(".SpeedChart");
-      const speedChartBarsName = speedChart
+      const SpeedChartBarsNameText = speedChart
+        .select(".SpeedChartBarsNameText")
         .selectAll("text")
         .data(props.speedData)
         .join("text")
@@ -54,24 +61,42 @@ export default function SpeedSVG(props: SpeedProps) {
         })
         .attr("y", (_, i) => i * 50 + 49)
         .attr("x", 30);
+      const SpeedChartBarsElapsedText = speedChart
+        .select(".SpeedChartBarsElapsedText")
+        .selectAll("text")
+        .data(props.speedData)
+        .join("text")
+        .attr("font-size", 0)
+        .attr("id", (d) => {
+          return "id" + d.id;
+        })
+        .text((d) => {
+          if (elapsedRef.current) {
+            elapsedRef.current = 0;
+          }
+          return stopWatch(calcualteTransitionDuration(d));
+        })
+        .attr("y", (_, i) => i * 50 + 49)
+        .attr("x", SVG_WIDTH - SVG_HEIGTH / 2);
       const speedChartBars = speedChart
         .selectAll("rect")
         .data(props.speedData)
         .join("rect")
         .attr("width", 0)
-        .attr("height", 40)
+        .attr("height", BAR_HEIGHT)
         .attr("fill", (_) => {
           return "#" + Math.floor(Math.random() * 16777215).toString(16) + "40";
         })
         .attr("stroke", "black")
         .attr("stroke-width", 1)
-        .attr("y", (_, i) => i * 50 + 20)
-        .attr("x", 20)
+        .attr("y", (_, i) => i * (SVG_HEIGTH / 8) + BAR_Y_COORD)
+        .attr("x", BAR_X_COORD)
         .style("pointer-events", "visible")
         .on("click", (e, d) => {
           console.log("clicked on bar");
         });
-      setBarsSelection(speedChartBars);
+
+      setSpeedChartBarsSelection(speedChartBars);
     }
   }, [selection, props.speedData]);
 
@@ -132,20 +157,17 @@ export default function SpeedSVG(props: SpeedProps) {
   function handleStartButton() {
     setInProgress(true);
     if (timer) {
-      if (pausedTimerRef && barsSelection) {
+      if (pausedTimerRef && speedChartBarsSelection) {
         pausedTimerRef.current = false;
 
-        barsSelection
+        speedChartBarsSelection
           .transition()
           .ease(d3.easeLinear)
           .duration((d) => {
-            const transitionDuration = calcualteTransitionDuration(d);
-            return transitionDuration + transitionDuration * 0.0186;
+            return calcualteTransitionDuration(d);
           })
-          .attr("width", 960)
-          .on("end", (d) => {
-            console.log("aaaaaaa", d.name);
-          });
+          .attr("width", SVG_WIDTH - 20)
+          .on("end", (d) => {});
 
         timer.restart((elapsed) => {
           elapsed = elapsed + elapsedRef.current;
@@ -157,24 +179,28 @@ export default function SpeedSVG(props: SpeedProps) {
           }
         }, 150);
       }
-    } else if (barsSelection) {
+    } else if (speedChartBarsSelection) {
       setTimer(t());
-      barsSelection
+      speedChartBarsSelection
         .transition()
         .ease(d3.easeLinear)
         .duration((d) => {
-          const transitionDuration = calcualteTransitionDuration(d);
-          console.log(transitionDuration);
-          return transitionDuration + transitionDuration * 0.0186;
+          return calcualteTransitionDuration(d);
         })
-        .attr("width", 960)
+        .attr("width", SVG_WIDTH - 20)
         .on("end", (d) => {
-          // console.log(d);
+          if (selection) {
+            selection
+              .select(".SpeedChart")
+              .select(".SpeedChartBarsElapsedText")
+              .select(`#id${d.id}`)
+              .attr("font-size", 25);
+          }
         });
     }
   }
   function handlePauseButton() {
-    if (barsSelection) barsSelection.interrupt();
+    if (speedChartBarsSelection) speedChartBarsSelection.interrupt();
     setInProgress(false);
     if (timer) {
       pausedTimerRef.current = true;
@@ -187,8 +213,8 @@ export default function SpeedSVG(props: SpeedProps) {
   }
   function handleResetButton() {
     setInProgress(false);
-    if (barsSelection) {
-      barsSelection
+    if (speedChartBarsSelection) {
+      speedChartBarsSelection
         .transition()
         .ease(d3.easeLinear)
         .duration(400)
@@ -205,47 +231,24 @@ export default function SpeedSVG(props: SpeedProps) {
   }
 
   return (
-    <Box my={0} display="flex" justifyContent="center" flexDirection={"column"}>
+    <Box my={1} display="flex" justifyContent="center" flexDirection={"column"}>
       <svg
-        id="speed-chart"
-        viewBox={`0 0 ${960} ${400}`}
+        id="SpeedChart"
+        viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGTH}`}
         preserveAspectRatio="xMidYMid meet"
         ref={svgRef}
       >
-        <g className="SpeedChart"></g>
-        <text fontSize={50} x="700" y="370" className="timer"></text>
+        <g className="SpeedChart">
+          <g className="SpeedChartBarsNameText"></g>
+          <g className="SpeedChartBarsElapsedText"></g>
+        </g>
+        <text
+          fontSize={40}
+          x={SVG_WIDTH - SVG_HEIGTH / 2}
+          y="370"
+          className="timer"
+        ></text>
         {/* <line x1="42" y1="30" x2="42" y2="380" stroke="black" /> */}
-        {/* <defs>
-    
-      <pattern
-        id="smallGrid"
-        width="8"
-        height="8"
-        patternUnits="userSpaceOnUse"
-      >
-        <path
-          d="M 8 0 L 0 0 0 8"
-          fill="none"
-          stroke="gray"
-          strokeWidth="0.5"
-        />
-      </pattern>
-      <pattern
-        id="grid"
-        width="79.93"
-        height="79.93"
-        patternUnits="userSpaceOnUse"
-      >
-        <rect width="80" height="80" fill="url(#smallGrid)" />
-        <path
-          d="M 80 0 L 0 0 0 80"
-          fill="none"
-          stroke="gray"
-          strokeWidth="1"
-        />
-      </pattern>
-    </defs>
-    <rect width="100%" height="100%" fill="url(#grid)" /> */}
       </svg>
       <Box
         display="flex"
