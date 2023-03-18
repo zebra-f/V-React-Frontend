@@ -17,6 +17,7 @@ import {
   lightBlue,
   orange,
   deepOrange,
+  yellow,
 } from "@mui/material/colors";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
@@ -32,22 +33,45 @@ import useLocalStorageState from "use-local-storage-state";
 import "./App.css";
 
 function App(props: any) {
+  const [measurementSystem, setMeasurementSystem] = useState<
+    "metric" | "imperial"
+  >("metric");
   return (
-    <div className="App">
+    <div
+      className="App"
+      style={
+        {
+          // height: "100vh",
+          // background: "theme.palette.background.default",
+          //   backgroundImage:
+          //     "linear-gradient(to right top, #090a0f, #090a0f, #090a0f, #090a0f, #090a0f, #090a0f, #090a0f, #111319, #141820, #171d27, #19222e, #1b2735)",
+        }
+      }
+    >
       <Navbar
         setSessionThemeMode={props.setSessionThemeMode}
         sessionThemeMode={props.sessionThemeMode}
       />
-      <Container maxWidth="xl">
-        <Routes>
-          <Route path="" element={<Home />} />
-          <Route path="vees" element={<Vees />}>
-            <Route path="length" element={<Length />} />
-            <Route path="" element={<Speed />} />
-          </Route>
-          <Route path="about" element={<About />} />
-        </Routes>
-      </Container>
+
+      <Routes>
+        <Route path="" element={<Home />} />
+        <Route
+          path="vees"
+          element={
+            <Vees
+              setMeasurementSystem={setMeasurementSystem}
+              measurementSystem={measurementSystem}
+            />
+          }
+        >
+          <Route path="length" element={<Length />} />
+          <Route
+            path=""
+            element={<Speed measurementSystem={measurementSystem} />}
+          />
+        </Route>
+        <Route path="about" element={<About />} />
+      </Routes>
     </div>
   );
 }
@@ -90,7 +114,7 @@ export default function AppColorMode() {
               main: red[400],
               contrastText: "#edf6f9",
             },
-            divider: grey[800],
+            divider: grey[400],
             text: {
               primary: grey[800],
               secondary: grey[800],
@@ -102,16 +126,21 @@ export default function AppColorMode() {
           }
         : {
             // palette values for dark mode
-            primary: grey,
-            secondary: grey,
-            divider: grey[600],
+            primary: blue,
+            secondary: red,
+            divider: "#1B2735",
             background: {
-              default: "#111111",
-              paper: grey[900],
+              default: "#090A0F",
+              paper: "#000000",
             },
             text: {
-              primary: grey[100],
-              secondary: grey[100],
+              primary: "#243141",
+              secondary: blue[200],
+            },
+            action: {
+              selected: "#3c4576",
+              active: "#3c4576",
+              disabled: "#00868c",
             },
           }),
     },

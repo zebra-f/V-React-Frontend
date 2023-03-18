@@ -10,11 +10,7 @@ import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
-import Typography from "@mui/material/Typography";
-import * as React from "react";
-import Stack from "@mui/material/Stack";
-import ToggleButton from "@mui/material/ToggleButton";
-import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import Container from "@mui/material/Container";
 
 import { v4 as uuidv4 } from "uuid";
 
@@ -64,10 +60,11 @@ const placeholderSpeedData: any[] = [
   },
 ];
 
-export default function Speed() {
-  const [measurementSystem, setMeasurementSystem] = useState<
-    "metric" | "imperial"
-  >("metric");
+interface AppProps {
+  measurementSystem: "metric" | "imperial";
+}
+
+export default function Speed(props: AppProps) {
   const [speedData, setSpeedData] = useState<
     {
       id: string;
@@ -108,7 +105,7 @@ export default function Speed() {
     switch (calledBy) {
       case "Form":
         setSpeedData((prev) => {
-          return measurementSystem === "metric"
+          return props.measurementSystem === "metric"
             ? [
                 ...prev,
                 {
@@ -165,96 +162,17 @@ export default function Speed() {
     }
   }, [open]);
 
-  const [alignment, setAlignment] = React.useState("metric");
-  const handleAlignment = (
-    event: React.MouseEvent<HTMLElement>,
-    newAlignment: "metric" | "imperial" | null
-  ) => {
-    if (newAlignment !== null) {
-      setAlignment(newAlignment);
-      setMeasurementSystem(newAlignment);
-    }
-  };
-
   return (
-    <>
-      <Stack
-        direction="row"
-        spacing={4}
-        my={4}
-        display="flex"
-        justifyContent="flex-end"
-      >
-        <ToggleButtonGroup
-          value={alignment}
-          exclusive
-          onChange={handleAlignment}
-          aria-label="text alignment"
-        >
-          <ToggleButton value="metric" aria-label="left aligned" size="small">
-            <Typography mt={0.5}>metric</Typography>
-          </ToggleButton>
-          <ToggleButton
-            value="imperial"
-            aria-label="right aligned"
-            size="small"
-          >
-            <Typography mt={0.5}>imperial</Typography>
-          </ToggleButton>
-        </ToggleButtonGroup>
-      </Stack>
-
-      <Grid mt={2} container spacing={2} columns={{ xs: 4, sm: 8, md: 12 }}>
+    <Container maxWidth="xl">
+      <Grid mt={4} container spacing={2} columns={{ xs: 4, sm: 8, md: 12 }}>
         <Grid id={"svg"} xs={4} sm={8} md={8}>
           <SpeedSVG
             speedData={speedData}
-            measurementSystem={measurementSystem}
+            measurementSystem={props.measurementSystem}
           />
         </Grid>
 
         <Grid xs={4} sm={8} md={4}>
-          <Box
-            display="flex"
-            justifyContent="center"
-            my={2}
-            component="form"
-            sx={{
-              "& .MuiTextField-root": { m: 1, width: "25ch" },
-            }}
-            noValidate
-            autoComplete="off"
-          >
-            <TextField
-              id="outlined-basic"
-              label="Name"
-              variant="outlined"
-              name="name"
-              onChange={handleSpeedDataForm}
-            />
-            <TextField
-              id="outlined-basic"
-              label={
-                measurementSystem == "metric" ? "Speed (km/h)" : "Speed (mph)"
-              }
-              variant="outlined"
-              name="speed"
-              onChange={handleSpeedDataForm}
-            />
-            <Button
-              variant="outlined"
-              sx={{
-                mt: 2,
-                minHeight: "20px",
-                minWidth: "70px",
-                height: "100%",
-                width: "20%",
-              }}
-              onClick={handleAddSpeedDataForm}
-            >
-              Add
-            </Button>
-          </Box>
-
           <Box display="flex" justifyContent="center" my={2}>
             <Autocomplete
               id="asynchronous-demo"
@@ -314,7 +232,9 @@ export default function Speed() {
                           ? data.name.slice(0, 25) + "..."
                           : data.name
                       } ${
-                        measurementSystem === "metric" ? data.kmph : data.mph
+                        props.measurementSystem === "metric"
+                          ? data.kmph
+                          : data.mph
                       }`}
                     />
                   </ListItem>
@@ -324,7 +244,48 @@ export default function Speed() {
           </Grid>
         </Grid>
       </Grid>
-    </>
+      <Box
+        display="flex"
+        justifyContent="center"
+        my={2}
+        component="form"
+        sx={{
+          "& .MuiTextField-root": { m: 1, width: "25ch" },
+        }}
+        noValidate
+        autoComplete="off"
+      >
+        <TextField
+          id="outlined-basic"
+          label="Name"
+          variant="outlined"
+          name="name"
+          onChange={handleSpeedDataForm}
+        />
+        <TextField
+          id="outlined-basic"
+          label={
+            props.measurementSystem == "metric" ? "Speed (km/h)" : "Speed (mph)"
+          }
+          variant="outlined"
+          name="speed"
+          onChange={handleSpeedDataForm}
+        />
+        <Button
+          variant="outlined"
+          sx={{
+            mt: 2,
+            minHeight: "20px",
+            minWidth: "70px",
+            height: "100%",
+            width: "20%",
+          }}
+          onClick={handleAddSpeedDataForm}
+        >
+          Add
+        </Button>
+      </Box>
+    </Container>
   );
 }
 

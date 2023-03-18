@@ -23,7 +23,7 @@ interface SpeedProps {
 
 export default function SpeedSVG(props: SpeedProps) {
   const theme = useTheme();
-  const color: string = theme.palette.mode === "light" ? "black" : "silver";
+  const color: string = theme.palette.mode === "light" ? "black" : "#243141";
 
   const SVG_WIDTH = 960;
   const SVG_HEIGTH = 400;
@@ -55,10 +55,7 @@ export default function SpeedSVG(props: SpeedProps) {
     if (!selection) {
       setSelection(d3.select(svgRef.current));
     } else {
-      selection.attr(
-        "style",
-        `outline: thin solid ${color}; border-bottom-right-radius: 20px;`
-      );
+      selection.attr("style", `outline: thin solid ${color};`);
 
       const speedChart = selection.select(".SpeedChart");
       const SpeedChartBarsNameText = speedChart
@@ -341,11 +338,12 @@ function getColor(themeMode: string) {
   } else {
     return (
       "hsla(" +
-      360 * Math.random() +
+      200 +
+      Math.random() * 100 +
       "," +
-      0 +
+      70 +
       "%," +
-      50 * Math.random() +
+      70 * Math.random() +
       "%, 0.2)"
     );
   }

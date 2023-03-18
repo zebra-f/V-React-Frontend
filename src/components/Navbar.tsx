@@ -39,11 +39,16 @@ export default function Navbar(props: any) {
     );
   };
   const theme = useTheme();
+  const backgroundColor =
+    theme.palette.mode === "dark"
+      ? "linear-gradient(0deg, rgba(9,10,15,0.8) 0%, rgba(27,39,53,0.4) 100%)"
+      : "white";
 
+  const activeStyleBackgroundColor =
+    theme.palette.mode === "dark" ? "rgb(9, 10, 15)" : "white";
   // NavLink highlight
   const activeStyle = {
-    backgroundColor: theme.palette.action.selected,
-    textDecoration: "none",
+    backgroundColor: activeStyleBackgroundColor,
   };
   const CustomNavLink = React.forwardRef<any, any>((props, ref) => (
     <NavLink
@@ -169,8 +174,13 @@ export default function Navbar(props: any) {
 
   return (
     <>
-      <Slide appear={false} direction="down" in={!useScrollTrigger()}>
-        <AppBar position="sticky" sx={{ pt: 0 }}>
+      <Slide appear={true} direction="down" in={!useScrollTrigger()}>
+        <AppBar
+          elevation={0}
+          position="sticky"
+          sx={{ pt: 0 }}
+          style={{ background: backgroundColor }}
+        >
           <Container maxWidth="xl">
             <Toolbar disableGutters>
               <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
@@ -248,7 +258,7 @@ export default function Navbar(props: any) {
                     key={page}
                     sx={{
                       // my: 2,
-                      color: "white",
+                      // color: "white",
                       display: "block",
                       pt: 3.2,
                       px: 2.4,
@@ -282,7 +292,11 @@ export default function Navbar(props: any) {
               </Box>
 
               {/* top right mobile */}
-              <Box sx={{ display: { xs: "flex", md: "none" } }}>
+              <Box
+                sx={{
+                  display: { xs: "flex", md: "none" },
+                }}
+              >
                 <IconButton
                   size="large"
                   aria-label="show more"
@@ -351,7 +365,7 @@ const MaterialUISwitch = styled(Switch)(({ theme }) => ({
     },
   },
   "& .MuiSwitch-thumb": {
-    backgroundColor: theme.palette.mode === "dark" ? "#323234" : "#001e3c",
+    backgroundColor: theme.palette.mode === "dark" ? "#3c4576" : "#001e3c",
     width: 32,
     height: 32,
     "&:before": {
@@ -370,7 +384,7 @@ const MaterialUISwitch = styled(Switch)(({ theme }) => ({
   },
   "& .MuiSwitch-track": {
     opacity: 1,
-    backgroundColor: theme.palette.mode === "dark" ? "#1F2028" : "#aab4be",
+    backgroundColor: theme.palette.mode === "dark" ? "#346aac" : "#aab4be",
     borderRadius: 20 / 2,
   },
 }));
