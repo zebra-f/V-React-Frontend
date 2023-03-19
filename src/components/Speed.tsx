@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, forwardRef } from "react";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -11,8 +11,6 @@ import ListItemText from "@mui/material/ListItemText";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Container from "@mui/material/Container";
-
-import * as React from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -21,7 +19,7 @@ import { TransitionProps } from "@mui/material/transitions";
 
 import AddBoxIcon from "@mui/icons-material/AddBox";
 
-const Transition = React.forwardRef(function Transition(
+const Transition = forwardRef(function Transition(
   props: TransitionProps & {
     children: React.ReactElement<any, any>;
   },
@@ -180,7 +178,7 @@ export default function Speed(props: AppProps) {
     }
   }, [open]);
 
-  const [openAddIcon, setOpenAddIcon] = React.useState(false);
+  const [openAddIcon, setOpenAddIcon] = useState(false);
   const handleAddIconOpen = () => {
     setOpenAddIcon(true);
   };

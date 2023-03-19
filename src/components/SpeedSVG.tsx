@@ -29,8 +29,10 @@ export default function SpeedSVG(props: SpeedProps) {
   const SVG_WIDTH = 960;
   const SVG_HEIGTH = 400;
   const BAR_X_COORD = 20;
-  const BAR_Y_COORD = 20;
+  const BAR_Y_COORD = 60;
   const BAR_HEIGHT = BAR_X_COORD * 2;
+
+  const [distance, setDistance] = useState<number>(2);
 
   const svgRef = useRef<SVGSVGElement | null>(null);
   const [selection, setSelection] = useState<null | d3.Selection<
@@ -71,7 +73,7 @@ export default function SpeedSVG(props: SpeedProps) {
         .text((d) => {
           return d.name.slice(0, 70);
         })
-        .attr("y", (_, i) => i * 50 + 49)
+        .attr("y", (_, i) => i * 50 + (29 + BAR_Y_COORD))
         .attr("x", BAR_X_COORD * 2);
       const SpeedChartBarsElapsedText = speedChart
         .select(".SpeedChartBarsElapsedText")
@@ -89,7 +91,7 @@ export default function SpeedSVG(props: SpeedProps) {
           }
           return stopWatch(calcualteTransitionDuration(d));
         })
-        .attr("y", (_, i) => i * 50 + 49)
+        .attr("y", (_, i) => i * 50 + (29 + BAR_Y_COORD))
         .attr("x", SVG_WIDTH - SVG_HEIGTH / 2);
       const speedChartBars = speedChart
         .selectAll("rect")
@@ -106,14 +108,37 @@ export default function SpeedSVG(props: SpeedProps) {
         .attr("x", BAR_X_COORD)
         .style("pointer-events", "visible")
         .on("click", (e, d) => {
-          console.log("clicked on bar");
+          console.log("clicked");
         });
+
+      const scale = d3
+        .scaleLinear()
+        .domain([0, distance])
+        .range([0, SVG_WIDTH - BAR_X_COORD * 2]);
+      const x_axis = d3.axisBottom(scale);
+      speedChart
+        .append("g")
+        .style("font", "12px Montserrat")
+        .attr("class", "x axis")
+        .attr("transform", "translate(20," + 20 + ")")
+        .call(x_axis);
+
+      // const scale = d3
+      //   .scaleLinear()
+      //   .domain([0, distance])
+      //   .range([0, SVG_WIDTH - BAR_X_COORD * 2]);
+      // const x_axis = d3.axisBottom(scale);
+      // speedChart
+      //   .select(".SpeedChartAxis")
+      //   .attr("class", "x axis")
+      //   .attr("transform", "translate(20," + 20 + ")")
+      //   .join("g")
+      //   .call(x_axis);
 
       setSpeedChartBarsSelection(speedChartBars);
     }
-  }, [selection, props.speedData, theme]);
+  }, [selection, props.speedData, theme, distance]);
 
-  const [distance, setDistance] = useState<number>(1);
   const elapsedRef = useRef<number>(0);
   const elapsedRestartRef = useRef<number>(0);
 
@@ -176,7 +201,7 @@ export default function SpeedSVG(props: SpeedProps) {
           .duration((d) => {
             return calcualteTransitionDuration(d);
           })
-          .attr("width", SVG_WIDTH - BAR_X_COORD + 1)
+          .attr("width", SVG_WIDTH - BAR_X_COORD * 2)
           .on("end", (d) => {
             if (selection) {
               selection
@@ -239,6 +264,7 @@ export default function SpeedSVG(props: SpeedProps) {
     }
   }
 
+  console.log(theme.palette.background.default);
   return (
     <Box my={1} display="flex" justifyContent="center" flexDirection={"column"}>
       <svg
@@ -247,7 +273,18 @@ export default function SpeedSVG(props: SpeedProps) {
         preserveAspectRatio="xMidYMid meet"
         ref={svgRef}
       >
+        <rect
+          width="100%"
+          height="100%"
+          fill={
+            theme.palette.mode === "light"
+              ? "rgba(251, 254, 251, 0.6)"
+              : "rgba(9, 10, 15, 0.8)"
+          }
+        />
+
         <g className="SpeedChart">
+          <g className="SpeedChartAxis"></g>
           <g className="SpeedChartBarsNameText"></g>
           <g className="SpeedChartBarsElapsedText"></g>
         </g>
@@ -270,32 +307,32 @@ export default function SpeedSVG(props: SpeedProps) {
         </text>
         <line
           x1={BAR_X_COORD}
-          y1={SVG_HEIGTH - BAR_Y_COORD}
+          y1={SVG_HEIGTH - BAR_X_COORD}
           x2={SVG_WIDTH}
-          y2={SVG_HEIGTH - BAR_Y_COORD}
+          y2={SVG_HEIGTH - BAR_X_COORD}
           stroke={color}
         />
         <line
           x1={BAR_X_COORD}
-          y1={SVG_HEIGTH - BAR_Y_COORD * 4}
+          y1={SVG_HEIGTH - BAR_Y_COORD}
           x2={BAR_X_COORD}
-          y2={SVG_HEIGTH - BAR_Y_COORD}
+          y2={SVG_HEIGTH - BAR_X_COORD}
           stroke={color}
         />
         <line
           x1={SVG_WIDTH}
           y1={1}
           x2={SVG_WIDTH}
-          y2={SVG_HEIGTH - BAR_Y_COORD}
+          y2={SVG_HEIGTH - BAR_X_COORD}
           stroke={color}
         />
-        <line
+        {/* <line
           x1={SVG_WIDTH}
           y1={1}
           x2={SVG_WIDTH - BAR_X_COORD * 4}
           y2={1}
           stroke={color}
-        />
+        /> */}
       </svg>
       <Box
         display="flex"
