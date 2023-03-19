@@ -264,7 +264,7 @@ export default function Navbar(props: any) {
                       px: 2.4,
                     }}
                   >
-                    <Typography variant="button" sx={{ fontWeight: "bold" }}>
+                    <Typography variant="button" sx={{}}>
                       {page}
                     </Typography>
                   </Button>

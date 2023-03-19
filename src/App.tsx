@@ -35,6 +35,9 @@ import useLocalStorageState from "use-local-storage-state";
 
 import "./App.css";
 
+import MoonLight from "./assets/svg/moon-main-light.svg";
+import UranusDark from "./assets/svg/uranus-main-dark.svg";
+
 function App(props: any) {
   const [measurementSystem, setMeasurementSystem] = useState<
     "metric" | "imperial"
@@ -45,19 +48,27 @@ function App(props: any) {
       style={
         props.mode === "light"
           ? {
+              backgroundImage: `url(${MoonLight})`,
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "top right",
+              minHeight: "800px",
               // background: "theme.palette.background.default",
-              // height: "100vh",
               // backgroundImage:
               // "linear-gradient(to top, #051937, #004d7a, #008793, #00bf72, #a8eb12)",
             }
-          : {}
+          : {
+              backgroundImage: `url(${UranusDark})`,
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "top right",
+              minHeight: "800px",
+            }
       }
     >
+      {/* <img src={Moon} alt="React Logo" /> */}
       <Navbar
         setSessionThemeMode={props.setSessionThemeMode}
         sessionThemeMode={props.sessionThemeMode}
       />
-
       <Routes>
         <Route path="" element={<Home />} />
         <Route
@@ -162,6 +173,12 @@ export default function AppColorMode() {
           duration: {
             enteringScreen: 600,
             leavingScreen: 200,
+          },
+        },
+        typography: {
+          fontFamily: ["'Montserrat'"].join(","),
+          button: {
+            textTransform: "none",
           },
         },
       }),

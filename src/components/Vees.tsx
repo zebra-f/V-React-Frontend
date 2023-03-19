@@ -34,19 +34,27 @@ export default function Vees(props: AppProps) {
       props.setMeasurementSystem(newAlignment);
     }
   };
-  // const backgroundColor = (theme.palette.mode === 'dark' ? )
+  const backgroundColor =
+    theme.palette.mode === "dark"
+      ? "rgba(0, 0, 0, 0.1)"
+      : "rgba(233, 236, 239, 0.7)";
   return (
     <>
       <Box
         display="flex"
         justifyContent="space-around"
-        mt={2}
+        mt={4}
         sx={{ width: "100%" }}
-        style={{ background: "rgba(0, 0, 0, 0.1)" }}
+        style={{ background: backgroundColor }}
       >
         <Tabs value={value} onChange={handleChange} centered>
-          <Tab label="Speed" to="/vees" component={Link} />
-          <Tab label="Length" to="/vees/length" component={Link} />
+          <Tab sx={{ pt: 5 }} label="Speed" to="/vees" component={Link} />
+          <Tab
+            sx={{ pt: 5 }}
+            label="Length"
+            to="/vees/length"
+            component={Link}
+          />
         </Tabs>
 
         <ToggleButtonGroup
@@ -57,7 +65,8 @@ export default function Vees(props: AppProps) {
           aria-label="text alignment"
           sx={{
             p: 1,
-            bgcolor: theme.palette.background.default,
+            // bgcolor: theme.palette.background.default,
+            borderRadius: 0,
           }}
         >
           <ToggleButton
@@ -65,20 +74,22 @@ export default function Vees(props: AppProps) {
             aria-label="left aligned"
             size="small"
             sx={{
+              mx: 1,
               maxHeight: 26,
             }}
           >
-            <Typography mt={0.5}>metric</Typography>
+            <Typography mt={0}>metric</Typography>
           </ToggleButton>
           <ToggleButton
             value="imperial"
             aria-label="right aligned"
             size="small"
             sx={{
+              mx: 1,
               maxHeight: 26,
             }}
           >
-            <Typography mt={0.5}>imperial</Typography>
+            <Typography mt={0}>imperial</Typography>
           </ToggleButton>
         </ToggleButtonGroup>
       </Box>
