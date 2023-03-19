@@ -19,11 +19,12 @@ interface SpeedProps {
     mph: number;
   }[];
   measurementSystem: "metric" | "imperial";
+  handleAddIconOpen: () => void;
 }
 
 export default function SpeedSVG(props: SpeedProps) {
   const theme = useTheme();
-  const color: string = theme.palette.mode === "light" ? "black" : "#243141";
+  const color: string = theme.palette.mode === "light" ? "#3d5a80" : "#98c1d9";
 
   const SVG_WIDTH = 960;
   const SVG_HEIGTH = 400;
@@ -55,7 +56,9 @@ export default function SpeedSVG(props: SpeedProps) {
     if (!selection) {
       setSelection(d3.select(svgRef.current));
     } else {
-      selection.attr("style", `outline: thin solid ${color};`);
+      // theme.palette.mode === "dark"
+      //   ? selection.attr("style", `outline: thin solid ${color};`)
+      //   : selection.attr("style", `outline: thin solid rgba(0,0,0,0);`);
 
       const speedChart = selection.select(".SpeedChart");
       const SpeedChartBarsNameText = speedChart
@@ -279,13 +282,26 @@ export default function SpeedSVG(props: SpeedProps) {
           y2={SVG_HEIGTH - BAR_Y_COORD}
           stroke={color}
         />
+        <line
+          x1={SVG_WIDTH}
+          y1={1}
+          x2={SVG_WIDTH}
+          y2={SVG_HEIGTH - BAR_Y_COORD}
+          stroke={color}
+        />
+        <line
+          x1={SVG_WIDTH}
+          y1={1}
+          x2={SVG_WIDTH - BAR_X_COORD * 4}
+          y2={1}
+          stroke={color}
+        />
       </svg>
       <Box
         display="flex"
         justifyContent="space-between"
         sx={{
-          p: 0,
-          m: 0.5,
+          p: 0.2,
         }}
       >
         <ButtonGroup size="medium" disableElevation variant="text">
@@ -309,7 +325,7 @@ export default function SpeedSVG(props: SpeedProps) {
           disableElevation
           variant="text"
         >
-          <Button>
+          <Button onClick={props.handleAddIconOpen}>
             <AddIcon />
           </Button>
           <Button>
@@ -339,7 +355,7 @@ function getColor(themeMode: string) {
     return (
       "hsla(" +
       200 +
-      Math.random() * 100 +
+      Math.random() * 50 +
       "," +
       70 +
       "%," +

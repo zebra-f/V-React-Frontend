@@ -12,6 +12,24 @@ import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Container from "@mui/material/Container";
 
+import * as React from "react";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogTitle from "@mui/material/DialogTitle";
+import Slide from "@mui/material/Slide";
+import { TransitionProps } from "@mui/material/transitions";
+
+import AddBoxIcon from "@mui/icons-material/AddBox";
+
+const Transition = React.forwardRef(function Transition(
+  props: TransitionProps & {
+    children: React.ReactElement<any, any>;
+  },
+  ref: React.Ref<unknown>
+) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
 import { v4 as uuidv4 } from "uuid";
 
 import SpeedSVG from "./SpeedSVG";
@@ -162,13 +180,22 @@ export default function Speed(props: AppProps) {
     }
   }, [open]);
 
+  const [openAddIcon, setOpenAddIcon] = React.useState(false);
+  const handleAddIconOpen = () => {
+    setOpenAddIcon(true);
+  };
+
+  const handleAddIconClose = () => {
+    setOpenAddIcon(false);
+  };
   return (
     <Container maxWidth="xl">
       <Grid mt={4} container spacing={2} columns={{ xs: 4, sm: 8, md: 12 }}>
-        <Grid id={"svg"} xs={4} sm={8} md={8}>
+        <Grid id={"svg"} xs={4} sm={8} md={8} boxShadow={5}>
           <SpeedSVG
             speedData={speedData}
             measurementSystem={props.measurementSystem}
+            handleAddIconOpen={handleAddIconOpen}
           />
         </Grid>
 
@@ -244,47 +271,73 @@ export default function Speed(props: AppProps) {
           </Grid>
         </Grid>
       </Grid>
-      <Box
-        display="flex"
-        justifyContent="center"
-        my={2}
-        component="form"
-        sx={{
-          "& .MuiTextField-root": { m: 1, width: "25ch" },
-        }}
-        noValidate
-        autoComplete="off"
+
+      <Dialog
+        open={openAddIcon}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={handleAddIconClose}
+        aria-describedby="alert-dialog-slide-description"
       >
-        <TextField
-          id="outlined-basic"
-          label="Name"
-          variant="outlined"
-          name="name"
-          onChange={handleSpeedDataForm}
-        />
-        <TextField
-          id="outlined-basic"
-          label={
-            props.measurementSystem == "metric" ? "Speed (km/h)" : "Speed (mph)"
-          }
-          variant="outlined"
-          name="speed"
-          onChange={handleSpeedDataForm}
-        />
-        <Button
-          variant="outlined"
+        <DialogTitle>{"Up to 5 fields possible..."}</DialogTitle>
+        <Box
+          display="flex"
+          justifyContent="space-around"
+          my={2}
+          component="form"
           sx={{
-            mt: 2,
-            minHeight: "20px",
-            minWidth: "70px",
-            height: "100%",
-            width: "20%",
+            "& .MuiTextField-root": { m: 1 },
           }}
-          onClick={handleAddSpeedDataForm}
+          noValidate
+          autoComplete="off"
         >
-          Add
-        </Button>
-      </Box>
+          <TextField
+            id="outlined-basic"
+            label="Name"
+            variant="outlined"
+            name="name"
+            onChange={handleSpeedDataForm}
+          />
+          <TextField
+            id="outlined-basic"
+            label={
+              props.measurementSystem == "metric"
+                ? "Speed (km/h)"
+                : "Speed (mph)"
+            }
+            variant="outlined"
+            name="speed"
+            onChange={handleSpeedDataForm}
+          />
+          {/* <AddBoxIcon
+            onClick={handleAddSpeedDataForm}
+            fontSize="large"
+            sx={{
+              mt: 2,
+              mr: 2,
+            }}
+          /> */}
+          <Button
+            variant="outlined"
+            sx={{
+              mr: 1,
+              mt: 1.5,
+              minHeight: "20px",
+              minWidth: "20px",
+              maxWidth: "50px",
+              height: "100%",
+              width: "20%",
+            }}
+            onClick={handleAddSpeedDataForm}
+            color="success"
+          >
+            <AddBoxIcon fontSize="large" />
+          </Button>
+        </Box>
+        <DialogActions>
+          <Button onClick={handleAddIconClose}>No more to add</Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 }

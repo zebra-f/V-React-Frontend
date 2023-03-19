@@ -41,8 +41,8 @@ export default function Navbar(props: any) {
   const theme = useTheme();
   const backgroundColor =
     theme.palette.mode === "dark"
-      ? "linear-gradient(0deg, rgba(9,10,15,0.8) 0%, rgba(27,39,53,0.4) 100%)"
-      : "white";
+      ? "linear-gradient(0deg, rgba(9,10,15,1) 0%, rgba(27,39,53,0.2) 100%)"
+      : "rgba(0,0,0,0)";
 
   const activeStyleBackgroundColor =
     theme.palette.mode === "dark" ? "rgb(9, 10, 15)" : "white";

@@ -8,6 +8,8 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 // } from "@mui/material/";
 import CssBaseline from "@mui/material/CssBaseline";
 import {
+  teal,
+  indigo,
   amber,
   grey,
   blue,
@@ -18,6 +20,7 @@ import {
   orange,
   deepOrange,
   yellow,
+  deepPurple,
 } from "@mui/material/colors";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
@@ -40,12 +43,14 @@ function App(props: any) {
     <div
       className="App"
       style={
-        {
-          // height: "100vh",
-          // background: "theme.palette.background.default",
-          //   backgroundImage:
-          //     "linear-gradient(to right top, #090a0f, #090a0f, #090a0f, #090a0f, #090a0f, #090a0f, #090a0f, #111319, #141820, #171d27, #19222e, #1b2735)",
-        }
+        props.mode === "light"
+          ? {
+              // background: "theme.palette.background.default",
+              // height: "100vh",
+              // backgroundImage:
+              // "linear-gradient(to top, #051937, #004d7a, #008793, #00bf72, #a8eb12)",
+            }
+          : {}
       }
     >
       <Navbar
@@ -107,8 +112,8 @@ export default function AppColorMode() {
             // palette values for light mode
             // color: "#7371FC"
             primary: {
-              main: red[400],
-              contrastText: "#edf6f9",
+              main: indigo[300],
+              contrastText: "#028090",
             },
             secondary: {
               main: red[400],
@@ -116,8 +121,8 @@ export default function AppColorMode() {
             },
             divider: grey[400],
             text: {
-              primary: grey[800],
-              secondary: grey[800],
+              primary: "#3d5a80",
+              secondary: "#028090",
             },
             background: {
               default: "#fbfefb",
@@ -126,20 +131,23 @@ export default function AppColorMode() {
           }
         : {
             // palette values for dark mode
-            primary: blue,
-            secondary: red,
+            primary: {
+              main: indigo[200],
+              contrastText: blue[100],
+            },
+            secondary: blue,
             divider: "#1B2735",
             background: {
               default: "#090A0F",
-              paper: "#000000",
+              paper: "#1B2735",
             },
             text: {
-              primary: "#243141",
-              secondary: blue[200],
+              primary: indigo[200],
+              secondary: "#7fdeff",
             },
             action: {
               selected: "#3c4576",
-              active: "#3c4576",
+              active: "#7fdeff",
               disabled: "#00868c",
             },
           }),
@@ -166,6 +174,7 @@ export default function AppColorMode() {
         <App
           setSessionThemeMode={setSessionThemeMode}
           sessionThemeMode={sessionThemeMode}
+          mode={mode}
         />
       </ThemeProvider>
     </ColorModeContext.Provider>
