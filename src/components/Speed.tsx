@@ -1,4 +1,7 @@
 import { useState, useEffect, forwardRef } from "react";
+
+import useLocalStorageState from "use-local-storage-state";
+
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -14,9 +17,10 @@ import Container from "@mui/material/Container";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
 import Slide from "@mui/material/Slide";
-import { TransitionProps } from "@mui/material/transitions";
-
+import { TransitionProps } from "@mui/material/transitions/";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 
 const Transition = forwardRef(function Transition(
@@ -48,18 +52,21 @@ const placeholderSpeedData: any[] = [
     name: "Mitsubishi 3000GT",
     kmph: 257.5,
     mph: 160.0,
+    internal: true,
   },
   {
     id: uuidv4(),
     name: "Human",
     kmph: 37.0,
     mph: 22.99,
+    internal: true,
   },
   {
     id: uuidv4(),
     name: "Lockheed Martin F-22 Raptor",
     kmph: 2414.0,
     mph: 1499.99,
+    internal: true,
   },
 
   {
@@ -67,6 +74,7 @@ const placeholderSpeedData: any[] = [
     name: "Earth",
     kmph: 107226.0,
     mph: 66627.12,
+    internal: true,
   },
   {
     id: uuidv4(),
@@ -81,18 +89,39 @@ interface AppProps {
 }
 
 export default function Speed(props: AppProps) {
-  const [speedData, setSpeedData] = useState<
+  const [distance, setDistance] = useLocalStorageState<number>("distance", {
+    defaultValue: 2,
+  });
+  const handleDistanceForm = (e: any) => {
+    // fix .023
+    if (!isNaN(e.target.value.trim() as any)) {
+      setDistance(Number(e.target.value.trim()));
+    }
+  };
+
+  const [speedData, setSpeedData] = useLocalStorageState<
     {
       id: string;
       name: string;
       kmph: number;
       mph: number;
+      internal: boolean;
     }[]
-  >(placeholderSpeedData);
+  >("speedData", {
+    defaultValue: placeholderSpeedData,
+  });
+  // const [speedData, setSpeedData] = useState<
+  //   {
+  //     id: string;
+  //     name: string;
+  //     kmph: number;
+  //     mph: number;
+  //     internal: true;
+  //   }[]
+  // >(localSpeedData);
 
   const [speedDataForm, setSpeedDataForm] = useState(() => {
     return {
-      id: "",
       name: "",
       speed: "",
     };
@@ -106,10 +135,17 @@ export default function Speed(props: AppProps) {
   const handleAddSpeedDataForm = (e: any) => {
     if (speedDataForm.name.length < 1) {
       // pass
-    } else if (isNaN(speedDataForm.speed as any)) {
+    } else if (
+      isNaN(speedDataForm.speed as any) ||
+      speedDataForm.speed === ""
+    ) {
       // pass
     } else {
       addSpeedData("Form");
+      setSpeedDataForm({
+        name: "",
+        speed: "",
+      });
     }
   };
   const handleDeleteDataFromList = (id: string, e: any) => {
@@ -129,6 +165,7 @@ export default function Speed(props: AppProps) {
                   name: speedDataForm.name,
                   kmph: Number(speedDataForm.speed),
                   mph: Number(speedDataForm.speed) * 0.621371,
+                  internal: true,
                 },
               ]
             : [
@@ -138,6 +175,7 @@ export default function Speed(props: AppProps) {
                   name: speedDataForm.name,
                   kmph: Number(speedDataForm.speed) * 1.60934,
                   mph: Number(speedDataForm.speed),
+                  internal: true,
                 },
               ];
         });
@@ -182,10 +220,18 @@ export default function Speed(props: AppProps) {
   const handleAddIconOpen = () => {
     setOpenAddIcon(true);
   };
-
   const handleAddIconClose = () => {
     setOpenAddIcon(false);
   };
+
+  const [openDistanceIcon, setOpenDistanceIcon] = useState(false);
+  const handleDistanceIconIconOpen = () => {
+    setOpenDistanceIcon(true);
+  };
+  const handleDistanceIconClose = () => {
+    setOpenDistanceIcon(false);
+  };
+
   return (
     <Container maxWidth="xl">
       <Grid mt={4} container spacing={2} columns={{ xs: 4, sm: 8, md: 12 }}>
@@ -194,6 +240,8 @@ export default function Speed(props: AppProps) {
             speedData={speedData}
             measurementSystem={props.measurementSystem}
             handleAddIconOpen={handleAddIconOpen}
+            distance={distance}
+            handleDistanceIconIconOpen={handleDistanceIconIconOpen}
           />
         </Grid>
 
@@ -277,7 +325,12 @@ export default function Speed(props: AppProps) {
         onClose={handleAddIconClose}
         aria-describedby="alert-dialog-slide-description"
       >
-        <DialogTitle>{"Up to 5 fields possible..."}</DialogTitle>
+        <DialogTitle>{"As many as you'd like,"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            data added here is saved in your local storage.
+          </DialogContentText>
+        </DialogContent>
         <Box
           display="flex"
           justifyContent="space-around"
@@ -295,6 +348,7 @@ export default function Speed(props: AppProps) {
             variant="outlined"
             name="name"
             onChange={handleSpeedDataForm}
+            value={speedDataForm.name}
           />
           <TextField
             id="outlined-basic"
@@ -306,17 +360,9 @@ export default function Speed(props: AppProps) {
             variant="outlined"
             name="speed"
             onChange={handleSpeedDataForm}
+            value={speedDataForm.speed}
           />
-          {/* <AddBoxIcon
-            onClick={handleAddSpeedDataForm}
-            fontSize="large"
-            sx={{
-              mt: 2,
-              mr: 2,
-            }}
-          /> */}
-          <Button
-            variant="outlined"
+          <IconButton
             sx={{
               mr: 1,
               mt: 1.5,
@@ -330,10 +376,51 @@ export default function Speed(props: AppProps) {
             color="success"
           >
             <AddBoxIcon fontSize="large" />
-          </Button>
+          </IconButton>
         </Box>
         <DialogActions>
-          <Button onClick={handleAddIconClose}>No more to add</Button>
+          <Button onClick={handleAddIconClose}>I think that's enough</Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={openDistanceIcon}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={handleDistanceIconClose}
+        aria-describedby="alert-dialog-slide-description"
+      >
+        <DialogTitle>{"Distance,"}</DialogTitle>
+        <DialogContent>
+          {props.measurementSystem == "metric" ? (
+            <List sx={{ pt: 0 }}>
+              <ListItem>100m = 0.1km</ListItem>
+              <ListItem>10m = 0.01km</ListItem>
+              <ListItem>1m = 0.001km</ListItem>
+              <ListItem>10cm = 0.0001km</ListItem>
+              <ListItem>1cm = 0.00001km</ListItem>
+            </List>
+          ) : (
+            <List sx={{ pt: 0 }}>
+              <ListItem>100yd = 0.000568182mi</ListItem>
+              <ListItem>10yd = 0.00568182mi</ListItem>
+              <ListItem>1yd = 0.000568182mi</ListItem>
+              <ListItem>10ft = 0.00189394mi</ListItem>
+              <ListItem>1ft = 0.000189394mi</ListItem>
+            </List>
+          )}
+        </DialogContent>
+        <TextField
+          id="outlined-basic"
+          label={props.measurementSystem == "metric" ? "Kilometers" : "Miles"}
+          variant="outlined"
+          name="distance"
+          onChange={handleDistanceForm}
+          value={distance}
+        />
+        <DialogActions>
+          <Button onClick={handleDistanceIconClose}>
+            I think that's enough
+          </Button>
         </DialogActions>
       </Dialog>
     </Container>

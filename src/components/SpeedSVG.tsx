@@ -1,7 +1,11 @@
 import { useState, useEffect, useRef, useContext } from "react";
+
+import * as d3 from "d3";
+
+import useLocalStorageState from "use-local-storage-state";
+
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import * as d3 from "d3";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
@@ -20,6 +24,8 @@ interface SpeedProps {
   }[];
   measurementSystem: "metric" | "imperial";
   handleAddIconOpen: () => void;
+  distance: number;
+  handleDistanceIconIconOpen: () => void;
 }
 
 export default function SpeedSVG(props: SpeedProps) {
@@ -27,12 +33,11 @@ export default function SpeedSVG(props: SpeedProps) {
   const color: string = theme.palette.mode === "light" ? "#3d5a80" : "#98c1d9";
 
   const SVG_WIDTH = 960;
-  const SVG_HEIGTH = 400;
+  let overFive = props.speedData.length <= 5 ? 0 : props.speedData.length - 5;
+  const SVG_HEIGTH = 400 + overFive * 50;
   const BAR_X_COORD = 20;
   const BAR_Y_COORD = 60;
   const BAR_HEIGHT = BAR_X_COORD * 2;
-
-  const [distance, setDistance] = useState<number>(2);
 
   const svgRef = useRef<SVGSVGElement | null>(null);
   const [selection, setSelection] = useState<null | d3.Selection<
@@ -92,7 +97,7 @@ export default function SpeedSVG(props: SpeedProps) {
           return stopWatch(calcualteTransitionDuration(d));
         })
         .attr("y", (_, i) => i * 50 + (29 + BAR_Y_COORD))
-        .attr("x", SVG_WIDTH - SVG_HEIGTH / 2);
+        .attr("x", SVG_WIDTH - 200);
       const speedChartBars = speedChart
         .selectAll("rect")
         .data(props.speedData)
@@ -104,7 +109,7 @@ export default function SpeedSVG(props: SpeedProps) {
         })
         .attr("stroke", color)
         .attr("stroke-width", 1)
-        .attr("y", (_, i) => i * (SVG_HEIGTH / 8) + BAR_Y_COORD)
+        .attr("y", (_, i) => i * 50 + BAR_Y_COORD)
         .attr("x", BAR_X_COORD)
         .style("pointer-events", "visible")
         .on("click", (e, d) => {
@@ -113,31 +118,23 @@ export default function SpeedSVG(props: SpeedProps) {
 
       const scale = d3
         .scaleLinear()
-        .domain([0, distance])
+        .domain([0, props.distance])
         .range([0, SVG_WIDTH - BAR_X_COORD * 2]);
-      const x_axis = d3.axisBottom(scale);
+      const xAxis = d3.axisBottom(scale);
       speedChart
         .append("g")
         .style("font", "12px Montserrat")
-        .attr("class", "x axis")
+        .attr("class", "xAxis")
         .attr("transform", "translate(20," + 20 + ")")
-        .call(x_axis);
-
-      // const scale = d3
-      //   .scaleLinear()
-      //   .domain([0, distance])
-      //   .range([0, SVG_WIDTH - BAR_X_COORD * 2]);
-      // const x_axis = d3.axisBottom(scale);
-      // speedChart
-      //   .select(".SpeedChartAxis")
-      //   .attr("class", "x axis")
-      //   .attr("transform", "translate(20," + 20 + ")")
-      //   .join("g")
-      //   .call(x_axis);
+        .call(xAxis);
 
       setSpeedChartBarsSelection(speedChartBars);
+
+      return () => {
+        speedChart.selectAll(".xAxis").remove();
+      };
     }
-  }, [selection, props.speedData, theme, distance]);
+  }, [selection, props.speedData, theme, props.distance]);
 
   const elapsedRef = useRef<number>(0);
   const elapsedRestartRef = useRef<number>(0);
@@ -182,9 +179,9 @@ export default function SpeedSVG(props: SpeedProps) {
   }) {
     let timeHours: null | number = null;
     if (props.measurementSystem === "metric") {
-      timeHours = distance / d.kmph;
+      timeHours = props.distance / d.kmph;
     } else {
-      timeHours = distance / d.mph;
+      timeHours = props.distance / d.mph;
     }
     const timeMiliseconds = timeHours * 3600000;
     return timeMiliseconds - elapsedRef.current;
@@ -264,7 +261,6 @@ export default function SpeedSVG(props: SpeedProps) {
     }
   }
 
-  console.log(theme.palette.background.default);
   return (
     <Box my={1} display="flex" justifyContent="center" flexDirection={"column"}>
       <svg
@@ -291,7 +287,7 @@ export default function SpeedSVG(props: SpeedProps) {
         <text
           fontSize={36}
           fill={color}
-          x={SVG_WIDTH - SVG_HEIGTH / 2}
+          x={SVG_WIDTH - 200}
           y={SVG_HEIGTH - 2 * 20}
           className="timer"
         ></text>
@@ -300,9 +296,9 @@ export default function SpeedSVG(props: SpeedProps) {
           fill={color}
           x={BAR_X_COORD * 2}
           y={SVG_HEIGTH - 2 * 20}
-          className="distance"
+          className="props.distance"
         >
-          Distance: {distance}{" "}
+          Distance: {props.distance}{" "}
           {props.measurementSystem === "metric" ? "km" : "mi"}
         </text>
         <line
@@ -365,7 +361,7 @@ export default function SpeedSVG(props: SpeedProps) {
           <Button onClick={props.handleAddIconOpen}>
             <AddIcon />
           </Button>
-          <Button>
+          <Button onClick={props.handleDistanceIconIconOpen}>
             <StraightenIcon />
           </Button>
           <Button>
