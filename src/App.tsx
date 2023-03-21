@@ -42,29 +42,25 @@ function App(props: any) {
   const [measurementSystem, setMeasurementSystem] = useState<
     "metric" | "imperial"
   >("metric");
+  const backgroundImagePosition =
+    window.innerWidth <= 1920
+      ? "top right"
+      : `${window.innerWidth / 2 + 150}px 0px`;
+  const divStyle = (image: string) => {
+    return {
+      backgroundImage: `url(${image})`,
+      backgroundRepeat: "no-repeat",
+      backgroundPosition: backgroundImagePosition,
+      minHeight: "800px",
+    };
+  };
   return (
     <div
       className="App"
       style={
-        props.mode === "light"
-          ? {
-              backgroundImage: `url(${MoonLight})`,
-              backgroundRepeat: "no-repeat",
-              backgroundPosition: "top right",
-              minHeight: "800px",
-              // background: "theme.palette.background.default",
-              // backgroundImage:
-              // "linear-gradient(to top, #051937, #004d7a, #008793, #00bf72, #a8eb12)",
-            }
-          : {
-              backgroundImage: `url(${UranusDark})`,
-              backgroundRepeat: "no-repeat",
-              backgroundPosition: "top right",
-              minHeight: "800px",
-            }
+        props.mode === "light" ? divStyle(MoonLight) : divStyle(UranusDark)
       }
     >
-      {/* <img src={Moon} alt="React Logo" /> */}
       <Navbar
         setSessionThemeMode={props.setSessionThemeMode}
         sessionThemeMode={props.sessionThemeMode}

@@ -149,7 +149,7 @@ export default function SpeedSVG(props: SpeedProps) {
       );
     }
     setElapsedMax(tempElapsedMax);
-  }, [props.speedData, props.measurementSystem]);
+  }, [props.speedData, props.measurementSystem, props.distance]);
 
   const t = () => {
     const t = d3.timer((elapsed) => {

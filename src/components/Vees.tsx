@@ -1,4 +1,8 @@
 import * as React from "react";
+import { useState } from "react";
+
+import useLocalStorageState from "use-local-storage-state";
+
 import useTheme from "@mui/material/styles/useTheme";
 import Box from "@mui/material/Box";
 import Tabs from "@mui/material/Tabs";
@@ -17,11 +21,13 @@ interface AppProps {
 
 export default function Vees(props: AppProps) {
   const theme = useTheme();
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = useState(0);
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
-  const [alignment, setAlignment] = React.useState("metric");
+  const [alignment, setAlignment] = useLocalStorageState("measurementSystem", {
+    defaultValue: "metric",
+  });
   const handleAlignment = (
     event: React.MouseEvent<HTMLElement>,
     newAlignment: "metric" | "imperial" | null
