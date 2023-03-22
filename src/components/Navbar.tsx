@@ -1,4 +1,7 @@
 import * as React from "react";
+
+import { useState, useContext, forwardRef } from "react";
+
 import { NavLink } from "react-router-dom";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -29,7 +32,7 @@ import { ColorModeContext } from "../App";
 const pages = ["Home", "Vees", "About"];
 
 export default function Navbar(props: any) {
-  const colorMode = React.useContext(ColorModeContext);
+  const colorMode = useContext(ColorModeContext);
   const changeColorMode = () => {
     colorMode.toggleColorMode();
     props.setSessionThemeMode(
@@ -50,7 +53,7 @@ export default function Navbar(props: any) {
     backgroundColor: activeStyleBackgroundColor,
     // textDecoration: "underline",
   };
-  const CustomNavLink = React.forwardRef<any, any>((props, ref) => (
+  const CustomNavLink = forwardRef<any, any>((props, ref) => (
     <NavLink
       style={({ isActive }) => (isActive ? activeStyle : undefined)}
       ref={ref}
@@ -62,7 +65,7 @@ export default function Navbar(props: any) {
   ));
 
   // Mobile drawer
-  const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
   };
@@ -92,12 +95,12 @@ export default function Navbar(props: any) {
   // Mobile menu
   const mobileMenuId = "primary-search-account-menu-mobile";
   const menuId = "primary-search-account-menu";
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
-    React.useState<null | HTMLElement>(null);
+    useState<null | HTMLElement>(null);
 
   const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setMobileMoreAnchorEl(event.currentTarget);

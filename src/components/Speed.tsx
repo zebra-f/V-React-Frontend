@@ -26,6 +26,7 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import InputLabel from "@mui/material/InputLabel";
+import useTheme from "@mui/material/styles/useTheme";
 
 import * as React from "react";
 import Table from "@mui/material/Table";
@@ -102,6 +103,7 @@ interface AppProps {
 }
 
 export default function Speed(props: AppProps) {
+  const theme = useTheme();
   const [distance, setDistance] = useLocalStorageState<number>("distance", {
     defaultValue: 2,
   });
@@ -371,13 +373,25 @@ export default function Speed(props: AppProps) {
               )}
             />
           </Box>
-
-          <Grid>
+          <Box display="flex" justifyContent="center" my={2}>
             <TableContainer
-              component={Paper}
-              sx={{ maxWidth: 600, backgroundColor: "rgba(0,0,0,0.7)" }}
+              sx={{
+                pt: 0.84,
+                backgroundColor:
+                  theme.palette.mode === "light"
+                    ? "rgba(251, 254, 251, 0.6)"
+                    : "rgba(9, 10, 15, 0.8)",
+                borderBottom: `thin solid ${
+                  theme.palette.mode === "light" ? "#3d5a80" : "#98c1d9"
+                }}`,
+              }}
             >
-              <Table sx={{}} aria-label="simple table">
+              <Table
+                aria-label="simple table"
+                stickyHeader
+                padding="normal"
+                size="small"
+              >
                 <TableHead>
                   <TableRow>
                     <TableCell>Name</TableCell>
@@ -391,16 +405,21 @@ export default function Speed(props: AppProps) {
                   {speedData.map((d) => (
                     <TableRow
                       key={d.id}
-                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                      sx={{
+                        "&:last-child td, &:last-child th": {
+                          border: 0,
+                        },
+                      }}
                     >
                       <TableCell component="th" scope="row">
                         {d.name}
                       </TableCell>
                       <TableCell align="right">
-                        {props.measurementSystem === "metric" ? d.kmph : d.mph}
+                        {props.measurementSystem === "metric"
+                          ? Number.parseFloat(String(d.kmph)).toFixed(2)
+                          : Number.parseFloat(String(d.mph)).toFixed(2)}
                       </TableCell>
                       <TableCell align="right">
-                        {" "}
                         <IconButton
                           edge="end"
                           aria-label="delete"
@@ -414,37 +433,38 @@ export default function Speed(props: AppProps) {
                 </TableBody>
               </Table>
             </TableContainer>
-            {/* <List dense={false}>
-              {speedData.map((data, index) => {
-                return (
-                  <ListItem
-                    key={index}
-                    secondaryAction={
-                      <IconButton
-                        edge="end"
-                        aria-label="delete"
-                        onClick={() => handleDeleteDataFromList(data.id)}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    }
-                  >
-                    <ListItemText
-                      primary={`${
-                        data.name.length > 25
-                          ? data.name.slice(0, 25) + "..."
-                          : data.name
-                      } ${
-                        props.measurementSystem === "metric"
-                          ? data.kmph
-                          : data.mph
-                      }`}
-                    />
-                  </ListItem>
-                );
-              })}
-            </List> */}
-          </Grid>
+          </Box>
+
+          {/* <List dense={false}>
+            {speedData.map((data, index) => {
+              return (
+                <ListItem
+                  key={index}
+                  secondaryAction={
+                    <IconButton
+                      edge="end"
+                      aria-label="delete"
+                      onClick={() => handleDeleteDataFromList(data.id)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  }
+                >
+                  <ListItemText
+                    primary={`${
+                      data.name.length > 25
+                        ? data.name.slice(0, 25) + "..."
+                        : data.name
+                    } ${
+                      props.measurementSystem === "metric"
+                        ? data.kmph
+                        : data.mph
+                    }`}
+                  />
+                </ListItem>
+              );
+            })}
+          </List> */}
         </Grid>
       </Grid>
 
