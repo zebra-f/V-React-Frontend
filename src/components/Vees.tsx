@@ -25,12 +25,13 @@ export default function Vees(props: AppProps) {
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
-  const [alignment, setAlignment] = useLocalStorageState("measurementSystem", {
-    defaultValue: "metric",
-  });
+  const [alignment, setAlignment] = useState<"metric" | "imperial">(
+    props.measurementSystem
+  );
+
   const handleAlignment = (
     event: React.MouseEvent<HTMLElement>,
-    newAlignment: "metric" | "imperial" | null
+    newAlignment: "metric" | "imperial"
   ) => {
     if (newAlignment !== null) {
       setAlignment(newAlignment);

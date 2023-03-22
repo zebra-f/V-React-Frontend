@@ -134,7 +134,13 @@ export default function SpeedSVG(props: SpeedProps) {
         speedChart.selectAll(".xAxis").remove();
       };
     }
-  }, [selection, props.speedData, theme, props.distance]);
+  }, [
+    selection,
+    props.speedData,
+    theme,
+    props.distance,
+    props.measurementSystem,
+  ]);
 
   const elapsedRef = useRef<number>(0);
   const elapsedRestartRef = useRef<number>(0);
@@ -260,6 +266,9 @@ export default function SpeedSVG(props: SpeedProps) {
       d3.select(".timer").text("00:00:00");
     }
   }
+  useEffect(() => {
+    handleResetButton();
+  }, [props.measurementSystem, props.distance]);
 
   return (
     <Box my={1} display="flex" justifyContent="center" flexDirection={"column"}>

@@ -39,9 +39,12 @@ import MoonLight from "./assets/svg/moon-main-light.svg";
 import UranusDark from "./assets/svg/uranus-main-dark.svg";
 
 function App(props: any) {
-  const [measurementSystem, setMeasurementSystem] = useState<
+  const [measurementSystem, setMeasurementSystem] = useLocalStorageState<
     "metric" | "imperial"
-  >("metric");
+  >("measurementSystem", {
+    defaultValue: "metric",
+  });
+
   const backgroundImagePosition =
     window.innerWidth <= 1920
       ? "top right"
