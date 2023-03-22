@@ -27,6 +27,15 @@ import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import InputLabel from "@mui/material/InputLabel";
 
+import * as React from "react";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
+
 const Transition = forwardRef(function Transition(
   props: TransitionProps & {
     children: React.ReactElement<any, any>;
@@ -273,6 +282,29 @@ export default function Speed(props: AppProps) {
     }
   }, [open]);
 
+  // SVG
+  // SVG
+  // SVG
+
+  function distanceUnitLabel() {
+    switch (distanceUnit) {
+      case "km":
+        return "kilometres";
+      case "m":
+        return "metres";
+      case "cm":
+        return "centimetres";
+      case "mi":
+        return "miles";
+      case "yd":
+        return "yards";
+      case "ft":
+        return "feet";
+      default:
+        return "";
+    }
+  }
+
   const [openAddIcon, setOpenAddIcon] = useState(false);
   const handleAddIconOpen = () => {
     setOpenAddIcon(true);
@@ -341,7 +373,48 @@ export default function Speed(props: AppProps) {
           </Box>
 
           <Grid>
-            <List dense={false}>
+            <TableContainer
+              component={Paper}
+              sx={{ maxWidth: 600, backgroundColor: "rgba(0,0,0,0.7)" }}
+            >
+              <Table sx={{}} aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Name</TableCell>
+                    <TableCell align="right">
+                      {props.measurementSystem === "metric" ? "kmph" : "mph"}
+                    </TableCell>
+                    <TableCell align="right"></TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {speedData.map((d) => (
+                    <TableRow
+                      key={d.id}
+                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                    >
+                      <TableCell component="th" scope="row">
+                        {d.name}
+                      </TableCell>
+                      <TableCell align="right">
+                        {props.measurementSystem === "metric" ? d.kmph : d.mph}
+                      </TableCell>
+                      <TableCell align="right">
+                        {" "}
+                        <IconButton
+                          edge="end"
+                          aria-label="delete"
+                          onClick={() => handleDeleteDataFromList(d.id)}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            {/* <List dense={false}>
               {speedData.map((data, index) => {
                 return (
                   <ListItem
@@ -370,7 +443,7 @@ export default function Speed(props: AppProps) {
                   </ListItem>
                 );
               })}
-            </List>
+            </List> */}
           </Grid>
         </Grid>
       </Grid>
@@ -447,29 +520,11 @@ export default function Speed(props: AppProps) {
         aria-describedby="alert-dialog-slide-description"
       >
         <DialogTitle>{"Distance,"}</DialogTitle>
-        <DialogContent>
-          {props.measurementSystem == "metric" ? (
-            <List sx={{ pt: 0 }}>
-              <ListItem>100m = 0.1km</ListItem>
-              <ListItem>10m = 0.01km</ListItem>
-              <ListItem>1m = 0.001km</ListItem>
-              <ListItem>10cm = 0.0001km</ListItem>
-              <ListItem>1cm = 0.00001km</ListItem>
-            </List>
-          ) : (
-            <List sx={{ pt: 0 }}>
-              <ListItem>100yd = 0.000568182mi</ListItem>
-              <ListItem>10yd = 0.00568182mi</ListItem>
-              <ListItem>1yd = 0.000568182mi</ListItem>
-              <ListItem>10ft = 0.00189394mi</ListItem>
-              <ListItem>1ft = 0.000189394mi</ListItem>
-            </List>
-          )}
-        </DialogContent>
+        <DialogContent></DialogContent>
         <Box display="flex" justifyContent="space-around">
           <TextField
             id="outlined-basic"
-            label={props.measurementSystem == "metric" ? "Kilometers" : "Miles"}
+            label={distanceUnitLabel()}
             variant="outlined"
             name="distance"
             onChange={handleDistanceForm}
