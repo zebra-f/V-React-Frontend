@@ -434,37 +434,6 @@ export default function Speed(props: AppProps) {
               </Table>
             </TableContainer>
           </Box>
-
-          {/* <List dense={false}>
-            {speedData.map((data, index) => {
-              return (
-                <ListItem
-                  key={index}
-                  secondaryAction={
-                    <IconButton
-                      edge="end"
-                      aria-label="delete"
-                      onClick={() => handleDeleteDataFromList(data.id)}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  }
-                >
-                  <ListItemText
-                    primary={`${
-                      data.name.length > 25
-                        ? data.name.slice(0, 25) + "..."
-                        : data.name
-                    } ${
-                      props.measurementSystem === "metric"
-                        ? data.kmph
-                        : data.mph
-                    }`}
-                  />
-                </ListItem>
-              );
-            })}
-          </List> */}
         </Grid>
       </Grid>
 
