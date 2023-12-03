@@ -1,12 +1,18 @@
-import WarningIcon from "@mui/icons-material/Warning";
+import Container from "@mui/material/Container";
 
 function Length() {
   return (
-    <>
-      <WarningIcon></WarningIcon>
-      <h1>Lengths</h1>
-      <p>Under Constuction</p>
-    </>
+    <Container
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        marginTop: "100px",
+      }}
+    >
+      <div>
+        <p>UNDER CONSTRUCTION</p>
+      </div>
+    </Container>
   );
 }
 
