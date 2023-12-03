@@ -116,6 +116,7 @@ export default function Speed(props: AppProps) {
     setDistanceUnit(props.measurementSystem === "metric" ? "km" : "mi");
   }, [props.measurementSystem]);
 
+  // set `Unit` form, input handle
   const handleUnitChange = (event: SelectChangeEvent) => {
     const value = event.target.value as string;
     setDistanceUnit(value);
@@ -144,6 +145,7 @@ export default function Speed(props: AppProps) {
   const disabledUnitImperial =
     props.measurementSystem === "metric" ? true : false;
 
+  // set `<distance>` form, input handle
   const handleDistanceForm = (e: any) => {
     const value: string = e.target.value.trim();
     setDistanceForm((prev) => {
@@ -192,13 +194,25 @@ export default function Speed(props: AppProps) {
       speed: "",
     };
   });
+  // set `Name` and `Speed (mph/kmph)` form, input handle
   const handleSpeedDataForm = (e: any) => {
-    setSpeedDataForm({
-      ...speedDataForm,
-      [e.target.name]: e.target.value.trim(),
-    });
+    let value = e.target.value.trim();
+    if (e.target.name === "speed") {
+      if (value.toLowerCase() == value.toUpperCase() && !isNaN(value as any)) {
+        setSpeedDataForm({
+          ...speedDataForm,
+          [e.target.name]: e.target.value.trim(),
+        });
+      }
+    } else {
+      setSpeedDataForm({
+        ...speedDataForm,
+        [e.target.name]: e.target.value.trim(),
+      });
+    }
   };
-  const handleAddSpeedDataForm = (e: any) => {
+
+  const addSpeedDataForm = () => {
     if (speedDataForm.name.length < 1) {
       // pass
     } else if (
@@ -214,6 +228,15 @@ export default function Speed(props: AppProps) {
       });
     }
   };
+  const handleAddSpeedDataForm = (e: any) => {
+    addSpeedDataForm();
+  };
+  const handleEnterSpeedDataForm = (e: any) => {
+    if (e.key == "Enter") {
+      addSpeedDataForm();
+    }
+  };
+
   const addSpeedData = (calledBy: string) => {
     switch (calledBy) {
       case "Form":
@@ -437,17 +460,19 @@ export default function Speed(props: AppProps) {
         </Grid>
       </Grid>
 
+      {/* Speed Form */}
       <Dialog
         open={openAddIcon}
         TransitionComponent={Transition}
         keepMounted
         onClose={handleAddIconClose}
+        onKeyDown={handleEnterSpeedDataForm}
         aria-describedby="alert-dialog-slide-description"
       >
-        <DialogTitle>{"As many as you'd like,"}</DialogTitle>
+        <DialogTitle>{"Add as many as you like"}</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            data added here is saved in your local storage.
+            (data entered here is stored in your local storage)
           </DialogContentText>
         </DialogContent>
         <Box
@@ -498,9 +523,11 @@ export default function Speed(props: AppProps) {
           </IconButton>
         </Box>
         <DialogActions>
-          <Button onClick={handleAddIconClose}>I think that's enough</Button>
+          <Button onClick={handleAddIconClose}>Close</Button>
         </DialogActions>
       </Dialog>
+
+      {/* Disntace Form */}
       <Dialog
         open={openDistanceIcon}
         TransitionComponent={Transition}
@@ -508,7 +535,7 @@ export default function Speed(props: AppProps) {
         onClose={handleDistanceIconClose}
         aria-describedby="alert-dialog-slide-description"
       >
-        <DialogTitle>{"Distance,"}</DialogTitle>
+        <DialogTitle>{"Set your preferred distance"}</DialogTitle>
         <DialogContent></DialogContent>
         <Box display="flex" justifyContent="space-around">
           <TextField
@@ -557,9 +584,7 @@ export default function Speed(props: AppProps) {
         </Box>
 
         <DialogActions>
-          <Button onClick={handleDistanceIconClose}>
-            I think that's enough
-          </Button>
+          <Button onClick={handleDistanceIconClose}>Close</Button>
         </DialogActions>
       </Dialog>
     </Container>
