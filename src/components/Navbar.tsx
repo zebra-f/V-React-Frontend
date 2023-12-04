@@ -1,6 +1,7 @@
 import * as React from "react";
 
 import { useState, useContext, forwardRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { NavLink } from "react-router-dom";
 import AppBar from "@mui/material/AppBar";
@@ -26,6 +27,7 @@ import styled from "@mui/material/styles/styled";
 import Switch from "@mui/material/Switch";
 import Slide from "@mui/material/Slide";
 import useScrollTrigger from "@mui/material/useScrollTrigger";
+import ButtonGroup from "@mui/material/ButtonGroup";
 
 import { ColorModeContext } from "../App";
 
@@ -175,6 +177,16 @@ export default function Navbar(props: any) {
     </Menu>
   );
 
+  // Sign in, Sign Up
+  const navigate = useNavigate();
+  const handleSignInClick = () => {
+    navigate("/signin");
+  };
+  const handleSignUpClick = () => {
+    navigate("/signup");
+  };
+
+  console.log(props.isAuthenticated);
   return (
     <>
       <Slide appear={true} direction="down" in={!useScrollTrigger()}>
@@ -277,17 +289,30 @@ export default function Navbar(props: any) {
                   checked={theme.palette.mode == "light" ? true : false}
                   onClick={changeColorMode}
                 />
-                <IconButton
-                  size="large"
-                  edge="end"
-                  aria-label="account of current user"
-                  aria-controls={menuId}
-                  aria-haspopup="true"
-                  onClick={handleProfileMenuOpen}
-                  color="inherit"
-                >
-                  <AccountCircle />
-                </IconButton>
+                {props.isAuthenticated ? (
+                  <IconButton
+                    size="large"
+                    edge="end"
+                    aria-label="account of current user"
+                    aria-controls={menuId}
+                    aria-haspopup="true"
+                    onClick={handleProfileMenuOpen}
+                    color="inherit"
+                  >
+                    <AccountCircle />
+                  </IconButton>
+                ) : (
+                  <>
+                    <ButtonGroup
+                      variant="outlined"
+                      aria-label="outlined button group"
+                      size="small"
+                    >
+                      <Button onClick={handleSignInClick}>Sigin In</Button>
+                      <Button onClick={handleSignUpClick}>Sign Up</Button>
+                    </ButtonGroup>
+                  </>
+                )}
               </Box>
 
               {/* top right mobile */}

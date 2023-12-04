@@ -30,6 +30,8 @@ import Vees from "./components/Vees";
 import About from "./components/About";
 import Length from "./components/Length";
 import Speed from "./components/Speed";
+import SignIn from "./components/Signin";
+import SignUp from "./components/Signup";
 
 import useLocalStorageState from "use-local-storage-state";
 
@@ -39,6 +41,13 @@ import MoonLight from "./assets/svg/moon-main-light.svg";
 import UranusDark from "./assets/svg/uranus-main-dark.svg";
 
 function App(props: any) {
+  // authentication state
+  const [isAuthenticated, setIsAuthenticated] = useLocalStorageState(
+    "isAuthenticated",
+    { defaultValue: false }
+  );
+  setIsAuthenticated(false);
+
   const [measurementSystem, setMeasurementSystem] = useLocalStorageState<
     "metric" | "imperial"
   >("measurementSystem", {
@@ -67,6 +76,7 @@ function App(props: any) {
       <Navbar
         setSessionThemeMode={props.setSessionThemeMode}
         sessionThemeMode={props.sessionThemeMode}
+        isAuthenticated={isAuthenticated}
       />
       <Routes>
         <Route path="" element={<Home />} />
@@ -86,6 +96,9 @@ function App(props: any) {
           />
         </Route>
         <Route path="about" element={<About />} />
+
+        <Route path="signin" element={<SignIn />} />
+        <Route path="signup" element={<SignUp />} />
       </Routes>
     </div>
   );
