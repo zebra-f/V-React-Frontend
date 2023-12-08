@@ -186,7 +186,6 @@ export default function Navbar(props: any) {
     navigate("/signup");
   };
 
-  console.log(props.isAuthenticated);
   return (
     <>
       <Slide appear={true} direction="down" in={!useScrollTrigger()}>

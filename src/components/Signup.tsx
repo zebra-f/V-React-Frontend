@@ -85,7 +85,7 @@ function SignUp() {
           >
             Sign Up
           </Button>
-          <Button type="submit" variant="contained" sx={{ mt: 1, mb: 3 }}>
+          <Button type="submit" variant="outlined" sx={{ mt: 1, mb: 3 }}>
             <GoogleIcon></GoogleIcon> Sign Up with Google
           </Button>
 

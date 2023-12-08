@@ -40,6 +40,8 @@ import "./App.css";
 import MoonLight from "./assets/svg/moon-main-light.svg";
 import UranusDark from "./assets/svg/uranus-main-dark.svg";
 
+import axiosClient from "./services/axios";
+
 function App(props: any) {
   // authentication state
   const [isAuthenticated, setIsAuthenticated] = useLocalStorageState(
