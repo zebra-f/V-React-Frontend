@@ -41,8 +41,15 @@ import MoonLight from "./assets/svg/moon-main-light.svg";
 import UranusDark from "./assets/svg/uranus-main-dark.svg";
 
 import axiosClient from "./services/axios";
+import kyClient from "./services/ky";
 
 function App(props: any) {
+  const response = kyClient.api.get("speeds/");
+  response.json().then((data) => {
+    console.log(data);
+  });
+  console.log("App", response);
+
   // authentication state
   const [isAuthenticated, setIsAuthenticated] = useLocalStorageState(
     "isAuthenticated",

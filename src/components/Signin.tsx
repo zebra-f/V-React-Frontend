@@ -76,7 +76,7 @@ function SignIn() {
             Sign In
           </Button>
           <Button type="submit" variant="outlined" sx={{ mt: 1, mb: 3 }}>
-            <GoogleIcon></GoogleIcon> Sign In with Google
+            <GoogleIcon></GoogleIcon>&nbsp;&nbsp;Sign In with Google
           </Button>
           <Grid container>
             <Grid item xs>
