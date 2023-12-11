@@ -24,14 +24,14 @@ import {
 } from "@mui/material/colors";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
-import Navbar from "./components/Navbar";
-import Home from "./components/Home";
-import Vees from "./components/Vees";
-import About from "./components/About";
-import Length from "./components/Length";
-import Speed from "./components/Speed";
-import SignIn from "./components/Signin";
-import SignUp from "./components/Signup";
+import Navbar from "./pages/Navbar";
+import Home from "./pages/Home";
+import Vees from "./pages/Vees";
+import About from "./pages/About";
+import Length from "./pages/Length";
+import Speed from "./pages/Speed";
+import SignIn from "./pages/Signin";
+import SignUp from "./pages/Signup";
 
 import useLocalStorageState from "use-local-storage-state";
 
@@ -44,13 +44,7 @@ import axiosClient from "./services/axios";
 import kyClient from "./services/ky";
 
 function App(props: any) {
-  const response = kyClient.api.get("speeds/");
-  response.json().then((data) => {
-    console.log(data);
-  });
-  console.log("App", response);
-
-  // authentication state
+  const response = kyClient.backendApi.get("speeds/");
   const [isAuthenticated, setIsAuthenticated] = useLocalStorageState(
     "isAuthenticated",
     { defaultValue: false }

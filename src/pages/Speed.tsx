@@ -48,7 +48,7 @@ const Transition = forwardRef(function Transition(
 
 import { v4 as uuidv4 } from "uuid";
 
-import SpeedSVG from "./SpeedSVG";
+import SpeedSVG from "../components/SpeedSVG";
 
 interface Film {
   title: string;

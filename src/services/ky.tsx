@@ -2,9 +2,9 @@ import ky from "ky";
 
 const apiUrl = import.meta.env.VITE_REACT_API_URL;
 
-const baseApi = ky.create({ prefixUrl: apiUrl });
+const baseBackendApi = ky.create({ prefixUrl: apiUrl });
 
-const api = baseApi.extend({
+const backendApi = baseBackendApi.extend({
   hooks: {
     afterResponse: [
       async (request, options, response) => {
@@ -20,4 +20,4 @@ const api = baseApi.extend({
   },
 });
 
-export default { api };
+export default { backendApi };
