@@ -28,6 +28,10 @@ import Select, { SelectChangeEvent } from "@mui/material/Select";
 import InputLabel from "@mui/material/InputLabel";
 import useTheme from "@mui/material/styles/useTheme";
 
+import { v4 as uuidv4 } from "uuid";
+
+import SpeedSVG from "./components/SpeedSVG";
+
 import * as React from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -45,10 +49,6 @@ const Transition = forwardRef(function Transition(
 ) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
-
-import { v4 as uuidv4 } from "uuid";
-
-import SpeedSVG from "../components/SpeedSVG";
 
 interface Film {
   title: string;

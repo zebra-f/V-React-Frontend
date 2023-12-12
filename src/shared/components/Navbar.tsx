@@ -29,7 +29,7 @@ import Slide from "@mui/material/Slide";
 import useScrollTrigger from "@mui/material/useScrollTrigger";
 import ButtonGroup from "@mui/material/ButtonGroup";
 
-import { ColorModeContext } from "../App";
+import { ColorModeContext } from "../../App";
 
 const pages = ["Home", "Vees", "About"];
 

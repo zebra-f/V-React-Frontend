@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
-import kyClient from "../services/ky";
+import kyClient from "../../shared/services/ky";
 
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
@@ -147,6 +147,7 @@ function SignIn() {
             autoComplete="email"
             autoFocus
             helperText={emailError.error ? emailError.errorMessage : ""}
+            error={emailError.error}
           />
           <TextField
             margin="normal"
@@ -158,6 +159,7 @@ function SignIn() {
             id="password"
             autoComplete="current-password"
             helperText={passwordError.error ? passwordError.errorMessage : ""}
+            error={passwordError.error}
           />
           <Button
             type="submit"

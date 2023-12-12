@@ -24,14 +24,14 @@ import {
 } from "@mui/material/colors";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
-import Navbar from "./pages/Navbar";
-import Home from "./pages/Home";
-import Vees from "./pages/Vees";
-import About from "./pages/About";
-import Length from "./pages/Length";
-import Speed from "./pages/Speed";
-import SignIn from "./pages/Signin";
-import SignUp from "./pages/Signup";
+import Navbar from "./shared/components/Navbar";
+import Home from "./pages/Home/Home";
+import Vees from "./pages/Primary/Vees";
+import About from "./pages/About/About";
+import Length from "./pages/Primary/Length";
+import Speed from "./pages/Primary/Speed";
+import SignIn from "./pages/Authentication/Signin";
+import SignUp from "./pages/Authentication/Signup";
 
 import useLocalStorageState from "use-local-storage-state";
 
@@ -40,8 +40,7 @@ import "./App.css";
 import MoonLight from "./assets/svg/moon-main-light.svg";
 import UranusDark from "./assets/svg/uranus-main-dark.svg";
 
-import axiosClient from "./services/axios";
-import kyClient from "./services/ky";
+import kyClient from "./shared/services/ky";
 
 function App(props: any) {
   const response = kyClient.backendApi.get("speeds/");
