@@ -13,13 +13,13 @@ import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-
 import GoogleIcon from "@mui/icons-material/Google";
 
 interface signInData {
   email: string;
   password: string;
 }
+
 async function requestSignIn(data: signInData) {
   try {
     const response: any = await kyClient.backendApi.post("token/login/", {
@@ -67,47 +67,54 @@ function SignIn() {
       return;
     }
 
+    let errorFlag = true;
     if (!email) {
       setEmailError({
         error: true,
         errorMessage: "This field is required.",
       });
-      return;
+    } else {
+      email = email.toString().trim();
+      if (email.length < 5 || email.indexOf("@") == -1) {
+        setEmailError({
+          error: true,
+          errorMessage: "Incorrect email address.",
+        });
+      } else {
+        setEmailError({ error: false, errorMessage: "" });
+        errorFlag = false;
+      }
     }
-    email = email.toString().trim();
-    if (email.length < 5 || email.indexOf("@") == -1) {
-      setEmailError({
-        error: true,
-        errorMessage: "Incorrect email address.",
-      });
-      return;
-    }
-    setEmailError({
-      ...emailError,
-      error: false,
-    });
-
     if (!password) {
       setPasswordError({
         error: true,
         errorMessage: "This field is required.",
       });
+      errorFlag = true;
+    } else {
+      password = password.toString();
+      if (password.length < 8) {
+        setPasswordError({
+          error: true,
+          errorMessage:
+            "This password is too short. It must contain at least 8 characters.",
+        });
+        errorFlag = true;
+      } else {
+        setPasswordError({ error: false, errorMessage: "" });
+        errorFlag = false;
+      }
+    }
+    if (errorFlag) {
       return;
     }
-    password = password.toString();
-    if (password.length < 8) {
-      setPasswordError({
-        error: true,
-        errorMessage:
-          "This password is too short. It must contain at least 8 characters.",
-      });
-      return;
-    }
-    setPasswordError({
-      ...passwordError,
-      error: false,
-    });
 
+    if (email && password) {
+      email = email.toString().trim();
+      password = password.toString();
+    } else {
+      return;
+    }
     requestSignIn({ email: email, password: password }).then((result) => {
       return result;
     });

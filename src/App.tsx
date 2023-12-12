@@ -1,35 +1,16 @@
 import { useState, createContext, useMemo } from "react";
 import { Routes, Route } from "react-router-dom";
 
-import Container from "@mui/material/Container";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-// import {
-//   PaletteMode,
-// } from "@mui/material/";
 import CssBaseline from "@mui/material/CssBaseline";
-import {
-  teal,
-  indigo,
-  amber,
-  grey,
-  blue,
-  pink,
-  brown,
-  red,
-  lightBlue,
-  orange,
-  deepOrange,
-  yellow,
-  deepPurple,
-} from "@mui/material/colors";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
 import Navbar from "./shared/components/Navbar";
 import Home from "./pages/Home/Home";
-import Vees from "./pages/Primary/Vees";
+import Vees from "./pages/Vees/Vees";
 import About from "./pages/About/About";
-import Length from "./pages/Primary/Length";
-import Speed from "./pages/Primary/Speed";
+import Length from "./pages/Vees/Length";
+import Speed from "./pages/Vees/Speed";
 import SignIn from "./pages/Authentication/Signin";
 import SignUp from "./pages/Authentication/Signup";
 
@@ -37,8 +18,8 @@ import useLocalStorageState from "use-local-storage-state";
 
 import "./App.css";
 
-import MoonLight from "./assets/svg/moon-main-light.svg";
-import UranusDark from "./assets/svg/uranus-main-dark.svg";
+import backgroundDivStyle from "./styles/background";
+import getTheme from "./styles/theme";
 
 import kyClient from "./shared/services/ky";
 
@@ -56,25 +37,8 @@ function App(props: any) {
     defaultValue: "metric",
   });
 
-  const backgroundImagePosition =
-    window.innerWidth <= 1920
-      ? "top right"
-      : `${window.innerWidth / 2 + 150}px 0px`;
-  const divStyle = (image: string) => {
-    return {
-      backgroundImage: `url(${image})`,
-      backgroundRepeat: "no-repeat",
-      backgroundPosition: backgroundImagePosition,
-      minHeight: "800px",
-    };
-  };
   return (
-    <div
-      className="App"
-      style={
-        props.mode === "light" ? divStyle(MoonLight) : divStyle(UranusDark)
-      }
-    >
+    <div className="App" style={backgroundDivStyle(props.mode)}>
       <Navbar
         setSessionThemeMode={props.setSessionThemeMode}
         sessionThemeMode={props.sessionThemeMode}
@@ -129,78 +93,9 @@ export default function AppColorMode() {
     }),
     []
   );
-  const getDesignTokens = (mode: any) => ({
-    palette: {
-      mode,
-      ...(mode === "light"
-        ? {
-            // palette values for light mode
-            // color: "#7371FC"
-            primary: {
-              main: indigo[300],
-              contrastText: "#028090",
-            },
-            secondary: {
-              main: red[400],
-              contrastText: "#edf6f9",
-            },
-            divider: grey[400],
-            text: {
-              primary: "#3d5a80",
-              secondary: "#028090",
-            },
-            background: {
-              default: "#fbfefb",
-              paper: "#fbfefb",
-            },
-          }
-        : {
-            // palette values for dark mode
-            primary: {
-              main: indigo[200],
-              contrastText: blue[100],
-            },
-            secondary: blue,
-            divider: "#1B2735",
-            background: {
-              default: "#090A0F",
-              paper: "#1B2735",
-            },
-            text: {
-              primary: indigo[200],
-              secondary: "#7fdeff",
-            },
-            action: {
-              selected: "#3c4576",
-              active: "#7fdeff",
-              disabled: "#00868c",
-            },
-          }),
-    },
-  });
-  const theme = useMemo(
-    () =>
-      createTheme({
-        // palette
-        ...getDesignTokens(mode),
-        transitions: {
-          duration: {
-            enteringScreen: 600,
-            leavingScreen: 200,
-          },
-        },
-        typography: {
-          fontFamily: ["'Montserrat'"].join(","),
-          button: {
-            textTransform: "none",
-          },
-        },
-      }),
-    [mode]
-  );
   return (
     <ColorModeContext.Provider value={colorMode}>
-      <ThemeProvider theme={theme}>
+      <ThemeProvider theme={getTheme(mode)}>
         <CssBaseline />
         <App
           setSessionThemeMode={setSessionThemeMode}
