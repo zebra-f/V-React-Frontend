@@ -1,9 +1,10 @@
-import * as React from "react";
-
 import { useState, useContext, forwardRef } from "react";
-import { useNavigate } from "react-router-dom";
 
+import { useNavigate } from "react-router-dom";
 import { NavLink } from "react-router-dom";
+
+import signOut from "../../actions/signOut";
+
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -28,6 +29,8 @@ import Switch from "@mui/material/Switch";
 import Slide from "@mui/material/Slide";
 import useScrollTrigger from "@mui/material/useScrollTrigger";
 import ButtonGroup from "@mui/material/ButtonGroup";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 
 import { ColorModeContext } from "../../styles/ColorModeApp";
 
@@ -155,6 +158,33 @@ export default function Navbar(props: any) {
     setAnchorEl(null);
     handleMobileMenuClose();
   };
+  const [errorSnackbarOpen, setErrorSnackbarOpen] = useState(false);
+  const [successSnackbarOpen, setSuccessSnackbarOpen] = useState(false);
+  const handleCloseAlert = (
+    event?: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setSuccessSnackbarOpen(false);
+    setErrorSnackbarOpen(false);
+  };
+  const handleSignOut = () => {
+    signOut(props.isAuthenticated, props.setIsAuthenticated).then(
+      (signedOut) => {
+        if (signedOut) {
+          setErrorSnackbarOpen(false);
+          setSuccessSnackbarOpen(true);
+
+          navigate("/");
+        } else {
+          setErrorSnackbarOpen(true);
+          setSuccessSnackbarOpen(false);
+        }
+      }
+    );
+  };
 
   const renderMenu = (
     <Menu
@@ -174,6 +204,14 @@ export default function Navbar(props: any) {
     >
       <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
       <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+      <MenuItem
+        onClick={() => {
+          handleMenuClose();
+          handleSignOut();
+        }}
+      >
+        Sign Out
+      </MenuItem>
     </Menu>
   );
 
@@ -188,6 +226,34 @@ export default function Navbar(props: any) {
 
   return (
     <>
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={successSnackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleCloseAlert}
+      >
+        <Alert
+          onClose={handleCloseAlert}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          You have been signed out successfully.
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        open={errorSnackbarOpen}
+        autoHideDuration={8000}
+        onClose={handleCloseAlert}
+      >
+        <Alert
+          onClose={handleCloseAlert}
+          severity="error"
+          sx={{ width: "100%" }}
+        >
+          Something went wrong.
+        </Alert>
+      </Snackbar>
+
       <Slide appear={true} direction="down" in={!useScrollTrigger()}>
         <AppBar
           elevation={0}
@@ -335,7 +401,6 @@ export default function Navbar(props: any) {
           </Container>
         </AppBar>
       </Slide>
-
       {/* mobile drawer */}
       <Box component="nav">
         <Drawer

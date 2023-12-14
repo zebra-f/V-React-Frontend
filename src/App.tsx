@@ -1,26 +1,21 @@
 import { Routes, Route } from "react-router-dom";
 
+import useLocalStorageState from "use-local-storage-state";
+
 import Navbar from "./shared/components/Navbar";
 import Home from "./pages/Home/Home";
 import Vees from "./pages/Vees/Vees";
 import About from "./pages/About/About";
 import Length from "./pages/Vees/Length";
 import Speed from "./pages/Vees/Speed";
-import SignIn from "./pages/Authentication/Signin";
-import SignUp from "./pages/Authentication/Signup";
-
-import useLocalStorageState from "use-local-storage-state";
-
-import kyClient from "./shared/services/ky";
+import SignIn from "./pages/Authentication/SignIn";
+import SignUp from "./pages/Authentication/SignUp";
 
 export default function App(props: any) {
-  const response = kyClient.backendApi.get("speeds/");
   const [isAuthenticated, setIsAuthenticated] = useLocalStorageState(
     "isAuthenticated",
     { defaultValue: false }
   );
-  setIsAuthenticated(false);
-
   const [measurementSystem, setMeasurementSystem] = useLocalStorageState<
     "metric" | "imperial"
   >("measurementSystem", {
@@ -33,6 +28,7 @@ export default function App(props: any) {
         setSessionThemeMode={props.setSessionThemeMode}
         sessionThemeMode={props.sessionThemeMode}
         isAuthenticated={isAuthenticated}
+        setIsAuthenticated={setIsAuthenticated}
       />
       <Routes>
         <Route path="" element={<Home />} />
@@ -53,7 +49,15 @@ export default function App(props: any) {
         </Route>
         <Route path="about" element={<About />} />
 
-        <Route path="signin" element={<SignIn />} />
+        <Route
+          path="signin"
+          element={
+            <SignIn
+              isAuthenticated={isAuthenticated}
+              setIsAuthenticated={setIsAuthenticated}
+            />
+          }
+        />
         <Route path="signup" element={<SignUp />} />
       </Routes>
     </div>

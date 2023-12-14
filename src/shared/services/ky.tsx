@@ -4,20 +4,27 @@ const apiUrl = import.meta.env.VITE_REACT_API_URL;
 
 const baseBackendApi = ky.create({ prefixUrl: apiUrl });
 
-const backendApi = baseBackendApi.extend({
+let backendApi = baseBackendApi.extend({
+  headers: {
+    authorization: localStorage.getItem("access")
+      ? `Bearer ${localStorage.getItem("access")}`
+      : undefined,
+  },
+  credentials: "include",
   hooks: {
-    afterResponse: [
-      async (request, options, response) => {
-        if (response.status === 403) {
-          const token = await ky("https://example.com/token").text();
-
-          request.headers.set("Authorization", `token ${token}`);
-
-          return ky(request);
+    beforeRequest: [
+      (options) => {
+        if ("access" in localStorage) {
+          options.headers.set(
+            "authorization",
+            `Bearer ${localStorage.getItem("access")}`
+          );
         }
       },
     ],
+    afterResponse: [],
   },
 });
 
+// import as kyClient
 export default { backendApi };

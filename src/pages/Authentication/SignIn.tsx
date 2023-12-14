@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import kyClient from "../../shared/services/ky";
 
@@ -13,7 +13,10 @@ import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
+import Alert from "@mui/material/Alert";
 import GoogleIcon from "@mui/icons-material/Google";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
 
 interface signInData {
   email: string;
@@ -37,7 +40,29 @@ async function requestSignIn(data: signInData) {
   }
 }
 
-function SignIn() {
+interface props {
+  isAuthenticated: boolean;
+  setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
+}
+function SignIn({ isAuthenticated, setIsAuthenticated }: props) {
+  const navigate = useNavigate();
+
+  const handleAuthenticatedUser = () => {
+    if (isAuthenticated) {
+      navigate("/");
+    }
+  };
+
+  useEffect(() => {
+    handleAuthenticatedUser();
+  }, []);
+
+  useEffect(() => {
+    handleAuthenticatedUser();
+  }, [isAuthenticated]);
+
+  const [apiError, setApiError] = useState({ error: false, errorMessage: "" });
+
   const [emailError, setEmailError] = useState({
     error: false,
     errorMessage: "",
@@ -115,13 +140,31 @@ function SignIn() {
     } else {
       return;
     }
+
     requestSignIn({ email: email, password: password }).then((result) => {
+      if (result.status === 200 && "access" in result.data) {
+        localStorage.setItem("access", result.data.access);
+        kyClient.backendApi.get("speeds/").json();
+        setApiError({ error: false, errorMessage: "" });
+        setIsAuthenticated(true);
+      } else {
+        console.log(result);
+        if ("data" in result) {
+          if ("detail" in result.data) {
+            setApiError({ error: true, errorMessage: result.data.detail });
+            return;
+          }
+        }
+        setApiError({
+          error: true,
+          errorMessage: "Something went wrong. Try again later.",
+        });
+      }
       return result;
     });
   };
 
   // Sign Up
-  const navigate = useNavigate();
   const handleSignUpClick = () => {
     navigate("/signup");
   };
@@ -143,6 +186,28 @@ function SignIn() {
         <Typography component="h1" variant="h5">
           Sign In
         </Typography>
+
+        {apiError.error && (
+          <Alert
+            action={
+              <IconButton
+                aria-label="close"
+                color="inherit"
+                size="small"
+                onClick={() => {
+                  setApiError({ error: false, errorMessage: "" });
+                }}
+              >
+                <CloseIcon fontSize="inherit" />
+              </IconButton>
+            }
+            sx={{ width: "100%", mt: 3 }}
+            severity="error"
+          >
+            {apiError.errorMessage}
+          </Alert>
+        )}
+
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <TextField
             margin="normal"
