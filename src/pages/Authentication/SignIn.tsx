@@ -144,11 +144,9 @@ function SignIn({ isAuthenticated, setIsAuthenticated }: props) {
     requestSignIn({ email: email, password: password }).then((result) => {
       if (result.status === 200 && "access" in result.data) {
         localStorage.setItem("access", result.data.access);
-        kyClient.backendApi.get("speeds/").json();
         setApiError({ error: false, errorMessage: "" });
         setIsAuthenticated(true);
       } else {
-        console.log(result);
         if ("data" in result) {
           if ("detail" in result.data) {
             setApiError({ error: true, errorMessage: result.data.detail });
