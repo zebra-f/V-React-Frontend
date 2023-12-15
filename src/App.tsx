@@ -58,7 +58,10 @@ export default function App(props: any) {
             />
           }
         />
-        <Route path="signup" element={<SignUp />} />
+        <Route
+          path="signup"
+          element={<SignUp isAuthenticated={isAuthenticated} />}
+        />
       </Routes>
     </div>
   );

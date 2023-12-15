@@ -22,7 +22,6 @@ interface signInData {
   email: string;
   password: string;
 }
-
 async function requestSignIn(data: signInData) {
   try {
     const response: any = await kyClient.backendApi.post("token/login/", {
@@ -147,18 +146,15 @@ function SignIn({ isAuthenticated, setIsAuthenticated }: props) {
         setApiError({ error: false, errorMessage: "" });
         setIsAuthenticated(true);
       } else {
-        if ("data" in result) {
-          if ("detail" in result.data) {
-            setApiError({ error: true, errorMessage: result.data.detail });
-            return;
-          }
+        if ("detail" in result.data) {
+          setApiError({ error: true, errorMessage: result.data.detail });
+          return;
         }
         setApiError({
           error: true,
           errorMessage: "Something went wrong. Try again later.",
         });
       }
-      return result;
     });
   };
 

@@ -231,6 +231,7 @@ export default function Navbar(props: any) {
         open={successSnackbarOpen}
         autoHideDuration={6000}
         onClose={handleCloseAlert}
+        sx={{ mt: 6 }}
       >
         <Alert
           onClose={handleCloseAlert}
@@ -241,9 +242,11 @@ export default function Navbar(props: any) {
         </Alert>
       </Snackbar>
       <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
         open={errorSnackbarOpen}
         autoHideDuration={8000}
         onClose={handleCloseAlert}
+        sx={{ mt: 6 }}
       >
         <Alert
           onClose={handleCloseAlert}
