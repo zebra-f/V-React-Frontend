@@ -1,4 +1,4 @@
-import { useState, useContext, forwardRef } from "react";
+import { useState, useContext, forwardRef, Dispatch } from "react";
 
 import { useNavigate } from "react-router-dom";
 import { NavLink } from "react-router-dom";
@@ -36,13 +36,22 @@ import { ColorModeContext } from "../../styles/ColorModeApp";
 
 const pages = ["Home", "Vees", "About"];
 
-export default function Navbar(props: any) {
+interface props {
+  isAuthenticated: boolean;
+  setIsAuthenticated: Dispatch<React.SetStateAction<boolean>>;
+  sessionThemeMode: string;
+  setSessionThemeMode: Dispatch<React.SetStateAction<string>>;
+}
+export default function Navbar({
+  isAuthenticated,
+  setIsAuthenticated,
+  sessionThemeMode,
+  setSessionThemeMode,
+}: props) {
   const colorMode = useContext(ColorModeContext);
   const changeColorMode = () => {
     colorMode.toggleColorMode();
-    props.setSessionThemeMode(
-      props.sessionThemeMode === "dark" ? "light" : "dark"
-    );
+    setSessionThemeMode(sessionThemeMode === "dark" ? "light" : "dark");
   };
   const theme = useTheme();
   const backgroundColor =
@@ -68,6 +77,14 @@ export default function Navbar(props: any) {
       }
     />
   ));
+
+  const navigate = useNavigate();
+  const handleSignInClick = () => {
+    navigate("/signin");
+  };
+  const handleSignUpClick = () => {
+    navigate("/signup");
+  };
 
   // Mobile drawer
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -137,20 +154,43 @@ export default function Navbar(props: any) {
           onClick={changeColorMode}
         />
       </MenuItem>
-      <MenuItem
-        onClick={handleProfileMenuOpen}
-        sx={{ justifyContent: "center" }}
-      >
-        <IconButton
-          size="large"
-          aria-label="account of current user"
-          aria-controls="primary-search-account-menu"
-          aria-haspopup="true"
-          color="inherit"
+      {isAuthenticated ? (
+        <MenuItem
+          onClick={handleProfileMenuOpen}
+          sx={{ justifyContent: "center" }}
         >
-          <AccountCircle />
-        </IconButton>
-      </MenuItem>
+          <IconButton
+            size="large"
+            aria-label="account of current user"
+            aria-controls="primary-search-account-menu"
+            aria-haspopup="true"
+            color="inherit"
+          >
+            <AccountCircle />
+          </IconButton>
+        </MenuItem>
+      ) : (
+        [
+          <MenuItem
+            key="placeholder1"
+            onClick={() => {
+              handleSignInClick();
+              handleMenuClose();
+            }}
+          >
+            Sign In
+          </MenuItem>,
+          <MenuItem
+            key="placeholder2"
+            onClick={() => {
+              handleSignUpClick();
+              handleMenuClose();
+            }}
+          >
+            Sign Up
+          </MenuItem>,
+        ]
+      )}
     </Menu>
   );
 
@@ -171,21 +211,20 @@ export default function Navbar(props: any) {
     setErrorSnackbarOpen(false);
   };
   const handleSignOut = () => {
-    signOut(props.isAuthenticated, props.setIsAuthenticated).then(
-      (signedOut) => {
-        if (signedOut) {
-          setErrorSnackbarOpen(false);
-          setSuccessSnackbarOpen(true);
+    signOut(isAuthenticated, setIsAuthenticated).then((signedOut) => {
+      if (signedOut) {
+        setErrorSnackbarOpen(false);
+        setSuccessSnackbarOpen(true);
 
-          navigate("/");
-        } else {
-          setErrorSnackbarOpen(true);
-          setSuccessSnackbarOpen(false);
-        }
+        navigate("/");
+      } else {
+        setErrorSnackbarOpen(true);
+        setSuccessSnackbarOpen(false);
       }
-    );
+    });
   };
 
+  // pop up user menu
   const renderMenu = (
     <Menu
       anchorEl={anchorEl}
@@ -214,15 +253,6 @@ export default function Navbar(props: any) {
       </MenuItem>
     </Menu>
   );
-
-  // Sign in, Sign Up
-  const navigate = useNavigate();
-  const handleSignInClick = () => {
-    navigate("/signin");
-  };
-  const handleSignUpClick = () => {
-    navigate("/signup");
-  };
 
   return (
     <>
@@ -357,7 +387,7 @@ export default function Navbar(props: any) {
                   checked={theme.palette.mode == "light" ? true : false}
                   onClick={changeColorMode}
                 />
-                {props.isAuthenticated ? (
+                {isAuthenticated ? (
                   <IconButton
                     size="large"
                     edge="end"
