@@ -33,9 +33,13 @@ async function requestSignIn(data: signInData) {
     const responseData = await response.json();
     return { status: response.status, data: responseData };
   } catch (error: any) {
-    const response = await error.response;
-    const responseData = await response.json();
-    return { status: response.status, data: responseData };
+    try {
+      const response = await error.response;
+      const responseData = await response.json();
+      return { status: response.status, data: responseData };
+    } catch (error: any) {
+      return { status: 500, data: {} };
+    }
   }
 }
 
@@ -91,7 +95,7 @@ function SignIn({ isAuthenticated, setIsAuthenticated }: props) {
       return;
     }
 
-    let errorFlag = true;
+    let errorFlag = false;
     if (!email) {
       setEmailError({
         error: true,
@@ -104,9 +108,9 @@ function SignIn({ isAuthenticated, setIsAuthenticated }: props) {
           error: true,
           errorMessage: "Incorrect email address.",
         });
+        errorFlag = true;
       } else {
         setEmailError({ error: false, errorMessage: "" });
-        errorFlag = false;
       }
     }
     if (!password) {
@@ -126,7 +130,6 @@ function SignIn({ isAuthenticated, setIsAuthenticated }: props) {
         errorFlag = true;
       } else {
         setPasswordError({ error: false, errorMessage: "" });
-        errorFlag = false;
       }
     }
     if (errorFlag) {
@@ -163,96 +166,119 @@ function SignIn({ isAuthenticated, setIsAuthenticated }: props) {
     navigate("/signup");
   };
 
+  const handlePasswordResetClick = () => {
+    navigate("/passwordreset");
+  };
+
+  const [open, setOpen] = useState(false);
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
   return (
-    <Container component="main" maxWidth="xs">
-      <CssBaseline />
-      <Box
-        sx={{
-          marginTop: 8,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
-        <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-          <LockOutlinedIcon />
-        </Avatar>
-        <Typography component="h1" variant="h5">
-          Sign In
-        </Typography>
+    <>
+      <Container component="main" maxWidth="xs">
+        <CssBaseline />
 
-        {apiError.error && (
-          <Alert
-            action={
-              <IconButton
-                aria-label="close"
-                color="inherit"
-                size="small"
-                onClick={() => {
-                  setApiError({ error: false, errorMessage: "" });
-                }}
-              >
-                <CloseIcon fontSize="inherit" />
-              </IconButton>
-            }
-            sx={{ width: "100%", mt: 3 }}
-            severity="error"
-          >
-            {apiError.errorMessage}
-          </Alert>
-        )}
-
-        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
-            autoFocus
-            helperText={emailError.error ? emailError.errorMessage : ""}
-            error={emailError.error}
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-            helperText={passwordError.error ? passwordError.errorMessage : ""}
-            error={passwordError.error}
-          />
-          <Button
-            type="submit"
-            variant="contained"
-            fullWidth
-            sx={{ mt: 3, mb: 0 }}
-          >
+        <Box
+          sx={{
+            marginTop: 8,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+            <LockOutlinedIcon />
+          </Avatar>
+          <Typography component="h1" variant="h5">
             Sign In
-          </Button>
-          <Button type="submit" variant="outlined" sx={{ mt: 1, mb: 3 }}>
-            <GoogleIcon></GoogleIcon>&nbsp;&nbsp;Sign In with Google
-          </Button>
-          <Grid container>
-            <Grid item xs>
-              <Link href="#" variant="body2">
-                Forgot password?
-              </Link>
+          </Typography>
+
+          {apiError.error && (
+            <Alert
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setApiError({ error: false, errorMessage: "" });
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+              sx={{ width: "100%", mt: 3 }}
+              severity="error"
+            >
+              {apiError.errorMessage}
+            </Alert>
+          )}
+
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            noValidate
+            sx={{ mt: 1 }}
+          >
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="email"
+              label="Email Address"
+              name="email"
+              autoComplete="email"
+              autoFocus
+              helperText={emailError.error ? emailError.errorMessage : ""}
+              error={emailError.error}
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="password"
+              label="Password"
+              type="password"
+              id="password"
+              autoComplete="current-password"
+              helperText={passwordError.error ? passwordError.errorMessage : ""}
+              error={passwordError.error}
+            />
+            <Button
+              type="submit"
+              variant="contained"
+              fullWidth
+              sx={{ mt: 3, mb: 0 }}
+            >
+              Sign In
+            </Button>
+            <Button variant="outlined" sx={{ mt: 1, mb: 3 }}>
+              <GoogleIcon></GoogleIcon>&nbsp;&nbsp;Sign In with Google
+            </Button>
+            <Grid container>
+              <Grid item xs>
+                <Link
+                  href="#"
+                  variant="body2"
+                  onClick={handlePasswordResetClick}
+                >
+                  Forgot password?
+                </Link>
+              </Grid>
+              <Grid item>
+                <Link onClick={handleSignUpClick} href="#" variant="body2">
+                  {"Don't have an account? Sign Up"}
+                </Link>
+              </Grid>
             </Grid>
-            <Grid item>
-              <Link onClick={handleSignUpClick} href="#" variant="body2">
-                {"Don't have an account? Sign Up"}
-              </Link>
-            </Grid>
-          </Grid>
+          </Box>
         </Box>
-      </Box>
-    </Container>
+      </Container>
+    </>
   );
 }
 

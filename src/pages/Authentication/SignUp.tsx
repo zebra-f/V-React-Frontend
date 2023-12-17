@@ -18,6 +18,10 @@ import Alert from "@mui/material/Alert";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import Snackbar from "@mui/material/Snackbar";
+import FormGroup from "@mui/material/FormGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
+import useTheme from "@mui/material/styles/useTheme";
 
 interface signUpData {
   username: string;
@@ -36,9 +40,13 @@ async function requestSignUp(data: signUpData) {
     const responseData = await response.json();
     return { status: response.status, data: responseData };
   } catch (error: any) {
-    const response = await error.response;
-    const responseData = await response.json();
-    return { status: response.status, data: responseData };
+    try {
+      const response = await error.response;
+      const responseData = await response.json();
+      return { status: response.status, data: responseData };
+    } catch (error: any) {
+      return { status: 500, data: {} };
+    }
   }
 }
 
@@ -46,6 +54,22 @@ interface props {
   isAuthenticated: boolean;
 }
 function SignUp({ isAuthenticated }: props) {
+  const theme = useTheme();
+
+  const handleAuthenticatedUser = () => {
+    if (isAuthenticated) {
+      navigate("/");
+    }
+  };
+
+  useEffect(() => {
+    handleAuthenticatedUser();
+  }, []);
+
+  useEffect(() => {
+    handleAuthenticatedUser();
+  }, [isAuthenticated]);
+
   const [successSnackbarOpen, setSuccessSnackbarOpen] = useState(false);
   const [signedUpAlertMessage, setSignedUpAlertMessage] = useState("");
   const handleCloseAlert = (
@@ -76,6 +100,12 @@ function SignUp({ isAuthenticated }: props) {
     errorMessage: "",
   });
 
+  const [checkboxCheckedError, setCheckboxCheckedError] = useState(false);
+  const [checkboxChecked, setCheckboxChecked] = useState(false);
+  const handleCheckboxChange = (event: any) => {
+    setCheckboxChecked(event.target.checked);
+  };
+
   const handleSubmit = (event: any) => {
     event.preventDefault();
 
@@ -85,7 +115,13 @@ function SignUp({ isAuthenticated }: props) {
     let password = data.get("password");
     let confirmPassword = data.get("confirm-password");
 
-    if (!email && !password && !username && !confirmPassword) {
+    if (
+      !email &&
+      !password &&
+      !username &&
+      !confirmPassword &&
+      !checkboxChecked
+    ) {
       setUsernameError({
         error: true,
         errorMessage: "This field is required.",
@@ -98,10 +134,11 @@ function SignUp({ isAuthenticated }: props) {
         error: true,
         errorMessage: "This field is required.",
       });
+      setCheckboxCheckedError(true);
       return;
     }
 
-    let errorFlag = true;
+    let errorFlag = false;
     if (!username) {
       setUsernameError({
         error: true,
@@ -115,9 +152,9 @@ function SignUp({ isAuthenticated }: props) {
           errorMessage:
             "Ensure this field has no more than 24 and no less than 3 characters",
         });
+        errorFlag = true;
       } else {
         setUsernameError({ error: false, errorMessage: "" });
-        errorFlag = false;
       }
     }
 
@@ -137,7 +174,6 @@ function SignUp({ isAuthenticated }: props) {
         errorFlag = true;
       } else {
         setEmailError({ error: false, errorMessage: "" });
-        errorFlag = false;
       }
     }
 
@@ -156,9 +192,9 @@ function SignUp({ isAuthenticated }: props) {
             "This password is too short. It must contain at least 8 characters.",
         });
         errorFlag = true;
+        return;
       } else {
         setPasswordError({ error: false, errorMessage: "" });
-        errorFlag = false;
       }
     }
     if (!confirmPassword) {
@@ -178,8 +214,14 @@ function SignUp({ isAuthenticated }: props) {
         errorFlag = true;
       } else if (!passwordError) {
         setPasswordError({ error: false, errorMessage: "" });
-        errorFlag = false;
       }
+    }
+
+    if (!checkboxChecked) {
+      setCheckboxCheckedError(true);
+      errorFlag = true;
+    } else {
+      setCheckboxCheckedError(false);
     }
 
     if (errorFlag) {
@@ -260,6 +302,9 @@ function SignUp({ isAuthenticated }: props) {
     navigate("/signin");
   };
 
+  const openTermsWindow = (url: string) => {
+    window.open(url, "_blank");
+  };
   return (
     <Container component="main" maxWidth="xs">
       <Snackbar
@@ -343,7 +388,6 @@ function SignUp({ isAuthenticated }: props) {
               label="Email Address"
               name="email"
               autoComplete="email"
-              autoFocus
               helperText={emailError.error ? emailError.errorMessage : ""}
               error={emailError.error}
             />
@@ -371,6 +415,32 @@ function SignUp({ isAuthenticated }: props) {
               helperText={passwordError.error ? passwordError.errorMessage : ""}
               error={passwordError.error}
             />
+            <FormGroup
+              sx={
+                checkboxCheckedError ? { color: theme.palette.error.main } : {}
+              }
+            >
+              <FormControlLabel
+                checked={checkboxChecked}
+                onChange={handleCheckboxChange}
+                required
+                control={<Checkbox size="small" />}
+                label={
+                  <span style={{ fontSize: "0.8rem" }}>
+                    {"I agree to the "}{" "}
+                    <Link
+                      href="#"
+                      onClick={() =>
+                        openTermsWindow("https://example.com/terms")
+                      }
+                      style={{ cursor: "pointer" }}
+                    >
+                      Terms of Service
+                    </Link>
+                  </span>
+                }
+              />
+            </FormGroup>
             <Button
               type="submit"
               variant="contained"
@@ -379,7 +449,7 @@ function SignUp({ isAuthenticated }: props) {
             >
               Sign Up
             </Button>
-            <Button type="submit" variant="outlined" sx={{ mt: 1, mb: 3 }}>
+            <Button variant="outlined" sx={{ mt: 1, mb: 3 }}>
               <GoogleIcon></GoogleIcon>&nbsp;&nbsp;Sign Up with Google
             </Button>
 

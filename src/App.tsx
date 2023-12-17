@@ -10,6 +10,7 @@ import Length from "./pages/Vees/Length";
 import Speed from "./pages/Vees/Speed";
 import SignIn from "./pages/Authentication/SignIn";
 import SignUp from "./pages/Authentication/SignUp";
+import PasswordReset from "./pages/Authentication/PasswordReset";
 
 export default function App(props: any) {
   const [isAuthenticated, setIsAuthenticated] = useLocalStorageState(
@@ -61,6 +62,10 @@ export default function App(props: any) {
         <Route
           path="signup"
           element={<SignUp isAuthenticated={isAuthenticated} />}
+        />
+        <Route
+          path="passwordreset"
+          element={<PasswordReset isAuthenticated={isAuthenticated} />}
         />
       </Routes>
     </div>
