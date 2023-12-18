@@ -62,7 +62,7 @@ export default function Navbar({
         "rgba(0,0,0,0)";
 
   const activeStyleBackgroundColor =
-    theme.palette.mode === "dark" ? "rgb(9, 10, 15)" : "rgba(0,0,0,0)";
+    theme.palette.mode === "dark" ? "rgb(0,0,0,0)" : "rgba(0,0,0,0)";
   // NavLink highlight
   const activeStyle = {
     backgroundColor: activeStyleBackgroundColor,
@@ -96,7 +96,7 @@ export default function Navbar({
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
       <Typography variant="h6" sx={{ my: 1.5 }}>
-        MUI
+        SOVERTIS
       </Typography>
       <Divider />
       <List>
@@ -165,7 +165,6 @@ export default function Navbar({
             aria-label="account of current user"
             aria-controls="primary-search-account-menu"
             aria-haspopup="true"
-            color="inherit"
           >
             <AccountCircle />
           </IconButton>
@@ -323,7 +322,6 @@ export default function Navbar({
                 }}
               >
                 <IconButton
-                  color="inherit"
                   aria-label="open drawer"
                   edge="start"
                   onClick={handleDrawerToggle}
@@ -397,7 +395,6 @@ export default function Navbar({
                     aria-controls={menuId}
                     aria-haspopup="true"
                     onClick={handleProfileMenuOpen}
-                    color="inherit"
                   >
                     <AccountCircle />
                   </IconButton>
@@ -427,7 +424,6 @@ export default function Navbar({
                   aria-controls={mobileMenuId}
                   aria-haspopup="true"
                   onClick={handleMobileMenuOpen}
-                  color="inherit"
                 >
                   <MoreIcon />
                 </IconButton>

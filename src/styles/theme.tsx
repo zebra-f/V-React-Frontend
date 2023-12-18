@@ -1,21 +1,7 @@
 import { useMemo } from "react";
 
 import { createTheme } from "@mui/material/styles";
-import {
-  teal,
-  indigo,
-  amber,
-  grey,
-  blue,
-  pink,
-  brown,
-  red,
-  lightBlue,
-  orange,
-  deepOrange,
-  yellow,
-  deepPurple,
-} from "@mui/material/colors";
+import { indigo, grey, red, yellow } from "@mui/material/colors";
 
 export default function getTheme(mode: string) {
   const getDesignTokens = (mode: any) => ({
@@ -25,8 +11,8 @@ export default function getTheme(mode: string) {
         ? {
             // palette values for light mode
             primary: {
-              main: indigo[300],
-              contrastText: grey[400],
+              main: indigo[400],
+              contrastText: grey[200],
             },
             secondary: {
               main: red[400],
@@ -61,11 +47,11 @@ export default function getTheme(mode: string) {
               default: "#090A0F",
               paper: "#011936",
             },
-            action: {
-              selected: "#3c4576",
-              active: "#7fdeff",
-              disabled: "#00868c",
-            },
+            // action: {
+            //   selected: "#3c4576",
+            //   active: "#7fdeff",
+            //   disabled: "#00868c",
+            // },
           }),
     },
   });
