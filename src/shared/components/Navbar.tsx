@@ -5,6 +5,7 @@ import { NavLink } from "react-router-dom";
 
 import signOut from "../../actions/signOut";
 
+import CssBaseline from "@mui/material/CssBaseline";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -256,6 +257,7 @@ export default function Navbar({
 
   return (
     <>
+      <CssBaseline />
       <Snackbar
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
         open={successSnackbarOpen}
@@ -306,7 +308,7 @@ export default function Navbar({
                   display: { xs: "none", md: "flex" },
                   fontFamily: "Montserrat",
                   letterSpacing: ".4rem",
-                  color: "inherit",
+                  color: theme.palette.mode === "light" ? "#028090" : "#55B8FF",
                   textDecoration: "none",
                 }}
               >
@@ -343,7 +345,7 @@ export default function Navbar({
                   flexGrow: 1,
                   fontFamily: "Montserrat",
                   letterSpacing: ".4rem",
-                  color: "inherit",
+                  color: theme.palette.mode === "light" ? "#028090" : "#55B8FF",
                   textDecoration: "none",
                 }}
               >

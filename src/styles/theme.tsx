@@ -24,10 +24,9 @@ export default function getTheme(mode: string) {
       ...(mode === "light"
         ? {
             // palette values for light mode
-            // color: "#7371FC"
             primary: {
               main: indigo[300],
-              contrastText: "#028090",
+              contrastText: grey[400],
             },
             secondary: {
               main: red[400],
@@ -47,17 +46,20 @@ export default function getTheme(mode: string) {
             // palette values for dark mode
             primary: {
               main: indigo[200],
-              contrastText: blue[100],
+              contrastText: grey[900],
             },
-            secondary: blue,
+            secondary: {
+              main: yellow[200],
+              contrastText: "#edf6f9",
+            },
             divider: "#1B2735",
+            text: {
+              primary: indigo[100],
+              secondary: "#55B8FF",
+            },
             background: {
               default: "#090A0F",
-              paper: "#1B2735",
-            },
-            text: {
-              primary: indigo[200],
-              secondary: "#7fdeff",
+              paper: "#011936",
             },
             action: {
               selected: "#3c4576",
