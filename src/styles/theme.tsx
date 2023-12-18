@@ -27,12 +27,17 @@ export default function getTheme(mode: string) {
               default: "#fbfefb",
               paper: "#fbfefb",
             },
+            action: {
+              selected: grey[800],
+              active: grey[800],
+              disabled: grey[800],
+            },
           }
         : {
             // palette values for dark mode
             primary: {
               main: indigo[200],
-              contrastText: grey[900],
+              contrastText: "#000000",
             },
             secondary: {
               main: yellow[200],
@@ -47,11 +52,11 @@ export default function getTheme(mode: string) {
               default: "#090A0F",
               paper: "#011936",
             },
-            // action: {
-            //   selected: "#3c4576",
-            //   active: "#7fdeff",
-            //   disabled: "#00868c",
-            // },
+            action: {
+              selected: grey[200],
+              active: grey[200],
+              disabled: grey[200],
+            },
           }),
     },
   });
