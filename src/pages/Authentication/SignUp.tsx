@@ -44,7 +44,7 @@ async function requestSignUp(data: signUpData) {
       const response = await error.response;
       const responseData = await response.json();
       return { status: response.status, data: responseData };
-    } catch (error: any) {
+    } catch (_error: any) {
       return { status: 500, data: {} };
     }
   }
@@ -61,14 +61,9 @@ function SignUp({ isAuthenticated }: props) {
       navigate("/");
     }
   };
-
   useEffect(() => {
     handleAuthenticatedUser();
   }, []);
-
-  useEffect(() => {
-    handleAuthenticatedUser();
-  }, [isAuthenticated]);
 
   const [successSnackbarOpen, setSuccessSnackbarOpen] = useState(false);
   const [signedUpAlertMessage, setSignedUpAlertMessage] = useState("");
@@ -298,8 +293,12 @@ function SignUp({ isAuthenticated }: props) {
     }
   });
   // Sign In
-  const handleSignInClick = () => {
+  const handleSignInLink = () => {
     navigate("/signin");
+  };
+
+  const handleResendLink = () => {
+    navigate("/verifyemail");
   };
 
   const openTermsWindow = (url: string) => {
@@ -456,8 +455,16 @@ function SignUp({ isAuthenticated }: props) {
             <Grid container>
               <Grid item xs></Grid>
               <Grid item>
-                <Link onClick={handleSignInClick} href="#" variant="body2">
+                <Link onClick={handleSignInLink} href="#" variant="body2">
                   {"Already have an account? Sign In"}
+                </Link>
+              </Grid>
+            </Grid>
+            <Grid container>
+              <Grid item xs></Grid>
+              <Grid item>
+                <Link onClick={handleResendLink} href="#" variant="body2">
+                  {"Didn't receive the verification email? Resend"}
                 </Link>
               </Grid>
             </Grid>

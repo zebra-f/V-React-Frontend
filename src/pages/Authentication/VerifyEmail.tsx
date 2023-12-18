@@ -1,13 +1,13 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 
-import passwordResetEmail from "./components/passwordResetEmail";
-import passwordResetPassword from "./components/passwordResetPassword";
+import verifyEmail from "./components/verifyEmail";
+import verifyEmailResendEmail from "./components/verifyEmailResendEmail";
 
 interface props {
   isAuthenticated: boolean;
 }
-function PasswordReset({ isAuthenticated }: props) {
+function VerifyEmail({ isAuthenticated }: props) {
   const navigate = useNavigate();
 
   const urlParams = new URLSearchParams(window.location.search);
@@ -24,9 +24,9 @@ function PasswordReset({ isAuthenticated }: props) {
   }, []);
 
   if (id && token) {
-    return passwordResetPassword(id, token);
+    return verifyEmail(id, token);
   }
-  return passwordResetEmail();
+  return verifyEmailResendEmail();
 }
 
-export default PasswordReset;
+export default VerifyEmail;

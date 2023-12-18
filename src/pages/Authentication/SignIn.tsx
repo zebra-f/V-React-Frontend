@@ -37,7 +37,7 @@ async function requestSignIn(data: signInData) {
       const response = await error.response;
       const responseData = await response.json();
       return { status: response.status, data: responseData };
-    } catch (error: any) {
+    } catch (_error: any) {
       return { status: 500, data: {} };
     }
   }
@@ -149,7 +149,13 @@ function SignIn({ isAuthenticated, setIsAuthenticated }: props) {
         setApiError({ error: false, errorMessage: "" });
         setIsAuthenticated(true);
       } else {
-        if ("detail" in result.data) {
+        if ("email" in result.data) {
+          setEmailError({
+            error: true,
+            errorMessage: result.data.email,
+          });
+          return;
+        } else if ("detail" in result.data) {
           setApiError({ error: true, errorMessage: result.data.detail });
           return;
         }

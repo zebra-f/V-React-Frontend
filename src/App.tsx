@@ -11,6 +11,7 @@ import Speed from "./pages/Vees/Speed";
 import SignIn from "./pages/Authentication/SignIn";
 import SignUp from "./pages/Authentication/SignUp";
 import PasswordReset from "./pages/Authentication/PasswordReset";
+import VerifyEmail from "./pages/Authentication/VerifyEmail";
 
 export default function App(props: any) {
   const [isAuthenticated, setIsAuthenticated] = useLocalStorageState(
@@ -66,6 +67,10 @@ export default function App(props: any) {
         <Route
           path="passwordreset"
           element={<PasswordReset isAuthenticated={isAuthenticated} />}
+        />
+        <Route
+          path="verifyemail"
+          element={<VerifyEmail isAuthenticated={isAuthenticated} />}
         />
       </Routes>
     </div>

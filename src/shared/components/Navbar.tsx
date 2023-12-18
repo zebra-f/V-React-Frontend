@@ -406,7 +406,7 @@ export default function Navbar({
                       aria-label="outlined button group"
                       size="small"
                     >
-                      <Button onClick={handleSignInClick}>Sigin In</Button>
+                      <Button onClick={handleSignInClick}>Sign In</Button>
                       <Button onClick={handleSignUpClick}>Sign Up</Button>
                     </ButtonGroup>
                   </>
