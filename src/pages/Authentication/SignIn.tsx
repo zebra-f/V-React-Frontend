@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 
 import kyClient from "../../shared/services/ky";
 
+import { openGoogleConsentWindow } from "./services/googleOAuth";
+
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -262,7 +264,11 @@ function SignIn({ isAuthenticated, setIsAuthenticated }: props) {
             >
               Sign In
             </Button>
-            <Button variant="outlined" sx={{ mt: 1, mb: 3 }}>
+            <Button
+              onClick={openGoogleConsentWindow}
+              variant="outlined"
+              sx={{ mt: 1, mb: 3 }}
+            >
               <GoogleIcon></GoogleIcon>&nbsp;&nbsp;Sign In with Google
             </Button>
             <Grid container>
