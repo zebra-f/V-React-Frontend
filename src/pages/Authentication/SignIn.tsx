@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 
 import kyClient from "../../shared/services/ky";
 
-import { openGoogleConsentWindow } from "./services/googleOAuth";
+import { openGoogleConsentWindow } from "./services/googleOpenId";
 
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
@@ -48,8 +48,15 @@ async function requestSignIn(data: signInData) {
 interface props {
   isAuthenticated: boolean;
   setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
+  googleEventListenerActive: boolean;
+  setGoogleEventListenerActive: React.Dispatch<React.SetStateAction<boolean>>;
 }
-function SignIn({ isAuthenticated, setIsAuthenticated }: props) {
+function SignIn({
+  isAuthenticated,
+  setIsAuthenticated,
+  googleEventListenerActive,
+  setGoogleEventListenerActive,
+}: props) {
   const navigate = useNavigate();
 
   const handleAuthenticatedUser = () => {
@@ -265,7 +272,12 @@ function SignIn({ isAuthenticated, setIsAuthenticated }: props) {
               Sign In
             </Button>
             <Button
-              onClick={openGoogleConsentWindow}
+              onClick={() =>
+                openGoogleConsentWindow(
+                  googleEventListenerActive,
+                  setGoogleEventListenerActive
+                )
+              }
               variant="outlined"
               sx={{ mt: 1, mb: 3 }}
             >

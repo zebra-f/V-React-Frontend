@@ -1,6 +1,9 @@
 import Container from "@mui/material/Container";
 
-function GoogleCallbackRedirect() {
+interface props {
+  setGoogleEventListenerActive: React.Dispatch<React.SetStateAction<boolean>>;
+}
+function GoogleRedirect({ setGoogleEventListenerActive }: props) {
   const openerWindow = window.opener;
 
   if (openerWindow && !openerWindow.closed) {
@@ -14,6 +17,9 @@ function GoogleCallbackRedirect() {
     } else {
       openerWindow.postMessage("", openerOrigin);
     }
+
+    setGoogleEventListenerActive(false);
+    window.close();
   } else {
     return (
       <>
@@ -29,4 +35,4 @@ function GoogleCallbackRedirect() {
   );
 }
 
-export default GoogleCallbackRedirect;
+export default GoogleRedirect;

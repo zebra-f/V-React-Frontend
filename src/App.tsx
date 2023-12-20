@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import { useState } from "react";
 
 import useLocalStorageState from "use-local-storage-state";
 
@@ -12,7 +13,7 @@ import SignIn from "./pages/Authentication/SignIn";
 import SignUp from "./pages/Authentication/SignUp";
 import PasswordReset from "./pages/Authentication/PasswordReset";
 import VerifyEmail from "./pages/Authentication/VerifyEmail";
-import GoogleCallbackRedirect from "./pages/Authentication/GoogleCallbackRedirect";
+import GoogleRedirect from "./pages/Authentication/google/GoogleRedirect";
 
 export default function App(props: any) {
   const [isAuthenticated, setIsAuthenticated] = useLocalStorageState(
@@ -25,6 +26,9 @@ export default function App(props: any) {
     defaultValue: "metric",
   });
 
+  const [googleEventListenerActive, setGoogleEventListenerActive] =
+    useState(false);
+
   return (
     <div className="App">
       <Navbar
@@ -35,6 +39,7 @@ export default function App(props: any) {
       />
       <Routes>
         <Route path="" element={<Home />} />
+        {/* Vees */}
         <Route
           path="vees"
           element={
@@ -52,18 +57,28 @@ export default function App(props: any) {
         </Route>
         <Route path="about" element={<About />} />
 
+        {/* Authentication */}
         <Route
           path="signin"
           element={
             <SignIn
               isAuthenticated={isAuthenticated}
               setIsAuthenticated={setIsAuthenticated}
+              googleEventListenerActive={googleEventListenerActive}
+              setGoogleEventListenerActive={setGoogleEventListenerActive}
             />
           }
         />
         <Route
           path="signup"
-          element={<SignUp isAuthenticated={isAuthenticated} />}
+          element={
+            <SignUp
+              isAuthenticated={isAuthenticated}
+              setIsAuthenticated={setIsAuthenticated}
+              googleEventListenerActive={googleEventListenerActive}
+              setGoogleEventListenerActive={setGoogleEventListenerActive}
+            />
+          }
         />
         <Route
           path="passwordreset"
@@ -74,8 +89,12 @@ export default function App(props: any) {
           element={<VerifyEmail isAuthenticated={isAuthenticated} />}
         />
         <Route
-          path="auth/googlecallbackredirect"
-          element={<GoogleCallbackRedirect />}
+          path="openid/googleredirect"
+          element={
+            <GoogleRedirect
+              setGoogleEventListenerActive={setGoogleEventListenerActive}
+            />
+          }
         />
       </Routes>
     </div>
