@@ -1,4 +1,3 @@
-import { redirect } from "react-router-dom";
 import kyClient from "../../../shared/services/ky";
 
 async function initializeAuth() {
@@ -42,7 +41,6 @@ function openGoogleConsentWindow(
           exchangeCallbackParamsForJwt(event.data);
         }
       }
-
       window.removeEventListener("message", handleMessageEvent);
       setGoogleEventListenerActive(false);
     };

@@ -1,11 +1,11 @@
+import { Navigate } from "react-router-dom";
+
 import Container from "@mui/material/Container";
+import Box from "@mui/material/Box";
+import CircularProgress from "@mui/material/CircularProgress";
 
-interface props {
-  setGoogleEventListenerActive: React.Dispatch<React.SetStateAction<boolean>>;
-}
-function GoogleRedirect({ setGoogleEventListenerActive }: props) {
+function GoogleRedirect() {
   const openerWindow = window.opener;
-
   if (openerWindow && !openerWindow.closed) {
     const openerOrigin = openerWindow.location.origin;
 
@@ -17,20 +17,25 @@ function GoogleRedirect({ setGoogleEventListenerActive }: props) {
     } else {
       openerWindow.postMessage("", openerOrigin);
     }
-
-    setGoogleEventListenerActive(false);
     window.close();
   } else {
-    return (
-      <>
-        <Container>You shouldn't be here.</Container>
-      </>
-    );
+    return <Navigate to="/" />;
   }
-
   return (
     <>
-      <Container>Be patient, it won't take long.</Container>
+      <Container>
+        <Box
+          sx={{
+            marginTop: 12,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <h2>Be patient. It shouldn't take too long.</h2>
+          <CircularProgress />
+        </Box>
+      </Container>
     </>
   );
 }

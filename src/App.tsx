@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { useState } from "react";
 
 import useLocalStorageState from "use-local-storage-state";
@@ -29,14 +29,26 @@ export default function App(props: any) {
   const [googleEventListenerActive, setGoogleEventListenerActive] =
     useState(false);
 
+  const location = useLocation();
+  const pathsWithoutNavbar = ["openid/googleredirect"];
+  let renderNavbar = true;
+  pathsWithoutNavbar.forEach((path) => {
+    const i = location.pathname.indexOf(path);
+    if (i !== -1) {
+      renderNavbar = false;
+    }
+  });
+
   return (
     <div className="App">
-      <Navbar
-        setSessionThemeMode={props.setSessionThemeMode}
-        sessionThemeMode={props.sessionThemeMode}
-        isAuthenticated={isAuthenticated}
-        setIsAuthenticated={setIsAuthenticated}
-      />
+      {renderNavbar && (
+        <Navbar
+          setSessionThemeMode={props.setSessionThemeMode}
+          sessionThemeMode={props.sessionThemeMode}
+          isAuthenticated={isAuthenticated}
+          setIsAuthenticated={setIsAuthenticated}
+        />
+      )}
       <Routes>
         <Route path="" element={<Home />} />
         {/* Vees */}
@@ -88,14 +100,8 @@ export default function App(props: any) {
           path="verifyemail"
           element={<VerifyEmail isAuthenticated={isAuthenticated} />}
         />
-        <Route
-          path="openid/googleredirect"
-          element={
-            <GoogleRedirect
-              setGoogleEventListenerActive={setGoogleEventListenerActive}
-            />
-          }
-        />
+        {/* Don't render Navbar */}
+        <Route path="openid/googleredirect" element={<GoogleRedirect />} />
       </Routes>
     </div>
   );
