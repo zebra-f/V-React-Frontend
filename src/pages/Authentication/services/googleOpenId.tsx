@@ -7,7 +7,7 @@ async function initializeAuth() {
       .json();
     return response.redirect_url;
   } catch (_error: any) {
-    return "";
+    throw new Error("Service Unavailable");
   }
 }
 
@@ -20,7 +20,7 @@ function openGoogleConsentWindow(
       openWindow(url);
     })
     .catch((_error) => {
-      return;
+      return false;
     });
 
   const openWindow = async (redirect_url: string) => {
