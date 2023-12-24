@@ -1,4 +1,5 @@
 import kyClient from "../../../shared/services/ky";
+import signIn from "../../../actions/signIn";
 
 async function initializeAuth() {
   try {
@@ -13,14 +14,16 @@ async function initializeAuth() {
 
 function openGoogleConsentWindow(
   googleEventListenerActive: boolean,
-  setGoogleEventListenerActive: React.Dispatch<React.SetStateAction<boolean>>
+  setGoogleEventListenerActive: React.Dispatch<React.SetStateAction<boolean>>,
+  setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>,
+  navigateHandler: any
 ) {
   initializeAuth()
     .then((url) => {
       openWindow(url);
     })
     .catch((_error) => {
-      return false;
+      return 500;
     });
 
   const openWindow = async (redirect_url: string) => {
@@ -38,7 +41,13 @@ function openGoogleConsentWindow(
         event.source.opener.location.href == window.location.href
       ) {
         if (event.data) {
-          exchangeCallbackParamsForJwt(event.data);
+          exchangeCallbackParamsForAccess(event.data).then((response: any) => {
+            if (response.status === 200 && "access" in response.data) {
+              signIn(response.data.access, setIsAuthenticated);
+            } else if (response.status === 202) {
+              navigateHandler("/googlesignup");
+            }
+          });
         }
       }
       window.removeEventListener("message", handleMessageEvent);
@@ -52,14 +61,16 @@ function openGoogleConsentWindow(
   };
 }
 
-async function exchangeCallbackParamsForJwt(queryParams: string) {
+async function exchangeCallbackParamsForAccess(queryParams: string) {
   try {
-    const response: any = await kyClient.backendApi
-      .get(`token/google/callback/${queryParams}`, { retry: 0 })
-      .json();
-    return response.redirect_url;
+    const response: any = await kyClient.backendApi.get(
+      `token/google/callback/${queryParams}`,
+      { retry: 0 }
+    );
+    const responseData = await response.json();
+    return { status: response.status, data: responseData };
   } catch (_error: any) {
-    return "";
+    throw new Error("Something wen't worng. Try again later.");
   }
 }
 

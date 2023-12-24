@@ -14,6 +14,7 @@ import SignUp from "./pages/Authentication/SignUp";
 import PasswordReset from "./pages/Authentication/PasswordReset";
 import VerifyEmail from "./pages/Authentication/VerifyEmail";
 import GoogleRedirect from "./pages/Authentication/google/GoogleRedirect";
+import GoogleSignUp from "./pages/Authentication/google/GoogleSignUp";
 
 export default function App(props: any) {
   const [isAuthenticated, setIsAuthenticated] = useLocalStorageState(
@@ -100,6 +101,7 @@ export default function App(props: any) {
           path="verifyemail"
           element={<VerifyEmail isAuthenticated={isAuthenticated} />}
         />
+        <Route path="googlesignup" element={<GoogleSignUp />} />
         {/* Don't render Navbar */}
         <Route path="openid/googleredirect" element={<GoogleRedirect />} />
       </Routes>

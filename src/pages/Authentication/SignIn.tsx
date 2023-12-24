@@ -58,17 +58,18 @@ function SignIn({
   setGoogleEventListenerActive,
 }: props) {
   const navigate = useNavigate();
+  const navigateHandler = (to: string) => {
+    navigate(to);
+  };
 
   const handleAuthenticatedUser = () => {
     if (isAuthenticated) {
       navigate("/");
     }
   };
-
   useEffect(() => {
     handleAuthenticatedUser();
   }, []);
-
   useEffect(() => {
     handleAuthenticatedUser();
   }, [isAuthenticated]);
@@ -185,12 +186,9 @@ function SignIn({
     navigate("/passwordreset");
   };
 
-  const [open, setOpen] = useState(false);
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-  const handleClose = () => {
-    setOpen(false);
+  // Google
+  const handleGoogleSignIn = () => {
+    open;
   };
   return (
     <>
@@ -275,7 +273,9 @@ function SignIn({
               onClick={() =>
                 openGoogleConsentWindow(
                   googleEventListenerActive,
-                  setGoogleEventListenerActive
+                  setGoogleEventListenerActive,
+                  setIsAuthenticated,
+                  navigateHandler
                 )
               }
               variant="outlined"

@@ -66,6 +66,15 @@ function SignUp({
 }: props) {
   const theme = useTheme();
 
+  const navigate = useNavigate();
+  const navigateHandler = (to: string) => {
+    navigate(to);
+  };
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/");
+    }
+  });
   const handleAuthenticatedUser = () => {
     if (isAuthenticated) {
       navigate("/");
@@ -296,12 +305,6 @@ function SignUp({
     });
   };
 
-  const navigate = useNavigate();
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/");
-    }
-  });
   // Sign In
   const handleSignInLink = () => {
     navigate("/signin");
@@ -462,7 +465,9 @@ function SignUp({
               onClick={() =>
                 openGoogleConsentWindow(
                   googleEventListenerActive,
-                  setGoogleEventListenerActive
+                  setGoogleEventListenerActive,
+                  setIsAuthenticated,
+                  navigateHandler
                 )
               }
               variant="outlined"
