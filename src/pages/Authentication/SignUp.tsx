@@ -82,7 +82,7 @@ function SignUp({
   };
   useEffect(() => {
     handleAuthenticatedUser();
-  }, []);
+  }, [isAuthenticated]);
 
   const [successSnackbarOpen, setSuccessSnackbarOpen] = useState(false);
   const [signedUpAlertMessage, setSignedUpAlertMessage] = useState("");

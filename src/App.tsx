@@ -101,7 +101,15 @@ export default function App(props: any) {
           path="verifyemail"
           element={<VerifyEmail isAuthenticated={isAuthenticated} />}
         />
-        <Route path="googlesignup" element={<GoogleSignUp />} />
+        <Route
+          path="googlesignup"
+          element={
+            <GoogleSignUp
+              isAuthenticated={isAuthenticated}
+              setIsAuthenticated={setIsAuthenticated}
+            />
+          }
+        />
         {/* Don't render Navbar */}
         <Route path="openid/googleredirect" element={<GoogleRedirect />} />
       </Routes>

@@ -64,7 +64,7 @@ function openGoogleConsentWindow(
 async function exchangeCallbackParamsForAccess(queryParams: string) {
   try {
     const response: any = await kyClient.backendApi.get(
-      `token/google/callback/${queryParams}`,
+      `token/google/callback/${queryParams}/`,
       { retry: 0 }
     );
     const responseData = await response.json();
