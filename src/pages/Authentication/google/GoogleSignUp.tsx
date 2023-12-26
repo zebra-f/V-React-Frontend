@@ -57,11 +57,6 @@ function GoogleSignUp({ isAuthenticated, setIsAuthenticated }: props) {
   const theme = useTheme();
 
   const navigate = useNavigate();
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/");
-    }
-  });
   const handleAuthenticatedUser = () => {
     if (isAuthenticated) {
       navigate("/");

@@ -70,11 +70,7 @@ function SignUp({
   const navigateHandler = (to: string) => {
     navigate(to);
   };
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/");
-    }
-  });
+
   const handleAuthenticatedUser = () => {
     if (isAuthenticated) {
       navigate("/");

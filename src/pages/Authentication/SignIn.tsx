@@ -69,9 +69,6 @@ function SignIn({
   };
   useEffect(() => {
     handleAuthenticatedUser();
-  }, []);
-  useEffect(() => {
-    handleAuthenticatedUser();
   }, [isAuthenticated]);
 
   const [apiError, setApiError] = useState({ error: false, errorMessage: "" });
