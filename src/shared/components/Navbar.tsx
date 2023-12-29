@@ -1,4 +1,11 @@
-import { useState, useContext, forwardRef, Dispatch } from "react";
+import {
+  useState,
+  useContext,
+  forwardRef,
+  Dispatch,
+  useEffect,
+  useRef,
+} from "react";
 
 import { useNavigate } from "react-router-dom";
 import { NavLink } from "react-router-dom";
@@ -199,7 +206,10 @@ export default function Navbar({
     handleMobileMenuClose();
   };
   const [errorSnackbarOpen, setErrorSnackbarOpen] = useState(false);
-  const [successSnackbarOpen, setSuccessSnackbarOpen] = useState(false);
+  const [successSignOutSnackbarOpen, setSuccessSignOutSnackbarOpen] =
+    useState(false);
+  const [successSignInSnackbarOpen, setSuccessSignInSnackbarOpen] =
+    useState(false);
   const handleCloseAlert = (
     event?: React.SyntheticEvent | Event,
     reason?: string
@@ -207,22 +217,32 @@ export default function Navbar({
     if (reason === "clickaway") {
       return;
     }
-    setSuccessSnackbarOpen(false);
+    setSuccessSignOutSnackbarOpen(false);
+    setSuccessSignInSnackbarOpen(false);
     setErrorSnackbarOpen(false);
   };
+
   const handleSignOut = () => {
     signOut(isAuthenticated, setIsAuthenticated).then((signedOut) => {
       if (signedOut) {
         setErrorSnackbarOpen(false);
-        setSuccessSnackbarOpen(true);
+        setSuccessSignOutSnackbarOpen(true);
 
         navigate("/");
       } else {
         setErrorSnackbarOpen(true);
-        setSuccessSnackbarOpen(false);
+        setSuccessSignOutSnackbarOpen(false);
       }
     });
   };
+
+  const firstRender = useRef(true);
+  useEffect(() => {
+    if (isAuthenticated === true && !firstRender.current) {
+      setSuccessSignInSnackbarOpen(true);
+    }
+    firstRender.current = false;
+  }, [isAuthenticated]);
 
   // pop up user menu
   const renderMenu = (
@@ -259,7 +279,7 @@ export default function Navbar({
       <CssBaseline />
       <Snackbar
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        open={successSnackbarOpen}
+        open={successSignOutSnackbarOpen}
         autoHideDuration={6000}
         onClose={handleCloseAlert}
         sx={{ mt: 6 }}
@@ -270,6 +290,21 @@ export default function Navbar({
           sx={{ width: "100%" }}
         >
           You have been signed out successfully.
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={successSignInSnackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleCloseAlert}
+        sx={{ mt: 6 }}
+      >
+        <Alert
+          onClose={handleCloseAlert}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          You're signed in.
         </Alert>
       </Snackbar>
       <Snackbar
