@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 
 import kyClient from "../../shared/services/ky";
+import signIn from "../../actions/signIn";
 
 import { openGoogleConsentWindow } from "./services/googleOpenId";
 
@@ -19,6 +20,7 @@ import Alert from "@mui/material/Alert";
 import GoogleIcon from "@mui/icons-material/Google";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
+import { access } from "fs";
 
 interface signInData {
   email: string;
@@ -152,9 +154,8 @@ function SignIn({
 
     requestSignIn({ email: email, password: password }).then((result) => {
       if (result.status === 200 && "access" in result.data) {
-        localStorage.setItem("access", result.data.access);
+        signIn(result.data.access, setIsAuthenticated);
         setApiError({ error: false, errorMessage: "" });
-        setIsAuthenticated(true);
       } else {
         if ("email" in result.data) {
           setEmailError({

@@ -1,9 +1,12 @@
+import jwt from "../utils/jwt";
+
 function signIn(
-  access_token: string,
+  accessToken: string,
   setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>
 ) {
-  localStorage.setItem("access", access_token);
+  localStorage.setItem("access", accessToken);
   setIsAuthenticated(true);
+  console.log(jwt.getUserId(accessToken));
 }
 
 export default signIn;

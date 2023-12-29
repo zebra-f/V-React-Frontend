@@ -239,7 +239,6 @@ export default function Navbar({
   const firstRender = useRef(true);
   useEffect(() => {
     if (isAuthenticated === true && !firstRender.current) {
-      console.log(firstRender.current);
       setSuccessSignInSnackbarOpen(true);
     }
     firstRender.current = false;
