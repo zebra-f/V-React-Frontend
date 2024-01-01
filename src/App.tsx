@@ -15,6 +15,7 @@ import PasswordReset from "./pages/Authentication/PasswordReset";
 import VerifyEmail from "./pages/Authentication/VerifyEmail";
 import GoogleRedirect from "./pages/Authentication/google/GoogleRedirect";
 import GoogleSignUp from "./pages/Authentication/google/GoogleSignUp";
+import Dashboard from "./pages/User/Dashboard";
 
 export default function App(props: any) {
   const [isAuthenticated, setIsAuthenticated] = useLocalStorageState(
@@ -69,6 +70,10 @@ export default function App(props: any) {
           />
         </Route>
         <Route path="about" element={<About />} />
+
+        <Route path="user">
+          <Route path="" element={<Dashboard />} />
+        </Route>
 
         {/* Authentication */}
         <Route
