@@ -94,6 +94,10 @@ export default function Navbar({
     navigate("/signup");
   };
 
+  const handleAccountClick = () => {
+    navigate("/account");
+  };
+
   // Mobile drawer
   const [mobileOpen, setMobileOpen] = useState(false);
   const handleDrawerToggle = () => {
@@ -262,7 +266,14 @@ export default function Navbar({
       onClose={handleMenuClose}
     >
       <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+      <MenuItem
+        onClick={() => {
+          handleMenuClose();
+          handleAccountClick();
+        }}
+      >
+        My account
+      </MenuItem>
       <MenuItem
         onClick={() => {
           handleMenuClose();
