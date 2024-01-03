@@ -5,17 +5,24 @@ import useLocalStorageState from "use-local-storage-state";
 
 import Navbar from "./shared/components/Navbar";
 import Home from "./pages/Home/Home";
+
 import Vees from "./pages/Vees/Vees";
 import About from "./pages/About/About";
+
 import Length from "./pages/Vees/Length";
 import Speed from "./pages/Vees/Speed";
+
 import SignIn from "./pages/Authentication/SignIn";
 import SignUp from "./pages/Authentication/SignUp";
 import PasswordReset from "./pages/Authentication/PasswordReset";
 import VerifyEmail from "./pages/Authentication/VerifyEmail";
 import GoogleRedirect from "./pages/Authentication/google/GoogleRedirect";
 import GoogleSignUp from "./pages/Authentication/google/GoogleSignUp";
+
 import Account from "./pages/User/Account";
+import MyAccount from "./pages/User/AccountComponents/MyAccount";
+import ChangePassword from "./pages/User/AccountComponents/ChangePassword";
+import DeleteAccount from "./pages/User/AccountComponents/DeleteAccount";
 
 export default function App(props: any) {
   const [isAuthenticated, setIsAuthenticated] = useLocalStorageState(
@@ -71,8 +78,10 @@ export default function App(props: any) {
         </Route>
         <Route path="about" element={<About />} />
 
-        <Route path="account">
-          <Route path="" element={<Account />} />
+        <Route path="account" element={<Account />}>
+          <Route path="myaccount" element={<MyAccount />} />
+          <Route path="changepassword" element={<ChangePassword />} />
+          <Route path="deleteaccount" element={<DeleteAccount />} />
         </Route>
 
         {/* Authentication */}

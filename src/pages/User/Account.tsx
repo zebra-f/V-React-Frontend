@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+import { mainListItems, secondaryListItems } from "./listItems";
+
 import { styled, createTheme, useTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import MuiDrawer from "@mui/material/Drawer";
@@ -14,10 +16,11 @@ import Badge from "@mui/material/Badge";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
-import Link from "@mui/material/Link";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import { mainListItems, secondaryListItems } from "./listItems";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import { Outlet, Link } from "react-router-dom";
 
 const drawerWidth: number = 240;
 
@@ -72,7 +75,7 @@ const Drawer = styled(MuiDrawer, {
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
-export default function Dashboard() {
+export default function Account() {
   const theme = useTheme();
   const backgroundColor =
     theme.palette.mode === "dark"
@@ -113,6 +116,7 @@ export default function Dashboard() {
             {secondaryListItems}
           </List>
         </Drawer>
+
         <Box
           component="main"
           sx={{
@@ -121,8 +125,8 @@ export default function Dashboard() {
             overflow: "auto",
           }}
         >
-          <Toolbar />
           <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+            <Outlet />
             <Grid container spacing={3}>
               {/* Chart */}
               <Grid item xs={12} md={8} lg={9}>
