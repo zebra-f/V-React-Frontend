@@ -1,5 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+
+import { useRedirectAuthenticatedUserEffect } from "../../../shared/hooks/useEffect";
 
 import kyClient from "../../../shared/services/ky";
 import signIn from "../../../actions/signIn";
@@ -17,7 +19,6 @@ import InfoIcon from "@mui/icons-material/Info";
 import Alert from "@mui/material/Alert";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
-import Snackbar from "@mui/material/Snackbar";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
@@ -57,14 +58,8 @@ function GoogleSignUp({ isAuthenticated, setIsAuthenticated }: props) {
   const theme = useTheme();
 
   const navigate = useNavigate();
-  const handleAuthenticatedUser = () => {
-    if (isAuthenticated) {
-      navigate("/");
-    }
-  };
-  useEffect(() => {
-    handleAuthenticatedUser();
-  }, [isAuthenticated]);
+
+  useRedirectAuthenticatedUserEffect(isAuthenticated, "/");
 
   const [apiError, setApiError] = useState({
     error: false,

@@ -1,5 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+
+import { useRedirectAuthenticatedUserEffect } from "../../shared/hooks/useEffect";
 
 import kyClient from "../../shared/services/ky";
 import signIn from "../../actions/signIn";
@@ -64,14 +66,7 @@ function SignIn({
     navigate(to);
   };
 
-  const handleAuthenticatedUser = () => {
-    if (isAuthenticated) {
-      navigate("/");
-    }
-  };
-  useEffect(() => {
-    handleAuthenticatedUser();
-  }, [isAuthenticated]);
+  useRedirectAuthenticatedUserEffect(isAuthenticated, "/");
 
   const [apiError, setApiError] = useState({ error: false, errorMessage: "" });
 

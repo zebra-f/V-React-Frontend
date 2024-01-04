@@ -1,5 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+
+import { useRedirectAuthenticatedUserEffect } from "../../shared/hooks/useEffect";
 
 import kyClient from "../../shared/services/ky";
 
@@ -71,14 +73,7 @@ function SignUp({
     navigate(to);
   };
 
-  const handleAuthenticatedUser = () => {
-    if (isAuthenticated) {
-      navigate("/");
-    }
-  };
-  useEffect(() => {
-    handleAuthenticatedUser();
-  }, [isAuthenticated]);
+  useRedirectAuthenticatedUserEffect(isAuthenticated, "/");
 
   const [successSnackbarOpen, setSuccessSnackbarOpen] = useState(false);
   const [signedUpAlertMessage, setSignedUpAlertMessage] = useState("");
