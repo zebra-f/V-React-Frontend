@@ -121,7 +121,7 @@ export default function Account() {
           component="main"
           sx={{
             flexGrow: 1,
-            height: "100vh",
+            height: "85vh",
             overflow: "auto",
           }}
         >
