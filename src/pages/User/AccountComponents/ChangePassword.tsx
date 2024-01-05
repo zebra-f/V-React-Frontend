@@ -1,24 +1,17 @@
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
-import Avatar from "@mui/material/Avatar";
+import jwt from "../../../utils/jwt";
+
 import Button from "@mui/material/Button";
-import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-import Link from "@mui/material/Link";
-import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Container from "@mui/material/Container";
 import GoogleIcon from "@mui/icons-material/Google";
 import Alert from "@mui/material/Alert";
+import Snackbar from "@mui/material/Snackbar";
+import InfoIcon from "@mui/icons-material/Info";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
-import Snackbar from "@mui/material/Snackbar";
-import FormGroup from "@mui/material/FormGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import useTheme from "@mui/material/styles/useTheme";
-import { useState, useEffect } from "react";
 
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
@@ -31,16 +24,28 @@ async function requestPasswordChange(
   newPassword: string
 ) {
   try {
-    const jsonResponse = kyClient.backendApi.patch(`users/${id}/`).json();
-    return jsonResponse;
+    const response = await kyClient.backendApi.patch(`users/${id}/`, {
+      json: {
+        password: password,
+        new_password: newPassword,
+      },
+    });
+    const responseData = await response.json();
+    return { status: response.status, data: responseData };
   } catch (error: any) {
-    throw new Error(error);
+    try {
+      const response = await error.response;
+      const responseData = await response.json();
+      return { status: response.status, data: responseData };
+    } catch (_error: any) {
+      return { status: 500, data: {} };
+    }
   }
 }
 
 export default function ChangePassword() {
   const [successSnackbarOpen, setSuccessSnackbarOpen] = useState(false);
-  const [signedUpAlertMessage, setSignedUpAlertMessage] = useState("");
+  const [successAlertMessage, setSuccessAlertMessage] = useState("");
   const handleCloseAlert = (
     event?: React.SyntheticEvent | Event,
     reason?: string
@@ -91,9 +96,21 @@ export default function ChangePassword() {
       });
       errorFlag = true;
     } else {
-      password = password.toString();
-      if (password.length < 8) {
-        setPasswordError({
+      setPasswordError({
+        error: false,
+        errorMessage: "",
+      });
+    }
+    if (!newPassword) {
+      setNewPasswordError({
+        error: true,
+        errorMessage: "This field is required.",
+      });
+      errorFlag = true;
+    } else {
+      newPassword = newPassword.toString();
+      if (newPassword.length < 8) {
+        setNewPasswordError({
           error: true,
           errorMessage:
             "This password is too short. It must contain at least 8 characters.",
@@ -101,72 +118,90 @@ export default function ChangePassword() {
         errorFlag = true;
         return;
       } else {
-        setPasswordError({ error: false, errorMessage: "" });
+        setNewPasswordError({ error: false, errorMessage: "" });
       }
     }
     if (!confirmNewPassword) {
-      setPasswordError({
+      setNewPasswordError({
         error: true,
         errorMessage: "This field is required.",
       });
       errorFlag = true;
     } else {
       confirmNewPassword = confirmNewPassword.toString();
-      if (confirmNewPassword !== password) {
-        setPasswordError({
+      if (newPassword && confirmNewPassword !== newPassword) {
+        setNewPasswordError({
           error: true,
           errorMessage:
             "Passwords do not match. Please ensure that both passwords entered are identical.",
         });
         errorFlag = true;
-      } else if (!passwordError) {
-        setPasswordError({ error: false, errorMessage: "" });
+      } else {
+        setNewPasswordError({ error: false, errorMessage: "" });
       }
     }
 
-    if (password) {
+    if (password && newPassword && confirmNewPassword) {
       password = password.toString();
+      newPassword = newPassword.toString();
     } else {
       return;
     }
 
-    requestPasswordChange("fkdjkfdjkfdj", password, "fkdjfkdjkfd").then(
-      (result: any) => {
-        if (result.status === 201) {
-          setSignedUpAlertMessage(
-            `A verification email will be promptly sent to this address: ${result.data.email}`
-          );
-          setSuccessSnackbarOpen(true);
-          setApiError({ error: false, errorMessage: "" });
-        } else {
-          const data = result.data;
-
-          if (result.status == 400) {
-            if ("password" in data) {
-              setPasswordError({
-                error: true,
-                errorMessage: data.password,
-              });
-              errorFlag = true;
-            }
-          }
-
-          if ("detail" in result.data) {
-            setApiError({ error: true, errorMessage: result.data.detail });
+    requestPasswordChange(
+      jwt.getUserId(localStorage.access),
+      password,
+      newPassword
+    ).then((result) => {
+      if (result.status === 200) {
+        setApiError({ error: false, errorMessage: "" });
+        setSuccessAlertMessage("Your new password has been successfully set.");
+        setSuccessSnackbarOpen(true);
+        const passwordInput = document.getElementById(
+          "password"
+        ) as HTMLInputElement;
+        const newPasswordInput = document.getElementById(
+          "new-password"
+        ) as HTMLInputElement;
+        const confirmNewPasswordInput = document.getElementById(
+          "confirm-new-password"
+        ) as HTMLInputElement;
+        passwordInput.value = "";
+        newPasswordInput.value = "";
+        confirmNewPasswordInput.value = "";
+      } else {
+        if (result.status === 400) {
+          if ("new_password" in result.data) {
+            setNewPasswordError({
+              error: true,
+              errorMessage: result.data.new_password,
+            });
             errorFlag = true;
           }
-
-          if (errorFlag) {
-            return;
+          if ("password" in result.data) {
+            setPasswordError({
+              error: true,
+              errorMessage: result.data.password,
+            });
+            errorFlag = true;
           }
-
-          setApiError({
-            error: true,
-            errorMessage: "Something went wrong. Try again later.",
-          });
         }
+
+        if ("detail" in result.data) {
+          setApiError({ error: true, errorMessage: result.data.detail });
+          errorFlag = true;
+        }
+
+        if (errorFlag) {
+          return;
+        }
+
+        setApiError({
+          error: true,
+          errorMessage: "Something went wrong. Try again later.",
+        });
       }
-    );
+    });
   };
   return (
     <>
@@ -182,9 +217,29 @@ export default function ChangePassword() {
           severity="success"
           sx={{ width: "100%" }}
         >
-          {signedUpAlertMessage}
+          {successAlertMessage}
         </Alert>
       </Snackbar>
+      {apiError.error && (
+        <Alert
+          action={
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              size="small"
+              onClick={() => {
+                setApiError({ error: false, errorMessage: "" });
+              }}
+            >
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
+          }
+          sx={{ width: "100%", mt: 3 }}
+          severity="error"
+        >
+          {apiError.errorMessage}
+        </Alert>
+      )}
       <Paper
         sx={{
           p: 1,
@@ -222,6 +277,12 @@ export default function ChangePassword() {
             <Typography variant="subtitle2" gutterBottom>
               Enter your current password and choose a new password to update
               your account's login credentials.
+            </Typography>
+
+            <Typography variant="caption" display="block" gutterBottom>
+              <InfoIcon /> If you've signed up with Google and skipped setting
+              up a password, please log out and select 'I forgot my password' to
+              set up your password, otherwise ignore this form.)
             </Typography>
 
             <Box
