@@ -6,7 +6,6 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
-import GoogleIcon from "@mui/icons-material/Google";
 import Alert from "@mui/material/Alert";
 import Snackbar from "@mui/material/Snackbar";
 import InfoIcon from "@mui/icons-material/Info";
@@ -282,7 +281,7 @@ export default function ChangePassword() {
             <Typography variant="caption" display="block" gutterBottom>
               <InfoIcon /> If you've signed up with Google and skipped setting
               up a password, please log out and select 'I forgot my password' to
-              set up your password, otherwise ignore this form.)
+              set up your password, otherwise ignore this form.
             </Typography>
 
             <Box
