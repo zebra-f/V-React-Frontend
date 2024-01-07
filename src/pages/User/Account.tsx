@@ -58,7 +58,7 @@ export default function Account({ isAuthenticated }: props) {
 
   useRedirectAnonUserEffect(isAuthenticated, "/");
 
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const toggleDrawer = () => {
     setOpen(!open);
   };
