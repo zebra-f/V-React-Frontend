@@ -20,12 +20,17 @@ let backendApi = baseBackendApi.extend({
     ],
     afterResponse: [
       async (request, _options, response) => {
-        const responseData = await response.json();
+        let responseData = {};
+        // handles `DELETE` method that returns no content
+        if (response.status !== 204) {
+          responseData = await response.json();
+        }
 
         if (response.status == 401) {
           if (
             "detail" in responseData &&
-            responseData["detail"] === "Token is invalid or expired"
+            (responseData["detail"] === "Token is invalid or expired" ||
+              responseData["detail"] === "User not found")
           ) {
             forceSignOut();
           } else if (
