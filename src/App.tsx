@@ -82,7 +82,9 @@ export default function App(props: any) {
           path="account"
           element={<Account isAuthenticated={isAuthenticated} />}
         >
+          <Route path="" element={<MyAccount />} />
           <Route path="myaccount" element={<MyAccount />} />
+
           <Route path="changepassword" element={<ChangePassword />} />
           <Route
             path="deleteaccount"
