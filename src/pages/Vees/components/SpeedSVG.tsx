@@ -31,6 +31,7 @@ interface SpeedProps {
 export default function SpeedSVG(props: SpeedProps) {
   const theme = useTheme();
   const color: string = theme.palette.mode === "light" ? "#3d5a80" : "#98c1d9";
+  const prevTheme = useRef(theme);
 
   const SVG_WIDTH = 960;
   let overFive = props.speedData.length <= 5 ? 0 : props.speedData.length - 5;
@@ -68,7 +69,7 @@ export default function SpeedSVG(props: SpeedProps) {
       //   : selection.attr("style", `outline: thin solid rgba(0,0,0,0);`);
 
       const speedChart = selection.select(".SpeedChart");
-      const SpeedChartBarsNameText = speedChart
+      speedChart
         .select(".SpeedChartBarsNameText")
         .selectAll("text")
         .data(props.speedData)
@@ -80,41 +81,73 @@ export default function SpeedSVG(props: SpeedProps) {
         })
         .attr("y", (_, i) => i * 50 + (29 + BAR_Y_COORD))
         .attr("x", BAR_X_COORD * 2);
-      const SpeedChartBarsElapsedText = speedChart
-        .select(".SpeedChartBarsElapsedText")
-        .selectAll("text")
-        .data(props.speedData)
-        .join("text")
-        .attr("font-size", 0)
-        .attr("fill", color)
-        .attr("id", (d) => {
-          return "id" + d.id;
-        })
-        .text((d) => {
-          if (elapsedRef.current) {
-            elapsedRef.current = 0;
-          }
-          return stopWatch(calcualteTransitionDuration(d));
-        })
-        .attr("y", (_, i) => i * 50 + (29 + BAR_Y_COORD))
-        .attr("x", SVG_WIDTH - 200);
-      const speedChartBars = speedChart
-        .selectAll("rect")
-        .data(props.speedData)
-        .join("rect")
-        .attr("width", 0)
-        .attr("height", BAR_HEIGHT)
-        .attr("fill", (_) => {
-          return getColor(theme.palette.mode);
-        })
-        .attr("stroke", color)
-        .attr("stroke-width", 1)
-        .attr("y", (_, i) => i * 50 + BAR_Y_COORD)
-        .attr("x", BAR_X_COORD)
-        .style("pointer-events", "visible")
-        .on("click", (e, d) => {
-          console.log("clicked");
-        });
+
+      let speedChartBars = null;
+      if (theme === prevTheme.current) {
+        speedChart
+          .select(".SpeedChartBarsElapsedText")
+          .selectAll("text")
+          .data(props.speedData)
+          .join("text")
+          .attr("font-size", 0)
+          .attr("fill", color)
+          .attr("id", (d) => {
+            return "id" + d.id;
+          })
+          .text((d) => {
+            if (elapsedRef.current) {
+              elapsedRef.current = 0;
+            }
+            return stopWatch(calcualteTransitionDuration(d));
+          })
+          .attr("y", (_, i) => i * 50 + (29 + BAR_Y_COORD))
+          .attr("x", SVG_WIDTH - 200);
+
+        speedChartBars = speedChart
+          .selectAll("rect")
+          .data(props.speedData)
+          .join("rect")
+          .attr("width", 0)
+          .attr("height", BAR_HEIGHT)
+          .attr("fill", (_) => {
+            return getColor(theme.palette.mode);
+          })
+          .attr("stroke", color)
+          .attr("stroke-width", 1)
+          .attr("y", (_, i) => i * 50 + BAR_Y_COORD)
+          .attr("x", BAR_X_COORD)
+          .style("pointer-events", "visible")
+          .on("click", (e, d) => {
+            // console.log("clicked");
+          });
+      } else {
+        prevTheme.current = theme;
+
+        speedChart
+          .select(".SpeedChartBarsElapsedText")
+          .selectAll("text")
+          .data(props.speedData)
+          .join("text")
+          .attr("fill", color)
+          .attr("id", (d) => {
+            return "id" + d.id;
+          })
+          .text((d) => {
+            if (elapsedRef.current) {
+              elapsedRef.current = 0;
+            }
+            return stopWatch(calcualteTransitionDuration(d));
+          })
+          .attr("y", (_, i) => i * 50 + (29 + BAR_Y_COORD))
+          .attr("x", SVG_WIDTH - 200);
+
+        speedChartBars = speedChart
+          .selectAll("rect")
+          .data(props.speedData)
+          .attr("fill", (_) => {
+            return getColor(theme.palette.mode);
+          });
+      }
 
       const scale = d3
         .scaleLinear()
@@ -141,6 +174,7 @@ export default function SpeedSVG(props: SpeedProps) {
     props.distance,
     props.measurementSystem,
   ]);
+  useEffect(() => {}, [theme]);
 
   const elapsedRef = useRef<number>(0);
   const elapsedRestartRef = useRef<number>(0);
