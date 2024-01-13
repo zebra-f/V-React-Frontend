@@ -302,7 +302,7 @@ export default function SpeedSVG(props: SpeedProps) {
   }
   useEffect(() => {
     handleResetButton();
-  }, [props.measurementSystem, props.distance]);
+  }, [props.measurementSystem, props.distance, props.speedData]);
 
   return (
     <Box my={1} display="flex" justifyContent="center" flexDirection={"column"}>
