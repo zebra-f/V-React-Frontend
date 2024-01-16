@@ -24,6 +24,10 @@ import MyAccount from "./pages/User/AccountComponents/MyAccount";
 import ChangePassword from "./pages/User/AccountComponents/ChangePassword";
 import DeleteAccount from "./pages/User/AccountComponents/DeleteAccount";
 
+import Profile from "./pages/User/Profile";
+import Speeds from "./pages/User/ProfileComponents/Speeds";
+import Lengths from "./pages/User/ProfileComponents/Lenghts";
+
 export default function App(props: any) {
   const [isAuthenticated, setIsAuthenticated] = useLocalStorageState(
     "isAuthenticated",
@@ -89,6 +93,21 @@ export default function App(props: any) {
           <Route
             path="deleteaccount"
             element={<DeleteAccount setIsAuthenticated={setIsAuthenticated} />}
+          />
+        </Route>
+        <Route
+          path="profile/:userName?"
+          element={
+            <Profile
+              setMeasurementSystem={setMeasurementSystem}
+              measurementSystem={measurementSystem}
+            />
+          }
+        >
+          <Route path="lengths" element={<Lengths />} />
+          <Route
+            path="speeds"
+            element={<Speeds measurementSystem={measurementSystem} />}
           />
         </Route>
 
