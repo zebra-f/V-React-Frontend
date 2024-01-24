@@ -30,12 +30,12 @@ export default function Profile(props: AppProps) {
     setValue(newValue);
   };
   const [alignment, setAlignment] = useState<"metric" | "imperial">(
-    props.measurementSystem
+    props.measurementSystem,
   );
 
   const handleAlignment = (
     event: React.MouseEvent<HTMLElement>,
-    newAlignment: "metric" | "imperial"
+    newAlignment: "metric" | "imperial",
   ) => {
     if (newAlignment !== null) {
       setAlignment(newAlignment);
@@ -49,7 +49,7 @@ export default function Profile(props: AppProps) {
   return (
     <>
       <Container>
-        <h1>{userName}</h1>
+        <h1>{userName ? userName : "Your Profile"}</h1>
       </Container>
       <Box
         display="flex"
