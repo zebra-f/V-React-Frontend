@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+import { getSpeeds } from "../services/speeds/getData";
 
 import useTheme from "@mui/material/styles/useTheme";
 import Box from "@mui/material/Box";
@@ -31,6 +33,7 @@ import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import LastPageIcon from "@mui/icons-material/LastPage";
 import TableFooter from "@mui/material/TableFooter";
 import TablePagination from "@mui/material/TablePagination";
+import ReportIcon from "@mui/icons-material/Report";
 
 function createData(score: number, name: string, speed: number) {
   return {
@@ -187,9 +190,10 @@ function Row(props: { row: ReturnType<typeof createData> }) {
                   />
                 </Stack>
                 <div>
-                  <Typography>
-                    Public <LockOpenIcon color="success" />
-                  </Typography>
+                  <Stack direction="row" alignItems="center" gap={1}>
+                    <Typography>Public</Typography>
+                    <LockOpenIcon color="success" />
+                  </Stack>
                 </div>
                 <ButtonGroup
                   size="small"
@@ -198,7 +202,20 @@ function Row(props: { row: ReturnType<typeof createData> }) {
                 >
                   <Button>
                     <Typography>
-                      Update
+                      &nbsp;&nbsp;Report
+                      <IconButton
+                        onClick={() => {
+                          console.log("hello");
+                        }}
+                        color="info"
+                      >
+                        <ReportIcon color="warning" />
+                      </IconButton>
+                    </Typography>
+                  </Button>
+                  <Button>
+                    <Typography>
+                      &nbsp;&nbsp;Update
                       <IconButton
                         onClick={() => {
                           console.log("hello");
@@ -211,7 +228,7 @@ function Row(props: { row: ReturnType<typeof createData> }) {
                   </Button>
                   <Button>
                     <Typography>
-                      Delete
+                      &nbsp;&nbsp;Delete
                       <IconButton
                         onClick={() => {
                           console.log("hello");
@@ -255,6 +272,12 @@ export default function SpeedTable() {
   ) => {
     setPage(newPage);
   };
+
+  useEffect(() => {
+    getSpeeds({ userName: null }, true).then((response) => {
+      console.log(response);
+    });
+  }, [page]);
 
   return (
     <TableContainer component={Paper}>

@@ -8,13 +8,16 @@ interface refreshDataObject {
   access: string;
 }
 let backendApi = baseBackendApi.extend({
+  headers: {
+    Accept: "application/json",
+  },
   credentials: "include",
   hooks: {
     beforeRequest: [
       (options) => {
         const access = localStorage.getItem("access");
         if (access) {
-          options.headers.set("authorization", `Bearer ${access}`);
+          options.headers.set("Authorization", `Bearer ${access}`);
         }
       },
     ],
