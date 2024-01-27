@@ -35,24 +35,106 @@ import TableFooter from "@mui/material/TableFooter";
 import TablePagination from "@mui/material/TablePagination";
 import ReportIcon from "@mui/icons-material/Report";
 
-function createData(score: number, name: string, speed: number) {
-  return {
-    score,
-    name,
-    speed,
-    history: [
-      {
-        date: "2020-01-05",
-        customerId: "11091700",
-        amount: 3,
-      },
-      {
-        date: "2020-01-02",
-        customerId: "Anonymous",
-        amount: 1,
-      },
-    ],
-  };
+function Row(props: { row: speedInterface }) {
+  const { row } = props;
+  const [open, setOpen] = useState(false);
+
+  const [vote, setVote] = useState<any>(
+    row.user_speed_feedback ? row.user_speed_feedback.feedback_vote : 0,
+  );
+
+  return (
+    <>
+      <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
+        <TableCell>
+          <IconButton
+            aria-label="expand row"
+            size="small"
+            onClick={() => setOpen(!open)}
+          >
+            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+          </IconButton>
+        </TableCell>
+        <TableCell align="right">
+          <ThumbUpAltIcon color={vote === 1 ? "info" : "primary"} />
+        </TableCell>
+        <TableCell align="center">{row.score}</TableCell>
+        <TableCell align="left">
+          <ThumbDownAltIcon color={vote === -1 ? "info" : "primary"} />
+        </TableCell>
+        <TableCell component="th" scope="row">
+          {row.name}
+        </TableCell>
+        <TableCell align="right">{row.kmph}</TableCell>
+        <TableCell align="center">
+          <StarOutlineIcon />
+        </TableCell>
+        <TableCell>
+          <AddIcon />
+        </TableCell>
+      </TableRow>
+      <TableRow>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
+          <Collapse in={open} timeout="auto" unmountOnExit>
+            <Box sx={{ margin: 1 }}>
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <Stack direction="row" spacing={1}>
+                  {row.tags.map((tag: string) => (
+                    <Chip
+                      key={tag}
+                      label={tag}
+                      variant="outlined"
+                      onClick={() => {
+                        console.log("fdf");
+                      }}
+                    />
+                  ))}
+                </Stack>
+                <div>
+                  <Stack direction="row" alignItems="center" gap={1}>
+                    <Typography>
+                      {row.is_public ? "Public" : "Private"}
+                    </Typography>
+                    <LockOpenIcon color={row.is_public ? "success" : "error"} />
+                  </Stack>
+                </div>
+                <ButtonGroup
+                  size="small"
+                  variant="text"
+                  aria-label="outlined primary button group"
+                >
+                  <Button>
+                    <Stack direction="row" alignItems="center" gap={1}>
+                      <Typography>&nbsp;&nbsp;Report</Typography>
+                      <ReportIcon color="warning" />
+                    </Stack>
+                  </Button>
+                  <Button>
+                    <Stack direction="row" alignItems="center" gap={1}>
+                      <Typography>&nbsp;&nbsp;Update</Typography>
+                      <EditIcon color="info" />
+                    </Stack>
+                  </Button>
+                  <Button>
+                    <Stack direction="row" alignItems="center" gap={1}>
+                      <Typography>&nbsp;&nbsp;Delete</Typography>
+                      <DeleteForeverIcon color="error" />
+                    </Stack>
+                  </Button>
+                </ButtonGroup>
+              </div>
+              <Typography variant="h6" gutterBottom component="div" mt={2}>
+                {row.description}
+              </Typography>
+              <Typography variant="subtitle1" mt={2}>
+                Created by: {row.user}
+              </Typography>
+            </Box>
+          </Collapse>
+        </TableCell>
+      </TableRow>
+    </>
+  );
 }
 
 interface TablePaginationActionsProps {
@@ -134,137 +216,41 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
   );
 }
 
-function Row(props: { row: ReturnType<typeof createData> }) {
-  const { row } = props;
-  const [open, setOpen] = useState(false);
-
-  return (
-    <>
-      <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
-        <TableCell>
-          <IconButton
-            aria-label="expand row"
-            size="small"
-            onClick={() => setOpen(!open)}
-          >
-            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-          </IconButton>
-        </TableCell>
-        <TableCell align="right">
-          <ThumbUpAltIcon />
-        </TableCell>
-        <TableCell align="center">{row.score}</TableCell>
-        <TableCell align="left">
-          <ThumbDownAltIcon />
-        </TableCell>
-        <TableCell component="th" scope="row">
-          {row.name}
-        </TableCell>
-        <TableCell align="right">{row.speed}</TableCell>
-        <TableCell align="center">
-          <StarOutlineIcon />
-        </TableCell>
-        <TableCell>
-          <AddIcon />
-        </TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 1 }}>
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <Stack direction="row" spacing={1}>
-                  <Chip
-                    label="#tag5"
-                    variant="outlined"
-                    onClick={() => {
-                      console.log("fdf");
-                    }}
-                  />
-                  <Chip
-                    label="#tag7"
-                    variant="outlined"
-                    onClick={() => {
-                      console.log("chip");
-                    }}
-                  />
-                </Stack>
-                <div>
-                  <Stack direction="row" alignItems="center" gap={1}>
-                    <Typography>Public</Typography>
-                    <LockOpenIcon color="success" />
-                  </Stack>
-                </div>
-                <ButtonGroup
-                  size="small"
-                  variant="text"
-                  aria-label="outlined primary button group"
-                >
-                  <Button>
-                    <Typography>
-                      &nbsp;&nbsp;Report
-                      <IconButton
-                        onClick={() => {
-                          console.log("hello");
-                        }}
-                        color="info"
-                      >
-                        <ReportIcon color="warning" />
-                      </IconButton>
-                    </Typography>
-                  </Button>
-                  <Button>
-                    <Typography>
-                      &nbsp;&nbsp;Update
-                      <IconButton
-                        onClick={() => {
-                          console.log("hello");
-                        }}
-                        color="info"
-                      >
-                        <EditIcon />
-                      </IconButton>
-                    </Typography>
-                  </Button>
-                  <Button>
-                    <Typography>
-                      &nbsp;&nbsp;Delete
-                      <IconButton
-                        onClick={() => {
-                          console.log("hello");
-                        }}
-                        color="error"
-                      >
-                        <DeleteForeverIcon />
-                      </IconButton>
-                    </Typography>
-                  </Button>
-                </ButtonGroup>
-              </div>
-              <Typography variant="h6" gutterBottom component="div">
-                Description
-              </Typography>
-            </Box>
-          </Collapse>
-        </TableCell>
-      </TableRow>
-    </>
-  );
+interface responseSpeedDataState {
+  count: number;
+  next: string;
+  previous: string;
+  results: Array<Object>;
+}
+interface userSpeedFeedback {
+  feedback_id: number;
+  feedback_vote: number;
+}
+interface speedInterface {
+  description: string;
+  estimated: boolean;
+  id: string & { isUUID: true };
+  is_public: boolean;
+  kmph: number;
+  name: string;
+  score: number;
+  speed_type: string;
+  tags: Array<string>;
+  url: string;
+  user: string;
+  user_speed_bookmark: null | Object;
+  user_speed_feedback: null | userSpeedFeedback;
 }
 
-const rows = [
-  createData(233, "Ice cream sandwich", 237),
-  createData(34243, "Eclair", 262),
-  createData(43, "Cupcake", 305),
-  createData(34, "Gingerbread", 356),
-  createData(
-    1,
-    "Light fdkfjdklsjfljdsl jsldfjslkdjfslkjdflsjd",
-    23847289374891,
-  ),
-];
-
 export default function SpeedTable() {
+  const [results, setResults] = useState<Array<speedInterface>>();
+  const [responseSpeedData, setResponseSpeedData] =
+    useState<responseSpeedDataState>({
+      count: 0,
+      next: "",
+      previous: "",
+      results: [],
+    });
   const [page, setPage] = useState(0);
   const handleChangePage = (
     event: React.MouseEvent<HTMLButtonElement> | null,
@@ -275,7 +261,24 @@ export default function SpeedTable() {
 
   useEffect(() => {
     getSpeeds({ userName: null }, true).then((response) => {
-      console.log(response);
+      if (response.status == 200) {
+        setResponseSpeedData(response.data);
+
+        let resultsTemp: any = [];
+        response.data.results.forEach((result: any) => {
+          // anon user
+          if (result.user_speed_bookmark === undefined) {
+            result.user_speed_bookmark = null;
+          }
+          if (result.user_speed_feedback === undefined) {
+            result.user_speed_bookmark = null;
+          }
+          resultsTemp.push(result);
+        });
+        setResults(resultsTemp);
+      } else {
+        console.log("not ok");
+      }
     });
   }, [page]);
 
@@ -297,20 +300,22 @@ export default function SpeedTable() {
               Speed
             </TableCell>
             <TableCell align="center" width={"5%"}></TableCell>
-            <TableCell align="center" width={"5%"}></TableCell>
+            <TableCell align="center" width={"4%"}></TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
-            <Row key={row.name} row={row} />
-          ))}
+          {results ? (
+            results.map((result) => <Row key={result.id} row={result} />)
+          ) : (
+            <></>
+          )}
         </TableBody>
         <TableFooter>
           <TableRow>
             <TablePagination
               rowsPerPageOptions={[]}
               colSpan={6}
-              count={343}
+              count={responseSpeedData.count}
               rowsPerPage={10}
               page={page}
               onPageChange={handleChangePage}
