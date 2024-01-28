@@ -34,12 +34,19 @@ import LastPageIcon from "@mui/icons-material/LastPage";
 import TableFooter from "@mui/material/TableFooter";
 import TablePagination from "@mui/material/TablePagination";
 import ReportIcon from "@mui/icons-material/Report";
+import Tooltip from "@mui/material/Tooltip";
 
-function Row(props: { row: speedInterface }) {
-  const { row } = props;
+function Row(props: {
+  row: speedInterface;
+  measurementSystem: "metric" | "imperial";
+}) {
+  const { row, measurementSystem } = props;
   const [open, setOpen] = useState(false);
 
-  const [vote, setVote] = useState<any>(
+  const [bookmark, setBookmark] = useState<boolean>(
+    row.user_speed_bookmark ? true : false,
+  );
+  const [vote, setVote] = useState<number>(
     row.user_speed_feedback ? row.user_speed_feedback.feedback_vote : 0,
   );
 
@@ -58,21 +65,40 @@ function Row(props: { row: speedInterface }) {
         <TableCell align="right">
           <ThumbUpAltIcon color={vote === 1 ? "info" : "primary"} />
         </TableCell>
-        <TableCell align="center">{row.score}</TableCell>
+        <TableCell align="center">
+          <Typography>{row.score}</Typography>
+        </TableCell>
         <TableCell align="left">
           <ThumbDownAltIcon color={vote === -1 ? "info" : "primary"} />
         </TableCell>
         <TableCell component="th" scope="row">
-          {row.name}
+          <Typography>{row.name}</Typography>
         </TableCell>
-        <TableCell align="right">{row.kmph}</TableCell>
+        <TableCell align="right">
+          <Tooltip
+            title={
+              <Typography fontSize={20}>
+                {row.estimated
+                  ? row.speed_type + " (estimated)"
+                  : row.speed_type}
+              </Typography>
+            }
+          >
+            <Typography>
+              {measurementSystem == "metric"
+                ? `${row.kmph} kmph`
+                : `${(row.kmph * 0.621371).toFixed(2)} mph`}
+            </Typography>
+          </Tooltip>
+        </TableCell>
         <TableCell align="center">
-          <StarOutlineIcon />
+          <StarOutlineIcon color={bookmark ? "warning" : "primary"} />
         </TableCell>
         <TableCell>
           <AddIcon />
         </TableCell>
       </TableRow>
+
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
           <Collapse in={open} timeout="auto" unmountOnExit>
@@ -222,6 +248,10 @@ interface responseSpeedDataState {
   previous: string;
   results: Array<Object>;
 }
+interface userSpeedBookmark {
+  bookmark_id: number;
+  bookmar_category: string;
+}
 interface userSpeedFeedback {
   feedback_id: number;
   feedback_vote: number;
@@ -238,11 +268,14 @@ interface speedInterface {
   tags: Array<string>;
   url: string;
   user: string;
-  user_speed_bookmark: null | Object;
+  user_speed_bookmark: null | userSpeedBookmark;
   user_speed_feedback: null | userSpeedFeedback;
 }
 
-export default function SpeedTable() {
+interface props {
+  measurementSystem: "metric" | "imperial";
+}
+export default function SpeedTable({ measurementSystem }: props) {
   const [results, setResults] = useState<Array<speedInterface>>();
   const [responseSpeedData, setResponseSpeedData] =
     useState<responseSpeedDataState>({
@@ -283,7 +316,7 @@ export default function SpeedTable() {
   }, [page]);
 
   return (
-    <TableContainer component={Paper}>
+    <TableContainer component={Paper} sx={{ mb: 10 }}>
       <Table aria-label="collapsible table">
         <TableHead>
           <TableRow>
@@ -296,22 +329,28 @@ export default function SpeedTable() {
             <TableCell align="left" width={"40%"}>
               Name
             </TableCell>
-            <TableCell align="right" width={"10%"}>
+            <TableCell align="right" width={"20%"}>
               Speed
             </TableCell>
-            <TableCell align="center" width={"5%"}></TableCell>
-            <TableCell align="center" width={"4%"}></TableCell>
+            <TableCell align="center" width={"8%"}></TableCell>
+            <TableCell align="center" width={"12%"}></TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {results ? (
-            results.map((result) => <Row key={result.id} row={result} />)
+            results.map((result) => (
+              <Row
+                key={result.id}
+                row={result}
+                measurementSystem={measurementSystem}
+              />
+            ))
           ) : (
             <></>
           )}
         </TableBody>
         <TableFooter>
-          <TableRow>
+          <TableRow sx={{ "& td": { border: 0 } }}>
             <TablePagination
               rowsPerPageOptions={[]}
               colSpan={6}

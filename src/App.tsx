@@ -25,13 +25,13 @@ import ChangePassword from "./pages/User/AccountComponents/ChangePassword";
 import DeleteAccount from "./pages/User/AccountComponents/DeleteAccount";
 
 import Profile from "./pages/User/Profile";
-import Speeds from "./pages/User/ProfileComponents/Speeds";
+import ProfileSpeeds from "./pages/User/ProfileComponents/Speeds";
 import Lengths from "./pages/User/ProfileComponents/Lenghts";
 
 export default function App(props: any) {
   const [isAuthenticated, setIsAuthenticated] = useLocalStorageState(
     "isAuthenticated",
-    { defaultValue: false }
+    { defaultValue: false },
   );
   const [measurementSystem, setMeasurementSystem] = useLocalStorageState<
     "metric" | "imperial"
@@ -107,7 +107,7 @@ export default function App(props: any) {
           <Route path="lengths" element={<Lengths />} />
           <Route
             path="speeds"
-            element={<Speeds measurementSystem={measurementSystem} />}
+            element={<ProfileSpeeds measurementSystem={measurementSystem} />}
           />
         </Route>
 
