@@ -24,9 +24,15 @@ import MyAccount from "./pages/User/AccountComponents/MyAccount";
 import ChangePassword from "./pages/User/AccountComponents/ChangePassword";
 import DeleteAccount from "./pages/User/AccountComponents/DeleteAccount";
 
+// Profile
 import Profile from "./pages/User/Profile";
+
 import ProfileSpeeds from "./pages/User/ProfileComponents/Speeds";
-import Lengths from "./pages/User/ProfileComponents/Lenghts";
+import MySpeeds from "./pages/User/ProfileComponents/SpeedsPersonalComponents/MySpeeds";
+import SpeedLikesDislikes from "./pages/User/ProfileComponents/SpeedsPersonalComponents/LikesDislikes";
+import SpeedBookmarks from "./pages/User/ProfileComponents/SpeedsPersonalComponents/Bookmarks";
+
+import ProfileLengths from "./pages/User/ProfileComponents/Lenghts";
 
 export default function App(props: any) {
   const [isAuthenticated, setIsAuthenticated] = useLocalStorageState(
@@ -95,6 +101,8 @@ export default function App(props: any) {
             element={<DeleteAccount setIsAuthenticated={setIsAuthenticated} />}
           />
         </Route>
+
+        {/* Profile */}
         <Route
           path="profile/:userName?"
           element={
@@ -104,11 +112,24 @@ export default function App(props: any) {
             />
           }
         >
-          <Route path="lengths" element={<Lengths />} />
+          <Route
+            path=""
+            element={<ProfileSpeeds measurementSystem={measurementSystem} />}
+          >
+            <Route path="" element={<MySpeeds />} />
+          </Route>
           <Route
             path="speeds"
             element={<ProfileSpeeds measurementSystem={measurementSystem} />}
-          />
+          >
+            <Route path="" element={<MySpeeds />} />
+            <Route path="myspeeds" element={<MySpeeds />} />
+
+            <Route path="likesdislikes" element={<SpeedLikesDislikes />} />
+            <Route path="bookmarks" element={<SpeedBookmarks />} />
+          </Route>
+
+          <Route path="lengths" element={<ProfileLengths />} />
         </Route>
 
         {/* Authentication */}

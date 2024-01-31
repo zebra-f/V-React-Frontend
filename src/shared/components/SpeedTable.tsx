@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, SetStateAction, Dispatch } from "react";
 
-import { getSpeeds } from "../services/speeds/getData";
+import { speedInterface } from "../interfaces/speedInterfaces";
 
 import useTheme from "@mui/material/styles/useTheme";
 import Box from "@mui/material/Box";
@@ -39,8 +39,9 @@ import Tooltip from "@mui/material/Tooltip";
 function Row(props: {
   row: speedInterface;
   measurementSystem: "metric" | "imperial";
+  isEditable: boolean;
 }) {
-  const { row, measurementSystem } = props;
+  const { row, measurementSystem, isEditable } = props;
   const [open, setOpen] = useState(false);
 
   const [bookmark, setBookmark] = useState<boolean>(
@@ -242,78 +243,28 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
   );
 }
 
-interface responseSpeedDataState {
-  count: number;
-  next: string;
-  previous: string;
-  results: Array<Object>;
-}
-interface userSpeedBookmark {
-  bookmark_id: number;
-  bookmar_category: string;
-}
-interface userSpeedFeedback {
-  feedback_id: number;
-  feedback_vote: number;
-}
-interface speedInterface {
-  description: string;
-  estimated: boolean;
-  id: string & { isUUID: true };
-  is_public: boolean;
-  kmph: number;
-  name: string;
-  score: number;
-  speed_type: string;
-  tags: Array<string>;
-  url: string;
-  user: string;
-  user_speed_bookmark: null | userSpeedBookmark;
-  user_speed_feedback: null | userSpeedFeedback;
-}
-
-interface props {
+interface speedsTableProps {
+  page: number;
+  setPage: Dispatch<SetStateAction<number>>;
+  results: Array<speedInterface>; // list of Speeds
+  count: number; // count of all Speeds available via API
   measurementSystem: "metric" | "imperial";
+  isEditable: boolean; // a user views his own profile
 }
-export default function SpeedTable({ measurementSystem }: props) {
-  const [results, setResults] = useState<Array<speedInterface>>();
-  const [responseSpeedData, setResponseSpeedData] =
-    useState<responseSpeedDataState>({
-      count: 0,
-      next: "",
-      previous: "",
-      results: [],
-    });
-  const [page, setPage] = useState(0);
+export default function SpeedsTable({
+  page,
+  setPage,
+  results,
+  count,
+  measurementSystem,
+  isEditable,
+}: speedsTableProps) {
   const handleChangePage = (
     event: React.MouseEvent<HTMLButtonElement> | null,
     newPage: number,
   ) => {
     setPage(newPage);
   };
-
-  useEffect(() => {
-    getSpeeds({ userName: null }, true).then((response) => {
-      if (response.status == 200) {
-        setResponseSpeedData(response.data);
-
-        let resultsTemp: any = [];
-        response.data.results.forEach((result: any) => {
-          // anon user
-          if (result.user_speed_bookmark === undefined) {
-            result.user_speed_bookmark = null;
-          }
-          if (result.user_speed_feedback === undefined) {
-            result.user_speed_bookmark = null;
-          }
-          resultsTemp.push(result);
-        });
-        setResults(resultsTemp);
-      } else {
-        console.log("not ok");
-      }
-    });
-  }, [page]);
 
   return (
     <TableContainer component={Paper} sx={{ mb: 10 }}>
@@ -338,11 +289,12 @@ export default function SpeedTable({ measurementSystem }: props) {
         </TableHead>
         <TableBody>
           {results ? (
-            results.map((result) => (
+            results.map((row) => (
               <Row
-                key={result.id}
-                row={result}
+                key={row.id}
+                row={row}
                 measurementSystem={measurementSystem}
+                isEditable={isEditable}
               />
             ))
           ) : (
@@ -354,7 +306,7 @@ export default function SpeedTable({ measurementSystem }: props) {
             <TablePagination
               rowsPerPageOptions={[]}
               colSpan={6}
-              count={responseSpeedData.count}
+              count={count}
               rowsPerPage={10}
               page={page}
               onPageChange={handleChangePage}

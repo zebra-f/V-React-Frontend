@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { useParams, useLocation } from "react-router-dom";
 
 import useLocalStorageState from "use-local-storage-state";
 
@@ -22,13 +22,16 @@ interface AppProps {
 
 export default function Profile(props: AppProps) {
   const { userName } = useParams();
-  console.log("username:", userName);
 
   const theme = useTheme();
-  const [value, setValue] = useState(0);
+
+  const location = useLocation();
+  const initialValue = location.pathname.includes("lengths") ? 1 : 0;
+  const [value, setValue] = useState(initialValue);
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
+
   const [alignment, setAlignment] = useState<"metric" | "imperial">(
     props.measurementSystem,
   );
@@ -69,6 +72,7 @@ export default function Profile(props: AppProps) {
             label="Lengths"
             to={userName ? `/profile/${userName}/lengths` : "/profile/lengths"}
             component={Link}
+            disabled={true}
           />
         </Tabs>
 
