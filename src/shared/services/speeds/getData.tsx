@@ -3,15 +3,32 @@ import kyClient from "../ky";
 import {
   speedInterface,
   responseSpeedDataInterface,
+  speedQueryParams,
 } from "../../interfaces/speedInterfaces";
 
-interface queryParams {
-  userName: string | null;
-}
-async function getSpeeds({ userName }: queryParams, personalList: boolean) {
+async function getSpeeds(
+  { page = 1, isPublic, userName, speedType, speedTags }: speedQueryParams,
+  personalList: boolean,
+) {
+  let params = [`page=${page}`];
+  if (isPublic !== null) {
+    params.push(`is_public=${isPublic.toString()}`);
+  }
+  if (userName) {
+    params.push(`user=${userName}`);
+  }
+  if (speedType) {
+    params.push(`speed_type=${speedType}`);
+  }
+  if (speedTags && speedTags.length > 0) {
+    params.push(`tags=${speedTags.join(",")}`);
+  }
+
   try {
     const response = await kyClient.backendApi.get(
-      personalList ? "speeds/personal-list/" : `speeds/?`,
+      personalList
+        ? `speeds/personal-list/?${params.join("&")}`
+        : `speeds/?${params.join("&")}`,
     );
     const responseData: responseSpeedDataInterface = await response.json();
     return { status: response.status, data: responseData };
@@ -27,11 +44,11 @@ async function getSpeeds({ userName }: queryParams, personalList: boolean) {
 }
 
 async function getAndPrepareSpeedsData(
-  { userName }: queryParams,
+  { page, isPublic, userName, speedType, speedTags }: speedQueryParams,
   personalList: boolean,
 ) {
   const { status, data } = await getSpeeds(
-    { userName: userName },
+    { page, isPublic, userName, speedType, speedTags },
     personalList,
   );
   if (status === 200) {

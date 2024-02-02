@@ -116,14 +116,23 @@ export default function App(props: any) {
             path=""
             element={<ProfileSpeeds measurementSystem={measurementSystem} />}
           >
-            <Route path="" element={<MySpeeds />} />
+            <Route
+              path=""
+              element={<MySpeeds measurementSystem={measurementSystem} />}
+            />
           </Route>
           <Route
             path="speeds"
             element={<ProfileSpeeds measurementSystem={measurementSystem} />}
           >
-            <Route path="" element={<MySpeeds />} />
-            <Route path="myspeeds" element={<MySpeeds />} />
+            <Route
+              path=""
+              element={<MySpeeds measurementSystem={measurementSystem} />}
+            />
+            <Route
+              path="myspeeds"
+              element={<MySpeeds measurementSystem={measurementSystem} />}
+            />
 
             <Route path="likesdislikes" element={<SpeedLikesDislikes />} />
             <Route path="bookmarks" element={<SpeedBookmarks />} />

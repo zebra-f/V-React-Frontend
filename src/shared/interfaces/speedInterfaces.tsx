@@ -29,9 +29,18 @@ interface responseSpeedDataInterface {
   results: Array<speedInterface>;
 }
 
+interface speedQueryParams {
+  page: number;
+  isPublic: null | boolean;
+  userName: null | string;
+  speedType: null | "top" | "average" | "constant" | "relative";
+  speedTags: null | Array<string>;
+}
+
 export type {
   userSpeedBookmarkInterface,
   userSpeedFeedbackInterface,
   speedInterface,
   responseSpeedDataInterface,
+  speedQueryParams,
 };

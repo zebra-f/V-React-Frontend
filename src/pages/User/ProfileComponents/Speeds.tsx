@@ -1,7 +1,5 @@
 import { useRef, useState, useEffect } from "react";
-import { useParams, useLocation } from "react-router-dom";
-
-import SpeedTable from "../../../shared/components/SpeedTable";
+import { useParams, useLocation, Outlet, Link } from "react-router-dom";
 
 import PublicProfileSpeeds from "./SpeedsPersonalComponents/PublicProfileSpeeds";
 
@@ -9,8 +7,6 @@ import useTheme from "@mui/material/styles/useTheme";
 import Box from "@mui/material/Box";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-import { Outlet, Link } from "react-router-dom";
-import Container from "@mui/material/Container";
 
 interface props {
   measurementSystem: "metric" | "imperial";
@@ -43,7 +39,6 @@ export default function ProfileSpeeds({ measurementSystem }: props) {
                 sx={{ pt: 2 }}
                 label="My Speeds"
                 to="/profile/speeds/myspeeds"
-                state={{ measurementSystem: measurementSystem }}
                 component={Link}
               />
               <Tab
@@ -63,7 +58,10 @@ export default function ProfileSpeeds({ measurementSystem }: props) {
           <Outlet />
         </>
       ) : (
-        <PublicProfileSpeeds measurementSystem={measurementSystem} />
+        <PublicProfileSpeeds
+          measurementSystem={measurementSystem}
+          userName={userName}
+        />
       )}
     </>
   );

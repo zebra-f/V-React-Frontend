@@ -1,17 +1,16 @@
-import { useState, useEffect, useRef } from "react";
-import { useParams, useLocation } from "react-router-dom";
-
-import useLocalStorageState from "use-local-storage-state";
+import { useState } from "react";
+import { useParams, useLocation, Outlet, Link } from "react-router-dom";
 
 import useTheme from "@mui/material/styles/useTheme";
 import Box from "@mui/material/Box";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-import { Outlet, Link } from "react-router-dom";
 import Typography from "@mui/material/Typography";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import Container from "@mui/material/Container";
+import AccountBoxIcon from "@mui/icons-material/AccountBox";
+import Stack from "@mui/material/Stack";
 
 interface AppProps {
   setMeasurementSystem: React.Dispatch<
@@ -52,7 +51,15 @@ export default function Profile(props: AppProps) {
   return (
     <>
       <Container>
-        <h1>{userName ? userName : "Your Profile"}</h1>
+        <Stack direction="row" alignItems="center" gap={1} my={2}>
+          <AccountBoxIcon
+            fontSize="large"
+            color={userName ? "inherit" : "success"}
+          />
+          <Typography variant="h3">
+            {userName ? userName : "Your Profile"}
+          </Typography>
+        </Stack>
       </Container>
       <Box
         display="flex"

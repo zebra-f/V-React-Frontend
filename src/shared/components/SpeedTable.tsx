@@ -1,6 +1,10 @@
-import { useEffect, useState, SetStateAction, Dispatch } from "react";
+import { useState, SetStateAction, Dispatch } from "react";
+import { useNavigate } from "react-router-dom";
 
-import { speedInterface } from "../interfaces/speedInterfaces";
+import {
+  speedInterface,
+  speedQueryParams,
+} from "../interfaces/speedInterfaces";
 
 import useTheme from "@mui/material/styles/useTheme";
 import Box from "@mui/material/Box";
@@ -35,12 +39,15 @@ import TableFooter from "@mui/material/TableFooter";
 import TablePagination from "@mui/material/TablePagination";
 import ReportIcon from "@mui/icons-material/Report";
 import Tooltip from "@mui/material/Tooltip";
+import Link from "@mui/material/Link";
 
 function Row(props: {
   row: speedInterface;
   measurementSystem: "metric" | "imperial";
   isEditable: boolean;
 }) {
+  const navigate = useNavigate();
+
   const { row, measurementSystem, isEditable } = props;
   const [open, setOpen] = useState(false);
 
@@ -50,6 +57,10 @@ function Row(props: {
   const [vote, setVote] = useState<number>(
     row.user_speed_feedback ? row.user_speed_feedback.feedback_vote : 0,
   );
+
+  const handleLinkToUserProfile = (userName: string) => {
+    navigate(`/profile/${userName}/speeds`);
+  };
 
   return (
     <>
@@ -117,14 +128,12 @@ function Row(props: {
                     />
                   ))}
                 </Stack>
-                <div>
-                  <Stack direction="row" alignItems="center" gap={1}>
-                    <Typography>
-                      {row.is_public ? "Public" : "Private"}
-                    </Typography>
-                    <LockOpenIcon color={row.is_public ? "success" : "error"} />
-                  </Stack>
-                </div>
+                <Stack direction="row" alignItems="center" gap={1}>
+                  <Typography>
+                    {row.is_public ? "Public" : "Private"}
+                  </Typography>
+                  <LockOpenIcon color={row.is_public ? "success" : "error"} />
+                </Stack>
                 <ButtonGroup
                   size="small"
                   variant="text"
@@ -136,25 +145,38 @@ function Row(props: {
                       <ReportIcon color="warning" />
                     </Stack>
                   </Button>
-                  <Button>
-                    <Stack direction="row" alignItems="center" gap={1}>
-                      <Typography>&nbsp;&nbsp;Update</Typography>
-                      <EditIcon color="info" />
-                    </Stack>
-                  </Button>
-                  <Button>
-                    <Stack direction="row" alignItems="center" gap={1}>
-                      <Typography>&nbsp;&nbsp;Delete</Typography>
-                      <DeleteForeverIcon color="error" />
-                    </Stack>
-                  </Button>
+                  {isEditable && (
+                    <Button>
+                      <Stack direction="row" alignItems="center" gap={1}>
+                        <Typography>&nbsp;&nbsp;Update</Typography>
+                        <EditIcon color="info" />
+                      </Stack>
+                    </Button>
+                  )}
+                  {isEditable && (
+                    <Button>
+                      <Stack direction="row" alignItems="center" gap={1}>
+                        <Typography>&nbsp;&nbsp;Delete</Typography>
+                        <DeleteForeverIcon color="error" />
+                      </Stack>
+                    </Button>
+                  )}
                 </ButtonGroup>
               </div>
               <Typography variant="h6" gutterBottom component="div" mt={2}>
                 {row.description}
               </Typography>
-              <Typography variant="subtitle1" mt={2}>
-                Created by: {row.user}
+              <Typography color={"#bb54e7"} variant="subtitle1" mt={2}>
+                Created by:&nbsp;
+                <Link
+                  href="#"
+                  onClick={() => {
+                    handleLinkToUserProfile(row.user);
+                  }}
+                  underline="none"
+                >
+                  {row.user}
+                </Link>
               </Typography>
             </Box>
           </Collapse>
@@ -244,16 +266,16 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 }
 
 interface speedsTableProps {
-  page: number;
-  setPage: Dispatch<SetStateAction<number>>;
+  queryParams: speedQueryParams;
+  setQueryParams: Dispatch<SetStateAction<speedQueryParams>>;
   results: Array<speedInterface>; // list of Speeds
   count: number; // count of all Speeds available via API
   measurementSystem: "metric" | "imperial";
   isEditable: boolean; // a user views his own profile
 }
 export default function SpeedsTable({
-  page,
-  setPage,
+  queryParams,
+  setQueryParams,
   results,
   count,
   measurementSystem,
@@ -263,11 +285,17 @@ export default function SpeedsTable({
     event: React.MouseEvent<HTMLButtonElement> | null,
     newPage: number,
   ) => {
-    setPage(newPage);
+    setQueryParams((prevQueryParams: speedQueryParams) => {
+      return {
+        ...prevQueryParams,
+        // in MUI pagination starts at page 0
+        page: newPage + 1,
+      };
+    });
   };
 
   return (
-    <TableContainer component={Paper} sx={{ mb: 10 }}>
+    <TableContainer component={Paper} sx={{ mt: 2, mb: 10 }}>
       <Table aria-label="collapsible table">
         <TableHead>
           <TableRow>
@@ -308,7 +336,7 @@ export default function SpeedsTable({
               colSpan={6}
               count={count}
               rowsPerPage={10}
-              page={page}
+              page={queryParams.page - 1}
               onPageChange={handleChangePage}
               ActionsComponent={TablePaginationActions}
             />
