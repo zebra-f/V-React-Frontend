@@ -40,6 +40,7 @@ import TablePagination from "@mui/material/TablePagination";
 import ReportIcon from "@mui/icons-material/Report";
 import Tooltip from "@mui/material/Tooltip";
 import Link from "@mui/material/Link";
+import Fade from "@mui/material/Fade";
 
 function Row(props: {
   row: speedInterface;
@@ -141,14 +142,14 @@ function Row(props: {
                 >
                   <Button>
                     <Stack direction="row" alignItems="center" gap={1}>
-                      <Typography>&nbsp;&nbsp;Report</Typography>
+                      <Typography>Report</Typography>
                       <ReportIcon color="warning" />
                     </Stack>
                   </Button>
                   {isEditable && (
                     <Button>
                       <Stack direction="row" alignItems="center" gap={1}>
-                        <Typography>&nbsp;&nbsp;Update</Typography>
+                        <Typography>&nbsp;Update</Typography>
                         <EditIcon color="info" />
                       </Stack>
                     </Button>
@@ -156,7 +157,7 @@ function Row(props: {
                   {isEditable && (
                     <Button>
                       <Stack direction="row" alignItems="center" gap={1}>
-                        <Typography>&nbsp;&nbsp;Delete</Typography>
+                        <Typography>&nbsp;Delete</Typography>
                         <DeleteForeverIcon color="error" />
                       </Stack>
                     </Button>
@@ -295,54 +296,56 @@ export default function SpeedsTable({
   };
 
   return (
-    <TableContainer component={Paper} sx={{ mt: 2, mb: 10 }}>
-      <Table aria-label="collapsible table">
-        <TableHead>
-          <TableRow>
-            <TableCell width={"10%"} />
-            <TableCell width={"5%"} align="right" />
-            <TableCell align="center" width={"5%"}>
-              Score
-            </TableCell>
-            <TableCell width={"5%"} align="left" />
-            <TableCell align="left" width={"40%"}>
-              Name
-            </TableCell>
-            <TableCell align="right" width={"20%"}>
-              Speed
-            </TableCell>
-            <TableCell align="center" width={"8%"}></TableCell>
-            <TableCell align="center" width={"12%"}></TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {results ? (
-            results.map((row) => (
-              <Row
-                key={row.id}
-                row={row}
-                measurementSystem={measurementSystem}
-                isEditable={isEditable}
+    <Fade in={true}>
+      <TableContainer component={Paper} sx={{ mt: 2, mb: 10 }}>
+        <Table aria-label="collapsible table">
+          <TableHead>
+            <TableRow>
+              <TableCell width={"10%"} />
+              <TableCell width={"5%"} align="right" />
+              <TableCell align="center" width={"5%"}>
+                Score
+              </TableCell>
+              <TableCell width={"5%"} align="left" />
+              <TableCell align="left" width={"40%"}>
+                Name
+              </TableCell>
+              <TableCell align="right" width={"20%"}>
+                Speed
+              </TableCell>
+              <TableCell align="center" width={"8%"}></TableCell>
+              <TableCell align="center" width={"12%"}></TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {results ? (
+              results.map((row) => (
+                <Row
+                  key={row.id}
+                  row={row}
+                  measurementSystem={measurementSystem}
+                  isEditable={isEditable}
+                />
+              ))
+            ) : (
+              <></>
+            )}
+          </TableBody>
+          <TableFooter>
+            <TableRow sx={{ "& td": { border: 0 } }}>
+              <TablePagination
+                rowsPerPageOptions={[]}
+                colSpan={6}
+                count={count}
+                rowsPerPage={10}
+                page={queryParams.page - 1}
+                onPageChange={handleChangePage}
+                ActionsComponent={TablePaginationActions}
               />
-            ))
-          ) : (
-            <></>
-          )}
-        </TableBody>
-        <TableFooter>
-          <TableRow sx={{ "& td": { border: 0 } }}>
-            <TablePagination
-              rowsPerPageOptions={[]}
-              colSpan={6}
-              count={count}
-              rowsPerPage={10}
-              page={queryParams.page - 1}
-              onPageChange={handleChangePage}
-              ActionsComponent={TablePaginationActions}
-            />
-          </TableRow>
-        </TableFooter>
-      </Table>
-    </TableContainer>
+            </TableRow>
+          </TableFooter>
+        </Table>
+      </TableContainer>
+    </Fade>
   );
 }

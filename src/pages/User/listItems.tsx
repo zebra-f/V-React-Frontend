@@ -1,4 +1,3 @@
-import * as React from "react";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
@@ -13,7 +12,7 @@ import Tab from "@mui/material/Tab";
 import { Outlet, Link } from "react-router-dom";
 
 export const mainListItems = (
-  <React.Fragment>
+  <>
     {/* <Tabs value={value} onChange={handleChange} centered>
       <Tab sx={{ pt: 5 }} label="Speed" to="/vees" component={Link} />
       <Tab sx={{ pt: 5 }} label="Length" to="/vees/length" component={Link} />
@@ -42,25 +41,46 @@ export const mainListItems = (
     <ListItem>
       <ListItemIcon></ListItemIcon>
     </ListItem>
-  </React.Fragment>
+  </>
 );
 
 export const secondaryListItems = (
-  <React.Fragment>
+  <>
     <ListItem>
       <ListItemIcon></ListItemIcon>
     </ListItem>
-    <ListItemButton>
+
+    <ListItemButton to="/account/profile/speeds" component={Link}>
       <ListItemIcon>
         <SpeedIcon />
       </ListItemIcon>
       <ListItemText primary="Speeds" />
     </ListItemButton>
-    <ListItemButton>
+
+    <ListItemButton
+      to="/account/profile/lengths"
+      disabled={true}
+      component={Link}
+    >
       <ListItemIcon>
         <StraightenIcon />
       </ListItemIcon>
       <ListItemText primary="Lengths" />
     </ListItemButton>
-  </React.Fragment>
+  </>
+);
+
+export const secondaryListRedirect = (
+  <>
+    <ListItem>
+      <ListItemIcon></ListItemIcon>
+    </ListItem>
+
+    <ListItemButton to="/account/myaccount" component={Link}>
+      <ListItemIcon>
+        <AccountCircleIcon />
+      </ListItemIcon>
+      <ListItemText primary="Account" />
+    </ListItemButton>
+  </>
 );

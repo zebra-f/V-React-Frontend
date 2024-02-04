@@ -1,126 +1,110 @@
 import { useState } from "react";
-import { useParams, useLocation, Outlet, Link } from "react-router-dom";
 
-import useTheme from "@mui/material/styles/useTheme";
+import { useRedirectAnonUserEffect } from "../../shared/hooks/useEffect";
+
+import { secondaryListItems, secondaryListRedirect } from "./listItems";
+
+import { styled, useTheme } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+import MuiDrawer from "@mui/material/Drawer";
 import Box from "@mui/material/Box";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import Typography from "@mui/material/Typography";
-import ToggleButton from "@mui/material/ToggleButton";
-import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import Toolbar from "@mui/material/Toolbar";
+import List from "@mui/material/List";
+import Divider from "@mui/material/Divider";
+import IconButton from "@mui/material/IconButton";
 import Container from "@mui/material/Container";
-import AccountBoxIcon from "@mui/icons-material/AccountBox";
-import Stack from "@mui/material/Stack";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import { Outlet } from "react-router-dom";
 
-interface AppProps {
-  setMeasurementSystem: React.Dispatch<
-    React.SetStateAction<"metric" | "imperial">
-  >;
-  measurementSystem: "metric" | "imperial";
+const drawerWidth: number = 240;
+
+const Drawer = styled(MuiDrawer, {
+  shouldForwardProp: (prop) => prop !== "open",
+})(({ theme, open }) => ({
+  "& .MuiDrawer-paper": {
+    position: "relative",
+    whiteSpace: "nowrap",
+    width: drawerWidth,
+    transition: theme.transitions.create("width", {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+    boxSizing: "border-box",
+    ...(!open && {
+      overflowX: "hidden",
+      transition: theme.transitions.create("width", {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.leavingScreen,
+      }),
+      width: theme.spacing(7),
+      [theme.breakpoints.up("sm")]: {
+        width: theme.spacing(9),
+      },
+    }),
+  },
+}));
+
+interface props {
+  isAuthenticated: boolean;
 }
-
-export default function Profile(props: AppProps) {
-  const { userName } = useParams();
-
+export default function Profile({ isAuthenticated }: props) {
   const theme = useTheme();
-
-  const location = useLocation();
-  const initialValue = location.pathname.includes("lengths") ? 1 : 0;
-  const [value, setValue] = useState(initialValue);
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
-  };
-
-  const [alignment, setAlignment] = useState<"metric" | "imperial">(
-    props.measurementSystem,
-  );
-
-  const handleAlignment = (
-    event: React.MouseEvent<HTMLElement>,
-    newAlignment: "metric" | "imperial",
-  ) => {
-    if (newAlignment !== null) {
-      setAlignment(newAlignment);
-      props.setMeasurementSystem(newAlignment);
-    }
-  };
   const backgroundColor =
     theme.palette.mode === "dark"
-      ? "rgba(0, 0, 0, 0.1)"
-      : "rgba(233, 236, 239, 0.7)";
-  return (
-    <>
-      <Container>
-        <Stack direction="row" alignItems="center" gap={1} my={2}>
-          <AccountBoxIcon
-            fontSize="large"
-            color={userName ? "inherit" : "success"}
-          />
-          <Typography variant="h3">
-            {userName ? userName : "Your Profile"}
-          </Typography>
-        </Stack>
-      </Container>
-      <Box
-        display="flex"
-        justifyContent="space-around"
-        sx={{ width: "100%" }}
-        style={{ background: backgroundColor }}
-      >
-        <Tabs value={value} onChange={handleChange} centered>
-          <Tab
-            sx={{ pt: 5 }}
-            label="Speeds"
-            to={userName ? `/profile/${userName}/speeds` : "/profile/speeds"}
-            component={Link}
-          />
-          <Tab
-            sx={{ pt: 5 }}
-            label="Lengths"
-            to={userName ? `/profile/${userName}/lengths` : "/profile/lengths"}
-            component={Link}
-            disabled={true}
-          />
-        </Tabs>
+      ? "rgba(0,0,0,0)"
+      : // ? "linear-gradient(0deg, rgba(9,10,15,1) 0%, rgba(27,39,53,0.2) 100%)"
+        "rgba(0,0,0,0)";
 
-        <ToggleButtonGroup
-          orientation="vertical"
-          value={alignment}
-          exclusive
-          onChange={handleAlignment}
-          aria-label="text alignment"
+  useRedirectAnonUserEffect(isAuthenticated, "/");
+
+  const [open, setOpen] = useState(false);
+  const toggleDrawer = () => {
+    setOpen(!open);
+  };
+
+  return (
+    <Container maxWidth="xl" sx={{ mt: 2 }}>
+      <CssBaseline />
+      <Box sx={{ display: "flex" }}>
+        <Drawer
+          PaperProps={{ sx: { backgroundColor: backgroundColor } }}
+          variant="permanent"
+          open={open}
+        >
+          <Toolbar
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "flex-end",
+              px: [1],
+            }}
+          >
+            <IconButton onClick={toggleDrawer}>
+              {open ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+            </IconButton>
+          </Toolbar>
+          <Divider />
+          <List component="nav">
+            {secondaryListItems}
+            <Divider sx={{ my: 1 }} />
+            {secondaryListRedirect}
+          </List>
+        </Drawer>
+
+        <Box
+          component="main"
           sx={{
-            p: 1,
-            pt: 1.2,
-            // bgcolor: theme.palette.background.default,
-            borderRadius: 0,
+            flexGrow: 1,
+            height: "85vh",
+            overflow: "auto",
           }}
         >
-          <ToggleButton
-            value="metric"
-            aria-label="left aligned"
-            size="small"
-            sx={{
-              mx: 1,
-              maxHeight: 26,
-            }}
-          >
-            <Typography mt={0}>metric</Typography>
-          </ToggleButton>
-          <ToggleButton
-            value="imperial"
-            aria-label="right aligned"
-            size="small"
-            sx={{
-              mx: 1,
-              maxHeight: 26,
-            }}
-          >
-            <Typography mt={0}>imperial</Typography>
-          </ToggleButton>
-        </ToggleButtonGroup>
+          <Container maxWidth="xl" sx={{ mt: 8, mb: 4 }}>
+            <Outlet />
+          </Container>
+        </Box>
       </Box>
-      <Outlet />
-    </>
+    </Container>
   );
 }

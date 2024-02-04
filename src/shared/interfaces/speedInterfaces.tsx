@@ -32,7 +32,7 @@ interface responseSpeedDataInterface {
 interface speedQueryParams {
   page: number;
   isPublic: null | boolean;
-  userName: null | string;
+  userName: null | string | undefined;
   speedType: null | "top" | "average" | "constant" | "relative";
   speedTags: null | Array<string>;
 }

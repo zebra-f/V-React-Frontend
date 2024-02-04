@@ -1,23 +1,22 @@
 import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 
-import { getAndPrepareSpeedsData } from "../../../../shared/services/speeds/getData";
+import { getAndPrepareSpeedsData } from "../../../shared/services/speeds/getData";
 import {
   speedInterface,
   speedQueryParams,
-} from "../../../../shared/interfaces/speedInterfaces";
+} from "../../../shared/interfaces/speedInterfaces";
 
-import SpeedsTable from "../../../../shared/components/SpeedTable";
+import SpeedsTable from "../../../shared/components/SpeedTable";
 
 import Container from "@mui/material/Container";
 
 interface props {
   measurementSystem: "metric" | "imperial";
-  userName: string;
 }
-export default function PublicProfileSpeeds({
-  measurementSystem,
-  userName,
-}: props) {
+export default function PublicProfileSpeeds({ measurementSystem }: props) {
+  const { userName } = useParams();
+
   const [queryParams, setQueryParams] = useState<speedQueryParams>({
     page: 1,
     isPublic: null,
