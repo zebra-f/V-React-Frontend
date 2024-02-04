@@ -129,23 +129,27 @@ function Row(props: {
                     />
                   ))}
                 </Stack>
-                <Stack direction="row" alignItems="center" gap={1}>
-                  <Typography>
-                    {row.is_public ? "Public" : "Private"}
-                  </Typography>
-                  <LockOpenIcon color={row.is_public ? "success" : "error"} />
-                </Stack>
+                {isEditable && (
+                  <Stack direction="row" alignItems="center" gap={1}>
+                    <Typography>
+                      {row.is_public ? "Public" : "Private"}
+                    </Typography>
+                    <LockOpenIcon color={row.is_public ? "success" : "error"} />
+                  </Stack>
+                )}
                 <ButtonGroup
                   size="small"
                   variant="text"
                   aria-label="outlined primary button group"
                 >
-                  <Button>
-                    <Stack direction="row" alignItems="center" gap={1}>
-                      <Typography>Report</Typography>
-                      <ReportIcon color="warning" />
-                    </Stack>
-                  </Button>
+                  {!isEditable && (
+                    <Button>
+                      <Stack direction="row" alignItems="center" gap={1}>
+                        <Typography>Report</Typography>
+                        <ReportIcon color="warning" />
+                      </Stack>
+                    </Button>
+                  )}
                   {isEditable && (
                     <Button>
                       <Stack direction="row" alignItems="center" gap={1}>
@@ -167,18 +171,20 @@ function Row(props: {
               <Typography variant="h6" gutterBottom component="div" mt={2}>
                 {row.description}
               </Typography>
-              <Typography color={"#bb54e7"} variant="subtitle1" mt={2}>
-                Created by:&nbsp;
-                <Link
-                  href="#"
-                  onClick={() => {
-                    handleLinkToUserProfile(row.user);
-                  }}
-                  underline="none"
-                >
-                  {row.user}
-                </Link>
-              </Typography>
+              {!isEditable && (
+                <Typography color={"#bb54e7"} variant="subtitle1" mt={2}>
+                  Added by:&nbsp;
+                  <Link
+                    href="#"
+                    onClick={() => {
+                      handleLinkToUserProfile(row.user);
+                    }}
+                    underline="none"
+                  >
+                    {row.user}
+                  </Link>
+                </Typography>
+              )}
             </Box>
           </Collapse>
         </TableCell>
