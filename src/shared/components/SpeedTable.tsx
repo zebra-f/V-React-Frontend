@@ -41,6 +41,8 @@ import ReportIcon from "@mui/icons-material/Report";
 import Tooltip from "@mui/material/Tooltip";
 import Link from "@mui/material/Link";
 import Fade from "@mui/material/Fade";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Switch from "@mui/material/Switch";
 
 function Row(props: {
   row: speedInterface;
@@ -312,10 +314,13 @@ export default function SpeedsTable({
     });
   };
 
+  const [dense, setDense] = useState(true);
+  const handleChangeDense = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setDense(event.target.checked);
+  };
   return (
     <Fade in={true}>
-      <TableContainer
-        component={Paper}
+      <Paper
         sx={{
           mt: 2,
           mb: 10,
@@ -325,60 +330,72 @@ export default function SpeedsTable({
             theme.palette.mode === "light"
               ? "rgba(251, 254, 251, 0.6)"
               : "rgba(9, 10, 15, 0.8)",
-          borderBottom: `thin solid ${
-            theme.palette.mode === "light" ? "#3d5a80" : "#98c1d9"
-          }}`,
         }}
       >
-        <Table aria-label="collapsible table">
-          <TableHead>
-            <TableRow>
-              <TableCell width={"10%"} />
-              <TableCell width={"5%"} align="right" />
-              <TableCell align="center" width={"5%"}>
-                Score
-              </TableCell>
-              <TableCell width={"5%"} align="left" />
-              <TableCell align="left" width={"40%"}>
-                Name
-              </TableCell>
-              <TableCell align="right" width={"20%"}>
-                Speed
-              </TableCell>
-              <TableCell align="center" width={"8%"}></TableCell>
-              <TableCell align="center" width={"12%"}></TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {results ? (
-              results.map((row) => (
-                <Row
-                  key={row.id}
-                  row={row}
-                  measurementSystem={measurementSystem}
-                  isEditable={isEditable}
-                  rowType={rowType}
+        <Box m={2}>
+          <FormControlLabel
+            control={<Switch checked={dense} onChange={handleChangeDense} />}
+            label="Dense padding"
+          />
+        </Box>
+        <TableContainer
+          sx={{
+            mt: 2,
+          }}
+        >
+          <Table
+            aria-label="collapsible table"
+            size={dense ? "small" : "medium"}
+          >
+            <TableHead>
+              <TableRow>
+                <TableCell width={"10%"} />
+                <TableCell width={"5%"} align="right" />
+                <TableCell align="center" width={"5%"}>
+                  Score
+                </TableCell>
+                <TableCell width={"5%"} align="left" />
+                <TableCell align="left" width={"40%"}>
+                  Name
+                </TableCell>
+                <TableCell align="right" width={"20%"}>
+                  Speed
+                </TableCell>
+                <TableCell align="center" width={"8%"}></TableCell>
+                <TableCell align="center" width={"12%"}></TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {results ? (
+                results.map((row) => (
+                  <Row
+                    key={row.id}
+                    row={row}
+                    measurementSystem={measurementSystem}
+                    isEditable={isEditable}
+                    rowType={rowType}
+                  />
+                ))
+              ) : (
+                <></>
+              )}
+            </TableBody>
+            <TableFooter>
+              <TableRow sx={{ "& td": { border: 0 } }}>
+                <TablePagination
+                  rowsPerPageOptions={[]}
+                  colSpan={6}
+                  count={count}
+                  rowsPerPage={10}
+                  page={queryParams.page - 1}
+                  onPageChange={handleChangePage}
+                  ActionsComponent={TablePaginationActions}
                 />
-              ))
-            ) : (
-              <></>
-            )}
-          </TableBody>
-          <TableFooter>
-            <TableRow sx={{ "& td": { border: 0 } }}>
-              <TablePagination
-                rowsPerPageOptions={[]}
-                colSpan={6}
-                count={count}
-                rowsPerPage={10}
-                page={queryParams.page - 1}
-                onPageChange={handleChangePage}
-                ActionsComponent={TablePaginationActions}
-              />
-            </TableRow>
-          </TableFooter>
-        </Table>
-      </TableContainer>
+              </TableRow>
+            </TableFooter>
+          </Table>
+        </TableContainer>
+      </Paper>
     </Fade>
   );
 }
