@@ -46,10 +46,11 @@ function Row(props: {
   row: speedInterface;
   measurementSystem: "metric" | "imperial";
   isEditable: boolean;
+  rowType: "regular" | "feedback" | "bookmark";
 }) {
   const navigate = useNavigate();
 
-  const { row, measurementSystem, isEditable } = props;
+  const { row, measurementSystem, isEditable, rowType } = props;
   const [open, setOpen] = useState(false);
 
   const [bookmark, setBookmark] = useState<boolean>(
@@ -76,13 +77,17 @@ function Row(props: {
           </IconButton>
         </TableCell>
         <TableCell align="right">
-          <ThumbUpAltIcon color={vote === 1 ? "info" : "primary"} />
+          {!(rowType === "bookmark") && (
+            <ThumbUpAltIcon color={vote === 1 ? "warning" : "primary"} />
+          )}
         </TableCell>
         <TableCell align="center">
           <Typography>{row.score}</Typography>
         </TableCell>
         <TableCell align="left">
-          <ThumbDownAltIcon color={vote === -1 ? "info" : "primary"} />
+          {!(rowType === "bookmark") && (
+            <ThumbDownAltIcon color={vote === -1 ? "warning" : "primary"} />
+          )}
         </TableCell>
         <TableCell component="th" scope="row">
           <Typography>{row.name}</Typography>
@@ -105,7 +110,9 @@ function Row(props: {
           </Tooltip>
         </TableCell>
         <TableCell align="center">
-          <StarOutlineIcon color={bookmark ? "warning" : "primary"} />
+          {(rowType == "regular" || rowType == "bookmark") && (
+            <StarOutlineIcon color={bookmark ? "warning" : "primary"} />
+          )}
         </TableCell>
         <TableCell>
           <AddIcon />
@@ -146,7 +153,7 @@ function Row(props: {
                     <Button>
                       <Stack direction="row" alignItems="center" gap={1}>
                         <Typography>Report</Typography>
-                        <ReportIcon color="warning" />
+                        <ReportIcon color="error" />
                       </Stack>
                     </Button>
                   )}
@@ -279,6 +286,7 @@ interface speedsTableProps {
   count: number; // count of all Speeds available via API
   measurementSystem: "metric" | "imperial";
   isEditable: boolean; // a user views his own profile
+  rowType: "regular" | "feedback" | "bookmark";
 }
 export default function SpeedsTable({
   queryParams,
@@ -287,7 +295,10 @@ export default function SpeedsTable({
   count,
   measurementSystem,
   isEditable,
+  rowType,
 }: speedsTableProps) {
+  const theme = useTheme();
+
   const handleChangePage = (
     event: React.MouseEvent<HTMLButtonElement> | null,
     newPage: number,
@@ -303,7 +314,22 @@ export default function SpeedsTable({
 
   return (
     <Fade in={true}>
-      <TableContainer component={Paper} sx={{ mt: 2, mb: 10 }}>
+      <TableContainer
+        component={Paper}
+        sx={{
+          mt: 2,
+          mb: 10,
+
+          pt: 0.84,
+          backgroundColor:
+            theme.palette.mode === "light"
+              ? "rgba(251, 254, 251, 0.6)"
+              : "rgba(9, 10, 15, 0.8)",
+          borderBottom: `thin solid ${
+            theme.palette.mode === "light" ? "#3d5a80" : "#98c1d9"
+          }}`,
+        }}
+      >
         <Table aria-label="collapsible table">
           <TableHead>
             <TableRow>
@@ -331,6 +357,7 @@ export default function SpeedsTable({
                   row={row}
                   measurementSystem={measurementSystem}
                   isEditable={isEditable}
+                  rowType={rowType}
                 />
               ))
             ) : (

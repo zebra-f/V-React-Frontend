@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Outlet, Link } from "react-router-dom";
+import { Outlet, Link, useLocation } from "react-router-dom";
 
 import useTheme from "@mui/material/styles/useTheme";
 import Box from "@mui/material/Box";
@@ -10,7 +10,14 @@ interface props {
   measurementSystem: "metric" | "imperial";
 }
 export default function ProfileSpeeds({ measurementSystem }: props) {
-  const [value, setValue] = useState(0);
+  const location = useLocation();
+  let initialValue = 0;
+  if (location.pathname.includes("feedback")) {
+    initialValue = 1;
+  } else if (location.pathname.includes("bookmarks")) {
+    initialValue = 2;
+  }
+  const [value, setValue] = useState(initialValue);
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
@@ -29,21 +36,16 @@ export default function ProfileSpeeds({ measurementSystem }: props) {
         style={{ background: backgroundColor }}
       >
         <Tabs value={value} onChange={handleChange} centered>
+          <Tab sx={{ pt: 2 }} label="My Speeds" to="speeds" component={Link} />
           <Tab
             sx={{ pt: 2 }}
-            label="My Speeds"
-            to="myspeeds"
+            label="My Feedback"
+            to="feedback"
             component={Link}
           />
           <Tab
             sx={{ pt: 2 }}
-            label="Likes & Dislikes"
-            to="likesdislikes"
-            component={Link}
-          />
-          <Tab
-            sx={{ pt: 2 }}
-            label="Bookmarks"
+            label="My Bookmarks"
             to="bookmarks"
             component={Link}
           />

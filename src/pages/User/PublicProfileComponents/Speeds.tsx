@@ -47,6 +47,7 @@ export default function PublicProfileSpeeds({ measurementSystem }: props) {
           count={count}
           measurementSystem={measurementSystem}
           isEditable={false}
+          rowType={"regular"}
         />
       </Container>
     </>

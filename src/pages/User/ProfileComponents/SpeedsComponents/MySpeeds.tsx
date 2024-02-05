@@ -9,6 +9,9 @@ import {
 import SpeedsTable from "../../../../shared/components/SpeedTable";
 
 import Container from "@mui/material/Container";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
 interface props {
   measurementSystem: "metric" | "imperial";
@@ -26,7 +29,6 @@ export default function MySpeeds({ measurementSystem }: props) {
   const [results, setResults] = useState<Array<speedInterface>>([]);
 
   useEffect(() => {
-    console.log(queryParams);
     getAndPrepareSpeedsData(queryParams, true).then((result) => {
       if (result.status === 200) {
         setCount(result.count);
@@ -38,6 +40,11 @@ export default function MySpeeds({ measurementSystem }: props) {
   return (
     <>
       <Container>
+        <Box display="flex" justifyContent="flex-end" mt={2}>
+          <Button variant="contained" color="success">
+            ADD MORE SPEEDS &nbsp;&nbsp; <CloudUploadIcon />
+          </Button>
+        </Box>
         <SpeedsTable
           queryParams={queryParams}
           setQueryParams={setQueryParams}
@@ -45,6 +52,7 @@ export default function MySpeeds({ measurementSystem }: props) {
           count={count}
           measurementSystem={measurementSystem}
           isEditable={true}
+          rowType={"regular"}
         />
       </Container>
     </>

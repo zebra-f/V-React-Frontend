@@ -29,8 +29,8 @@ import DeleteAccount from "./pages/User/AccountComponents/DeleteAccount";
 import Profile from "./pages/User/Profile";
 import ProfileSpeeds from "./pages/User/ProfileComponents/Speeds";
 import MySpeeds from "./pages/User/ProfileComponents/SpeedsComponents/MySpeeds";
-import SpeedLikesDislikes from "./pages/User/ProfileComponents/SpeedsComponents/LikesDislikes";
-import SpeedBookmarks from "./pages/User/ProfileComponents/SpeedsComponents/Bookmarks";
+import MySpeedFeedback from "./pages/User/ProfileComponents/SpeedsComponents/MyFeedback";
+import MySpeedBookmarks from "./pages/User/ProfileComponents/SpeedsComponents/MyBookmarks";
 import ProfileLengths from "./pages/User/ProfileComponents/Lengths";
 
 // Public Profile
@@ -119,14 +119,24 @@ export default function App(props: any) {
               path={path}
               element={<ProfileSpeeds measurementSystem={measurementSystem} />}
             >
-              {["", "myspeeds"].map((path) => (
+              {["", "speeds"].map((path) => (
                 <Route
                   path={path}
                   element={<MySpeeds measurementSystem={measurementSystem} />}
                 />
               ))}
-              <Route path="likesdislikes" element={<SpeedLikesDislikes />} />
-              <Route path="bookmarks" element={<SpeedBookmarks />} />
+              <Route
+                path="feedback"
+                element={
+                  <MySpeedFeedback measurementSystem={measurementSystem} />
+                }
+              />
+              <Route
+                path="bookmarks"
+                element={
+                  <MySpeedBookmarks measurementSystem={measurementSystem} />
+                }
+              />
             </Route>
           ))}
           <Route path="lengths" element={<ProfileLengths />}></Route>
