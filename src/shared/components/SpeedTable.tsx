@@ -5,6 +5,7 @@ import {
   speedInterface,
   speedQueryParams,
 } from "../interfaces/speedInterfaces";
+import { makeSpeedFeedback } from "../../actions/speed/feedback";
 
 import useTheme from "@mui/material/styles/useTheme";
 import Box from "@mui/material/Box";
@@ -45,22 +46,98 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
 
 function Row(props: {
-  row: speedInterface;
+  key: string & { isUUID: true };
+  speed: speedInterface;
   measurementSystem: "metric" | "imperial";
   isEditable: boolean;
   rowType: "regular" | "feedback" | "bookmark";
 }) {
   const navigate = useNavigate();
 
-  const { row, measurementSystem, isEditable, rowType } = props;
+  const { speed, measurementSystem, isEditable, rowType } = props;
+  const [row, setRow] = useState(speed);
+
   const [open, setOpen] = useState(false);
 
   const [bookmark, setBookmark] = useState<boolean>(
     row.user_speed_bookmark ? true : false,
   );
-  const [vote, setVote] = useState<number>(
-    row.user_speed_feedback ? row.user_speed_feedback.feedback_vote : 0,
-  );
+
+  const handleFeedbackRequestResult = (result: any) => {
+    if (result.status === 201 || result.status === 200) {
+      const userSpeedFeedback = {
+        feedback_id: result.data.id,
+        feedback_vote: result.data.vote,
+      };
+      setRow((prevState) => {
+        return {
+          ...prevState,
+          user_speed_feedback: userSpeedFeedback,
+          score: result.data.speed.score,
+        };
+      });
+    } else {
+      // handle >=400
+    }
+  };
+  const handleUpvote = () => {
+    // create
+    if (!row.user_speed_feedback) {
+      makeSpeedFeedback(null, row.id, 1, true).then((result) => {
+        handleFeedbackRequestResult(result);
+      });
+      // update
+    } else {
+      if (row.user_speed_feedback.feedback_vote === 1) {
+        makeSpeedFeedback(
+          row.user_speed_feedback.feedback_id,
+          null,
+          0,
+          false,
+        ).then((result) => {
+          handleFeedbackRequestResult(result);
+        });
+      } else {
+        makeSpeedFeedback(
+          row.user_speed_feedback.feedback_id,
+          null,
+          1,
+          false,
+        ).then((result) => {
+          handleFeedbackRequestResult(result);
+        });
+      }
+    }
+  };
+  const handleDownvote = () => {
+    // create
+    if (!row.user_speed_feedback) {
+      makeSpeedFeedback(null, row.id, -1, true).then((result) => {
+        handleFeedbackRequestResult(result);
+      });
+      // update
+    } else {
+      if (row.user_speed_feedback.feedback_vote === -1) {
+        makeSpeedFeedback(
+          row.user_speed_feedback.feedback_id,
+          null,
+          0,
+          false,
+        ).then((result) => {
+          handleFeedbackRequestResult(result);
+        });
+      } else {
+        makeSpeedFeedback(
+          row.user_speed_feedback.feedback_id,
+          null,
+          -1,
+          false,
+        ).then((result) => {
+          handleFeedbackRequestResult(result);
+        });
+      }
+    }
+  };
 
   const handleLinkToUserProfile = (userName: string) => {
     navigate(`/profile/${userName}/speeds`);
@@ -80,16 +157,34 @@ function Row(props: {
         </TableCell>
         <TableCell align="right">
           {!(rowType === "bookmark") && (
-            <ThumbUpAltIcon color={vote === 1 ? "warning" : "primary"} />
+            <Button onClick={handleUpvote}>
+              <ThumbUpAltIcon
+                color={
+                  row.user_speed_feedback &&
+                  row.user_speed_feedback.feedback_vote === 1
+                    ? "warning"
+                    : "primary"
+                }
+              />
+            </Button>
           )}
         </TableCell>
         <TableCell align="center">
           <Typography>{row.score}</Typography>
         </TableCell>
         <TableCell align="left">
-          {!(rowType === "bookmark") && (
-            <ThumbDownAltIcon color={vote === -1 ? "warning" : "primary"} />
-          )}
+          <Button onClick={handleDownvote}>
+            {!(rowType === "bookmark") && (
+              <ThumbDownAltIcon
+                color={
+                  row.user_speed_feedback &&
+                  row.user_speed_feedback.feedback_vote === -1
+                    ? "warning"
+                    : "primary"
+                }
+              />
+            )}
+          </Button>
         </TableCell>
         <TableCell component="th" scope="row">
           <Typography>{row.name}</Typography>
@@ -370,7 +465,7 @@ export default function SpeedsTable({
                 results.map((row) => (
                   <Row
                     key={row.id}
-                    row={row}
+                    speed={row}
                     measurementSystem={measurementSystem}
                     isEditable={isEditable}
                     rowType={rowType}

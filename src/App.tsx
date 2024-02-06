@@ -117,7 +117,12 @@ export default function App(props: any) {
           {["", "speeds"].map((path) => (
             <Route
               path={path}
-              element={<ProfileSpeeds measurementSystem={measurementSystem} />}
+              element={
+                <ProfileSpeeds
+                  setMeasurementSystem={setMeasurementSystem}
+                  measurementSystem={measurementSystem}
+                />
+              }
             >
               {["", "speeds"].map((path) => (
                 <Route

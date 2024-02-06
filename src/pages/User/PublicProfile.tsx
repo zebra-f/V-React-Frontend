@@ -12,14 +12,13 @@ import Container from "@mui/material/Container";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import Stack from "@mui/material/Stack";
 
-interface AppProps {
+interface props {
   setMeasurementSystem: React.Dispatch<
     React.SetStateAction<"metric" | "imperial">
   >;
   measurementSystem: "metric" | "imperial";
 }
-
-export default function PublicProfile(props: AppProps) {
+export default function PublicProfile(props: props) {
   const { userName } = useParams();
 
   const theme = useTheme();
@@ -34,7 +33,6 @@ export default function PublicProfile(props: AppProps) {
   const [alignment, setAlignment] = useState<"metric" | "imperial">(
     props.measurementSystem,
   );
-
   const handleAlignment = (
     event: React.MouseEvent<HTMLElement>,
     newAlignment: "metric" | "imperial",
@@ -44,6 +42,7 @@ export default function PublicProfile(props: AppProps) {
       props.setMeasurementSystem(newAlignment);
     }
   };
+
   const backgroundColor =
     theme.palette.mode === "dark"
       ? "rgba(0, 0, 0, 0.1)"
