@@ -8,7 +8,6 @@ import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
-import Container from "@mui/material/Container";
 
 interface props {
   setMeasurementSystem: React.Dispatch<
@@ -60,7 +59,6 @@ export default function ProfileSpeeds({
         <Tabs
           value={value}
           onChange={handleChange}
-          centered
           variant="scrollable"
           scrollButtons="auto"
           allowScrollButtonsMobile

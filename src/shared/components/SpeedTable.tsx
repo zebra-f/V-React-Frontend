@@ -6,6 +6,10 @@ import {
   speedQueryParams,
 } from "../interfaces/speedInterfaces";
 import { makeSpeedFeedback } from "../../actions/speed/feedback";
+import {
+  createSpeedBookmark,
+  deleteSpeedBookmark,
+} from "../../actions/speed/bookmark";
 
 import useTheme from "@mui/material/styles/useTheme";
 import Box from "@mui/material/Box";
@@ -47,21 +51,17 @@ import Switch from "@mui/material/Switch";
 
 function Row(props: {
   key: string & { isUUID: true };
-  speed: speedInterface;
+  rowMainData: speedInterface;
   measurementSystem: "metric" | "imperial";
   isEditable: boolean;
   rowType: "regular" | "feedback" | "bookmark";
 }) {
   const navigate = useNavigate();
 
-  const { speed, measurementSystem, isEditable, rowType } = props;
-  const [row, setRow] = useState(speed);
+  const { rowMainData, measurementSystem, isEditable, rowType } = props;
+  const [speed, setSpeed] = useState<speedInterface>(rowMainData);
 
   const [open, setOpen] = useState(false);
-
-  const [bookmark, setBookmark] = useState<boolean>(
-    row.user_speed_bookmark ? true : false,
-  );
 
   const handleFeedbackRequestResult = (result: any) => {
     if (result.status === 201 || result.status === 200) {
@@ -69,7 +69,7 @@ function Row(props: {
         feedback_id: result.data.id,
         feedback_vote: result.data.vote,
       };
-      setRow((prevState) => {
+      setSpeed((prevState) => {
         return {
           ...prevState,
           user_speed_feedback: userSpeedFeedback,
@@ -77,20 +77,20 @@ function Row(props: {
         };
       });
     } else {
-      // handle >=400
+      // handle >= 400
     }
   };
   const handleUpvote = () => {
     // create
-    if (!row.user_speed_feedback) {
-      makeSpeedFeedback(null, row.id, 1, true).then((result) => {
+    if (!speed.user_speed_feedback) {
+      makeSpeedFeedback(null, speed.id, 1, true).then((result) => {
         handleFeedbackRequestResult(result);
       });
       // update
     } else {
-      if (row.user_speed_feedback.feedback_vote === 1) {
+      if (speed.user_speed_feedback.feedback_vote === 1) {
         makeSpeedFeedback(
-          row.user_speed_feedback.feedback_id,
+          speed.user_speed_feedback.feedback_id,
           null,
           0,
           false,
@@ -99,7 +99,7 @@ function Row(props: {
         });
       } else {
         makeSpeedFeedback(
-          row.user_speed_feedback.feedback_id,
+          speed.user_speed_feedback.feedback_id,
           null,
           1,
           false,
@@ -111,15 +111,15 @@ function Row(props: {
   };
   const handleDownvote = () => {
     // create
-    if (!row.user_speed_feedback) {
-      makeSpeedFeedback(null, row.id, -1, true).then((result) => {
+    if (!speed.user_speed_feedback) {
+      makeSpeedFeedback(null, speed.id, -1, true).then((result) => {
         handleFeedbackRequestResult(result);
       });
       // update
     } else {
-      if (row.user_speed_feedback.feedback_vote === -1) {
+      if (speed.user_speed_feedback.feedback_vote === -1) {
         makeSpeedFeedback(
-          row.user_speed_feedback.feedback_id,
+          speed.user_speed_feedback.feedback_id,
           null,
           0,
           false,
@@ -128,7 +128,7 @@ function Row(props: {
         });
       } else {
         makeSpeedFeedback(
-          row.user_speed_feedback.feedback_id,
+          speed.user_speed_feedback.feedback_id,
           null,
           -1,
           false,
@@ -136,6 +136,45 @@ function Row(props: {
           handleFeedbackRequestResult(result);
         });
       }
+    }
+  };
+
+  const handleCreateBookmark = () => {
+    if (!speed.user_speed_bookmark) {
+      createSpeedBookmark(speed.id, null).then((result) => {
+        if (result.status === 201) {
+          const userSpeedBookmark = {
+            bookmark_id: result.data.id,
+            bookmark_category: result.data.category,
+          };
+          setSpeed((prevState: any) => {
+            return {
+              ...prevState,
+              user_speed_bookmark: userSpeedBookmark,
+            };
+          });
+        } else {
+          // hande >= 400
+        }
+      });
+    }
+  };
+  const handleDeleteBookmark = () => {
+    if (speed.user_speed_bookmark) {
+      deleteSpeedBookmark(speed.user_speed_bookmark.bookmark_id).then(
+        (result) => {
+          if (result.status === 204) {
+            setSpeed((prevState) => {
+              return {
+                ...prevState,
+                user_speed_bookmark: null,
+              };
+            });
+          } else {
+            // handle >= 400
+          }
+        },
+      );
     }
   };
 
@@ -160,8 +199,8 @@ function Row(props: {
             <Button onClick={handleUpvote}>
               <ThumbUpAltIcon
                 color={
-                  row.user_speed_feedback &&
-                  row.user_speed_feedback.feedback_vote === 1
+                  speed.user_speed_feedback &&
+                  speed.user_speed_feedback.feedback_vote === 1
                     ? "warning"
                     : "primary"
                 }
@@ -170,15 +209,15 @@ function Row(props: {
           )}
         </TableCell>
         <TableCell align="center">
-          <Typography>{row.score}</Typography>
+          <Typography>{speed.score}</Typography>
         </TableCell>
         <TableCell align="left">
           {!(rowType === "bookmark") && (
             <Button onClick={handleDownvote}>
               <ThumbDownAltIcon
                 color={
-                  row.user_speed_feedback &&
-                  row.user_speed_feedback.feedback_vote === -1
+                  speed.user_speed_feedback &&
+                  speed.user_speed_feedback.feedback_vote === -1
                     ? "warning"
                     : "primary"
                 }
@@ -187,28 +226,40 @@ function Row(props: {
           )}
         </TableCell>
         <TableCell component="th" scope="row">
-          <Typography>{row.name}</Typography>
+          <Typography>{speed.name}</Typography>
         </TableCell>
         <TableCell align="right">
           <Tooltip
             title={
               <Typography fontSize={20}>
-                {row.estimated
-                  ? row.speed_type + " (estimated)"
-                  : row.speed_type}
+                {speed.estimated
+                  ? speed.speed_type + " (estimated)"
+                  : speed.speed_type}
               </Typography>
             }
           >
             <Typography>
               {measurementSystem == "metric"
-                ? `${row.kmph} kmph`
-                : `${(row.kmph * 0.621371).toFixed(2)} mph`}
+                ? `${speed.kmph} kmph`
+                : `${(speed.kmph * 0.621371).toFixed(2)} mph`}
             </Typography>
           </Tooltip>
         </TableCell>
         <TableCell align="center">
           {(rowType == "regular" || rowType == "bookmark") && (
-            <StarOutlineIcon color={bookmark ? "warning" : "primary"} />
+            <Button
+              onClick={() => {
+                if (!speed.user_speed_bookmark) {
+                  handleCreateBookmark();
+                } else {
+                  handleDeleteBookmark();
+                }
+              }}
+            >
+              <StarOutlineIcon
+                color={speed.user_speed_bookmark ? "warning" : "primary"}
+              />
+            </Button>
           )}
         </TableCell>
         <TableCell>
@@ -222,23 +273,18 @@ function Row(props: {
             <Box sx={{ margin: 1 }}>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <Stack direction="row" spacing={1}>
-                  {row.tags.map((tag: string) => (
-                    <Chip
-                      key={tag}
-                      label={tag}
-                      variant="outlined"
-                      onClick={() => {
-                        console.log("fdf");
-                      }}
-                    />
+                  {speed.tags.map((tag: string) => (
+                    <Chip key={tag} label={tag} variant="outlined" />
                   ))}
                 </Stack>
                 {isEditable && (
                   <Stack direction="row" alignItems="center" gap={1}>
                     <Typography>
-                      {row.is_public ? "Public" : "Private"}
+                      {speed.is_public ? "Public" : "Private"}
                     </Typography>
-                    <LockOpenIcon color={row.is_public ? "success" : "error"} />
+                    <LockOpenIcon
+                      color={speed.is_public ? "success" : "error"}
+                    />
                   </Stack>
                 )}
                 <ButtonGroup
@@ -273,7 +319,7 @@ function Row(props: {
                 </ButtonGroup>
               </div>
               <Typography variant="h6" gutterBottom component="div" mt={2}>
-                {row.description}
+                {speed.description}
               </Typography>
               {!isEditable && (
                 <Typography color={"#bb54e7"} variant="subtitle1" mt={2}>
@@ -281,11 +327,11 @@ function Row(props: {
                   <Link
                     href="#"
                     onClick={() => {
-                      handleLinkToUserProfile(row.user);
+                      handleLinkToUserProfile(speed.user);
                     }}
                     underline="none"
                   >
-                    {row.user}
+                    {speed.user}
                   </Link>
                 </Typography>
               )}
@@ -465,7 +511,7 @@ export default function SpeedsTable({
                 results.map((row) => (
                   <Row
                     key={row.id}
-                    speed={row}
+                    rowMainData={row}
                     measurementSystem={measurementSystem}
                     isEditable={isEditable}
                     rowType={rowType}
