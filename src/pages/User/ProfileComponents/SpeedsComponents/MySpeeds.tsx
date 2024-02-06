@@ -6,12 +6,11 @@ import {
   speedQueryParams,
 } from "../../../../shared/interfaces/speedInterfaces";
 
+import AddSpeed from "../../../../shared/components/AddSpeed";
 import SpeedsTable from "../../../../shared/components/SpeedTable";
 
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
 interface props {
   measurementSystem: "metric" | "imperial";
@@ -41,9 +40,7 @@ export default function MySpeeds({ measurementSystem }: props) {
     <>
       <Container>
         <Box display="flex" justifyContent="flex-end" mt={2}>
-          <Button variant="contained" color="success">
-            ADD MORE SPEEDS &nbsp;&nbsp; <CloudUploadIcon />
-          </Button>
+          <AddSpeed />
         </Box>
         <SpeedsTable
           queryParams={queryParams}
