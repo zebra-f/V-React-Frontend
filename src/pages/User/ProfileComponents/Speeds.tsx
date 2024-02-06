@@ -57,7 +57,14 @@ export default function ProfileSpeeds({
         sx={{ width: "100%" }}
         style={{ background: backgroundColor }}
       >
-        <Tabs value={value} onChange={handleChange} centered>
+        <Tabs
+          value={value}
+          onChange={handleChange}
+          centered
+          variant="scrollable"
+          scrollButtons="auto"
+          allowScrollButtonsMobile
+        >
           <Tab sx={{ pt: 5 }} label="My Speeds" to="speeds" component={Link} />
           <Tab
             sx={{ pt: 5 }}

@@ -173,8 +173,8 @@ function Row(props: {
           <Typography>{row.score}</Typography>
         </TableCell>
         <TableCell align="left">
-          <Button onClick={handleDownvote}>
-            {!(rowType === "bookmark") && (
+          {!(rowType === "bookmark") && (
+            <Button onClick={handleDownvote}>
               <ThumbDownAltIcon
                 color={
                   row.user_speed_feedback &&
@@ -183,8 +183,8 @@ function Row(props: {
                     : "primary"
                 }
               />
-            )}
-          </Button>
+            </Button>
+          )}
         </TableCell>
         <TableCell component="th" scope="row">
           <Typography>{row.name}</Typography>
