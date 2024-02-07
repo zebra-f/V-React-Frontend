@@ -84,8 +84,9 @@ export default function App(props: any) {
             />
           }
         >
-          {["", "speed"].map((path) => (
+          {["", "speed"].map((path, index) => (
             <Route
+              key={index}
               path={path}
               element={<Speed measurementSystem={measurementSystem} />}
             />
@@ -100,8 +101,8 @@ export default function App(props: any) {
           path="account"
           element={<Account isAuthenticated={isAuthenticated} />}
         >
-          {["", "myaccount"].map((path) => (
-            <Route path={path} element={<MyAccount />} />
+          {["", "myaccount"].map((path, index) => (
+            <Route key={index} path={path} element={<MyAccount />} />
           ))}
           <Route path="changepassword" element={<ChangePassword />} />
           <Route
@@ -114,8 +115,9 @@ export default function App(props: any) {
           path="account/profile"
           element={<Profile isAuthenticated={isAuthenticated} />}
         >
-          {["", "speeds"].map((path) => (
+          {["", "speeds"].map((path, index) => (
             <Route
+              key={index}
               path={path}
               element={
                 <ProfileSpeeds
@@ -124,8 +126,9 @@ export default function App(props: any) {
                 />
               }
             >
-              {["", "speeds"].map((path) => (
+              {["", "speeds"].map((path, index) => (
                 <Route
+                  key={index}
                   path={path}
                   element={
                     <MySpeeds
@@ -161,8 +164,9 @@ export default function App(props: any) {
             />
           }
         >
-          {["", "speeds"].map((path) => (
+          {["", "speeds"].map((path, index) => (
             <Route
+              key={index}
               path={path}
               element={
                 <PublicProfileSpeeds measurementSystem={measurementSystem} />
