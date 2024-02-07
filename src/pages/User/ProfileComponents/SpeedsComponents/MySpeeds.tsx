@@ -6,16 +6,24 @@ import {
   speedQueryParams,
 } from "../../../../shared/interfaces/speedInterfaces";
 
-import AddSpeed from "../../../../shared/components/AddSpeed";
+import AddSpeedForm from "../../../../shared/components/AddSpeedForm";
 import SpeedsTable from "../../../../shared/components/SpeedTable";
 
+import Button from "@mui/material/Button";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
 
 interface props {
+  setMeasurementSystem: React.Dispatch<
+    React.SetStateAction<"metric" | "imperial">
+  >;
   measurementSystem: "metric" | "imperial";
 }
-export default function MySpeeds({ measurementSystem }: props) {
+export default function MySpeeds({
+  measurementSystem,
+  setMeasurementSystem,
+}: props) {
   const [queryParams, setQueryParams] = useState<speedQueryParams>({
     page: 1,
     isPublic: null,
@@ -36,11 +44,25 @@ export default function MySpeeds({ measurementSystem }: props) {
     });
   }, [queryParams]);
 
+  const [formOpen, setFormOpen] = useState<boolean>(false);
+  const handleAddSpeed = () => {
+    setFormOpen(true);
+  };
+
   return (
     <>
       <Container>
         <Box display="flex" justifyContent="flex-end" mt={2}>
-          <AddSpeed />
+          <Button variant="contained" color="success" onClick={handleAddSpeed}>
+            ADD MORE SPEEDS &nbsp;&nbsp; <CloudUploadIcon />
+          </Button>
+          <AddSpeedForm
+            measurementSystem={measurementSystem}
+            setMeasurementSystem={setMeasurementSystem}
+            formOpen={formOpen}
+            setFormOpen={setFormOpen}
+            speedData={null}
+          />
         </Box>
         <SpeedsTable
           queryParams={queryParams}
