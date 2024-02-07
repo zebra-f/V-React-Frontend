@@ -36,15 +36,11 @@ export default function ProfileSpeeds({
       ? "rgba(0, 0, 0, 0.1)"
       : "rgba(233, 236, 239, 0.7)";
 
-  const [alignment, setAlignment] = useState<"metric" | "imperial">(
-    measurementSystem,
-  );
   const handleAlignment = (
     event: React.MouseEvent<HTMLElement>,
     newAlignment: "metric" | "imperial",
   ) => {
     if (newAlignment !== null) {
-      setAlignment(newAlignment);
       setMeasurementSystem(newAlignment);
     }
   };
@@ -80,7 +76,7 @@ export default function ProfileSpeeds({
 
         <ToggleButtonGroup
           orientation="vertical"
-          value={alignment}
+          value={measurementSystem}
           exclusive
           onChange={handleAlignment}
           aria-label="text alignment"

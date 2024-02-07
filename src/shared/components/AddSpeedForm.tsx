@@ -62,11 +62,6 @@ export default function AddSpeedForm({
     setFormOpen(false);
   };
 
-  const [apiError, setApiError] = useState({
-    error: false,
-    errorMessage: "",
-  });
-
   const [estimatedChecked, setEstimatedChecked] = useState(false);
   const handleEstimatedCheckboxChange = (event: any) => {
     setEstimatedChecked(event.target.checked);
@@ -85,6 +80,26 @@ export default function AddSpeedForm({
     speedData !== null ? speedData.tags : [],
   );
 
+  const [apiError, setApiError] = useState({
+    error: false,
+    errorMessage: "",
+  });
+  const [nameError, setNameError] = useState({
+    error: false,
+    errorMessage: "",
+  });
+  const [descriptionError, setDescriptionError] = useState({
+    error: false,
+    errorMessage: "",
+  });
+  const [speedError, setSpeedError] = useState({
+    error: false,
+    errorMessage: "",
+  });
+  const [tagsError, setTagsError] = useState({
+    error: false,
+    errorMessage: "",
+  });
   const handleSubmit = (event: any) => {
     event.preventDefault();
 
@@ -96,6 +111,42 @@ export default function AddSpeedForm({
     let speedType = data.get("speed-type-select");
     let estimatedCheckbox = data.get("estimated-checkbox");
     let privateCheckbox = data.get("private-checkbox");
+
+    let flag = false;
+
+    if (!name) {
+      setNameError({ error: true, errorMessage: "This field is required" });
+      flag = true;
+    }
+
+    if (!description) {
+      setDescriptionError({
+        error: true,
+        errorMessage: "This field is required",
+      });
+      flag = true;
+    }
+
+    if (!speed) {
+      setSpeedError({ error: true, errorMessage: "This field is required." });
+      flag = true;
+    } else {
+      if (isNaN(speed.toString().trim() as any)) {
+        setSpeedError({
+          error: true,
+          errorMessage: "A valid number is required",
+        });
+        flag = true;
+      }
+    }
+
+    if (tags.length > 4) {
+      setTagsError({
+        error: true,
+        errorMessage: "The list can have a maximum of 4 items.",
+      });
+    }
+
     console.log(
       name,
       description,
@@ -169,6 +220,8 @@ export default function AddSpeedForm({
                 name="name"
                 autoFocus
                 defaultValue={speedData ? speedData.name : null}
+                helperText={nameError.error ? nameError.errorMessage : ""}
+                error={nameError.error}
               />
               <TextField
                 margin="normal"
@@ -178,15 +231,17 @@ export default function AddSpeedForm({
                 label="Description"
                 name="description"
                 defaultValue={speedData ? speedData.description : null}
+                helperText={
+                  descriptionError.error ? descriptionError.errorMessage : ""
+                }
+                error={descriptionError.error}
               />
 
               <Box sx={{ flexGrow: 2 }}>
                 <FormControl>
                   <RadioGroup
                     aria-labelledby="unit-radio-group"
-                    defaultValue={
-                      measurementSystem === "metric" ? "kmph" : "mph"
-                    }
+                    value={measurementSystem === "metric" ? "kmph" : "mph"}
                     name="unit-radio-group"
                     row
                   >
@@ -212,7 +267,6 @@ export default function AddSpeedForm({
                   <Grid xs={7}>
                     <TextField
                       margin="normal"
-                      type="number"
                       required
                       fullWidth
                       name="speed"
@@ -230,6 +284,10 @@ export default function AddSpeedForm({
                             : (speedData.kmph * 0.621371).toFixed(2)
                           : null
                       }
+                      helperText={
+                        speedError.error ? speedError.errorMessage : ""
+                      }
+                      error={speedError.error}
                     />
                   </Grid>
                   <Grid xs={5}>
@@ -287,6 +345,8 @@ export default function AddSpeedForm({
                     variant="outlined"
                     label="Tags"
                     required
+                    helperText={tagsError.error ? tagsError.errorMessage : ""}
+                    error={tagsError.error}
                   />
                 )}
               />
