@@ -29,7 +29,7 @@ export default function getTheme(mode: string) {
             },
             action: {
               selected: grey[200],
-              active: grey[500],
+              active: grey[800],
               disabled: grey[800],
             },
           }
@@ -54,7 +54,7 @@ export default function getTheme(mode: string) {
             },
             action: {
               selected: grey[800],
-              active: grey[500],
+              active: grey[200],
               disabled: grey[200],
             },
           }),
