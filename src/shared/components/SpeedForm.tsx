@@ -7,11 +7,11 @@ import {
 
 import kyClient from "../services/ky";
 
+import Tooltip from "@mui/material/Tooltip";
 import Snackbar from "@mui/material/Snackbar";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
 import Button from "@mui/material/Button";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import Slide from "@mui/material/Slide";
@@ -35,6 +35,7 @@ import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import Grid from "@mui/material/Unstable_Grid2";
 import Autocomplete from "@mui/material/Autocomplete";
+import HelpIcon from "@mui/icons-material/Help";
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & {
@@ -313,7 +314,7 @@ export default function SpeedForm({
       <Snackbar
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
         open={successSnackbarOpen}
-        autoHideDuration={3000}
+        autoHideDuration={4000}
         onClose={handleCloseAlert}
         sx={{ mt: 6 }}
       >
@@ -483,39 +484,82 @@ export default function SpeedForm({
                   checked={estimatedChecked}
                   onChange={handleEstimatedCheckboxChange}
                   control={<Checkbox size="medium" />}
-                  label={<span>Estimated</span>}
+                  label={
+                    <span>
+                      Estimated&nbsp;
+                      <Tooltip
+                        enterTouchDelay={0}
+                        leaveTouchDelay={4000}
+                        title={
+                          <Typography fontSize={20}>
+                            Check this box to indicates that the values are not
+                            directly measured but are approximations or
+                            predictions. For example, it might represent the
+                            estimated top speed of a T-Rex running.
+                          </Typography>
+                        }
+                      >
+                        <HelpIcon fontSize="small" />
+                      </Tooltip>
+                    </span>
+                  }
                   name="estimated-checkbox"
                 />
                 <FormControlLabel
                   checked={privateChecked}
                   onChange={handlePrivateCheckboxChange}
                   control={<Checkbox size="medium" />}
-                  label={<span>Private</span>}
+                  label={
+                    <span>
+                      Private&nbsp;
+                      <Tooltip
+                        enterTouchDelay={0}
+                        leaveTouchDelay={3000}
+                        title={
+                          <Typography fontSize={20}>
+                            Check this box to ensure that the added 'Speed' data
+                            remains private and accessible only for you.
+                          </Typography>
+                        }
+                      >
+                        <HelpIcon fontSize="small" />
+                      </Tooltip>
+                    </span>
+                  }
                   name="private-checkbox"
                 />
               </FormGroup>
-              <Autocomplete
-                sx={{ mt: 1 }}
-                multiple
-                id="tags"
-                options={[]}
-                value={tags}
-                freeSolo
-                onChange={(_, tags: Array<string>) => {
-                  setTags(tags);
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    id={"tags-text-field"}
-                    variant="outlined"
-                    label="Tags"
-                    required
-                    helperText={tagsError.error ? tagsError.errorMessage : ""}
-                    error={tagsError.error}
-                  />
-                )}
-              />
+              <Box>
+                <Autocomplete
+                  sx={{ mt: 1 }}
+                  multiple
+                  id="tags"
+                  options={[]}
+                  value={tags}
+                  freeSolo
+                  onChange={(_, tags: Array<string>) => {
+                    setTags(tags);
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      id={"tags-text-field"}
+                      variant="outlined"
+                      label="Tags"
+                      required
+                      helperText={tagsError.error ? tagsError.errorMessage : ""}
+                      error={tagsError.error}
+                    />
+                  )}
+                />
+                <Typography variant="subtitle2" gutterBottom>
+                  To improve search results and enhance the data with additional
+                  context, consider adding relevant tags. While not obligatory,
+                  it is recommended for better categorization and
+                  discoverability. Simply type a word and press 'Enter' to add
+                  tags (up to 4).
+                </Typography>
+              </Box>
               <Button
                 type="submit"
                 variant="contained"
@@ -526,9 +570,6 @@ export default function SpeedForm({
               </Button>
             </Box>
           </Box>
-          <DialogContentText mt={2}>
-            (data entered here is will be available on your account)
-          </DialogContentText>
         </DialogContent>
 
         <DialogActions>
