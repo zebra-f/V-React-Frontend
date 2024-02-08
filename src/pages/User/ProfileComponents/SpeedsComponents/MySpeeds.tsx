@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 import { getAndPrepareSpeedsData } from "../../../../shared/services/speeds/getData";
 import {
@@ -6,7 +6,7 @@ import {
   speedQueryParams,
 } from "../../../../shared/interfaces/speedInterfaces";
 
-import AddSpeedForm from "../../../../shared/components/AddSpeedForm";
+import SpeedForm from "../../../../shared/components/SpeedForm";
 import SpeedsTable from "../../../../shared/components/SpeedTable";
 
 import Button from "@mui/material/Button";
@@ -48,6 +48,22 @@ export default function MySpeeds({
   const handleAddSpeed = () => {
     setFormOpen(true);
   };
+  const [speedFormResponseData, setSpeedFormResponseData] =
+    useState<speedInterface | null>(null);
+
+  const firstRenderRef = useRef(true);
+  useEffect(() => {
+    if (firstRenderRef.current) {
+      firstRenderRef.current = false;
+      return;
+    }
+    if (speedFormResponseData !== null) {
+      setResults((prevState) => {
+        return [speedFormResponseData, ...prevState];
+      });
+      setCount((prevState) => prevState + 1);
+    }
+  }, [speedFormResponseData]);
 
   return (
     <>
@@ -56,12 +72,13 @@ export default function MySpeeds({
           <Button variant="contained" color="success" onClick={handleAddSpeed}>
             ADD MORE SPEEDS &nbsp;&nbsp; <CloudUploadIcon />
           </Button>
-          <AddSpeedForm
+          <SpeedForm
             measurementSystem={measurementSystem}
             setMeasurementSystem={setMeasurementSystem}
             formOpen={formOpen}
             setFormOpen={setFormOpen}
             speedData={null}
+            setSpeedFormResponseData={setSpeedFormResponseData}
           />
         </Box>
         <SpeedsTable

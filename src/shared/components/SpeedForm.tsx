@@ -1,10 +1,15 @@
 import { useState, forwardRef } from "react";
 
-import { speedInterface } from "../interfaces/speedInterfaces";
+import {
+  speedInterface,
+  speedBaseInterface,
+} from "../interfaces/speedInterfaces";
 
+import kyClient from "../services/ky";
+
+import Snackbar from "@mui/material/Snackbar";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
-import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import Button from "@mui/material/Button";
@@ -40,6 +45,32 @@ const Transition = forwardRef(function Transition(
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
+async function addSpeedRequest(data: speedBaseInterface) {
+  try {
+    const response: any = await kyClient.backendApi.post("speeds/", {
+      json: {
+        name: data.name,
+        description: data.description,
+        speed_type: data.speed_type,
+        tags: data.tags,
+        kmph: data.kmph,
+        estimated: data.estimated,
+        is_public: data.is_public,
+      },
+    });
+    const responseData = await response.json();
+    return { status: response.status, data: responseData };
+  } catch (error: any) {
+    try {
+      const response = await error.response;
+      const responseData = await response.json();
+      return { status: response.status, data: responseData };
+    } catch (_error: any) {
+      return { status: 500, data: {} };
+    }
+  }
+}
+
 interface props {
   setMeasurementSystem: React.Dispatch<
     React.SetStateAction<"metric" | "imperial">
@@ -48,15 +79,31 @@ interface props {
   formOpen: boolean;
   setFormOpen: React.Dispatch<React.SetStateAction<boolean>>;
   speedData: null | speedInterface;
+  setSpeedFormResponseData: React.Dispatch<
+    React.SetStateAction<speedInterface | null>
+  >;
 }
-export default function AddSpeedForm({
+export default function SpeedForm({
   measurementSystem,
   setMeasurementSystem,
   formOpen,
   setFormOpen,
   speedData,
+  setSpeedFormResponseData,
 }: props) {
   const theme = useTheme();
+
+  const [successSnackbarOpen, setSuccessSnackbarOpen] = useState(false);
+  const [speedAddedAlertMessage, setSpeedAddedAlertMessage] = useState("");
+  const handleCloseAlert = (
+    event?: React.SyntheticEvent | Event,
+    reason?: string,
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setSuccessSnackbarOpen(false);
+  };
 
   const handleCloseForm = () => {
     setFormOpen(false);
@@ -107,16 +154,18 @@ export default function AddSpeedForm({
     let name = data.get("name");
     let description = data.get("description");
     let unit = data.get("unit-radio-group");
-    let speed = data.get("speed");
+    let kmph = data.get("speed");
     let speedType = data.get("speed-type-select");
     let estimatedCheckbox = data.get("estimated-checkbox");
     let privateCheckbox = data.get("private-checkbox");
 
-    let flag = false;
+    let errorFlag = false;
 
     if (!name) {
       setNameError({ error: true, errorMessage: "This field is required" });
-      flag = true;
+      errorFlag = true;
+    } else {
+      setNameError({ error: false, errorMessage: "" });
     }
 
     if (!description) {
@@ -124,19 +173,26 @@ export default function AddSpeedForm({
         error: true,
         errorMessage: "This field is required",
       });
-      flag = true;
+      errorFlag = true;
+    } else {
+      setDescriptionError({
+        error: false,
+        errorMessage: "",
+      });
     }
 
-    if (!speed) {
+    if (!kmph) {
       setSpeedError({ error: true, errorMessage: "This field is required." });
-      flag = true;
+      errorFlag = true;
     } else {
-      if (isNaN(speed.toString().trim() as any)) {
+      if (isNaN(kmph.toString().trim() as any)) {
         setSpeedError({
           error: true,
           errorMessage: "A valid number is required",
         });
-        flag = true;
+        errorFlag = true;
+      } else {
+        setSpeedError({ error: false, errorMessage: "" });
       }
     }
 
@@ -145,22 +201,131 @@ export default function AddSpeedForm({
         error: true,
         errorMessage: "The list can have a maximum of 4 items.",
       });
+    } else {
+      let tagsFlag = false;
+      tags.forEach((tag) => {
+        if (tag.length > 20) {
+          setTagsError({
+            error: true,
+            errorMessage:
+              "Tag length exceeds the maximum limit. Each tag can have a maximum of 20 characters.",
+          });
+          errorFlag = true;
+          tagsFlag = true;
+        }
+      });
+      if (!tagsFlag) {
+        setTagsError({ error: false, errorMessage: "" });
+      }
     }
 
-    console.log(
-      name,
-      description,
-      speed,
-      unit,
-      speedType,
-      estimatedCheckbox,
-      privateCheckbox,
-      tags,
-    );
+    if (errorFlag) {
+      return;
+    }
+
+    if (name && description && kmph && unit && speedType) {
+      name = name.toString().trim();
+      description = description.toString().trim();
+      kmph = kmph.toString().trim();
+      unit = unit.toString().trim();
+      speedType = speedType.toString().trim();
+    } else {
+      return;
+    }
+
+    const requestData: speedBaseInterface = {
+      description: description,
+      estimated: estimatedCheckbox !== null ? true : false,
+      is_public: privateCheckbox !== null ? false : true,
+      kmph: unit === "kmph" ? Number(kmph) : Number(kmph) * 1.609344,
+      speed_type: speedType.toLowerCase(),
+      name: name,
+      tags: tags,
+    };
+
+    addSpeedRequest(requestData).then((result) => {
+      if (result.status === 201) {
+        (document.getElementById("name") as HTMLInputElement).value = "";
+        (document.getElementById("description") as HTMLInputElement).value = "";
+        (document.getElementById("speed") as HTMLInputElement).value = "";
+
+        setSpeedAddedAlertMessage(
+          "Success! You can close this form or add more speeds.",
+        );
+        setSuccessSnackbarOpen(true);
+
+        setSpeedFormResponseData(result.data);
+
+        setApiError({ error: false, errorMessage: "" });
+      } else {
+        const data = result.data;
+
+        if (result.status == 400) {
+          if ("name" in data) {
+            setNameError({
+              error: true,
+              errorMessage: data.name,
+            });
+            errorFlag = true;
+          }
+          if ("description" in data) {
+            setDescriptionError({
+              error: true,
+              errorMessage: data.description,
+            });
+            errorFlag = true;
+          }
+          if ("kmph" in data) {
+            setSpeedError({
+              error: true,
+              errorMessage: data.password,
+            });
+            errorFlag = true;
+          }
+          if ("tags" in data) {
+            setTagsError({
+              error: true,
+              errorMessage: data.tags,
+            });
+            errorFlag = true;
+          }
+        }
+
+        if ("detail" in result.data) {
+          setApiError({ error: true, errorMessage: result.data.detail });
+          errorFlag = true;
+        }
+
+        if (errorFlag) {
+          return;
+        }
+
+        setApiError({
+          error: true,
+          errorMessage: "Something went wrong. Try again later.",
+        });
+      }
+    });
   };
 
   return (
     <>
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={successSnackbarOpen}
+        autoHideDuration={3000}
+        onClose={handleCloseAlert}
+        sx={{ mt: 6 }}
+      >
+        <Alert
+          onClose={handleCloseAlert}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          {speedAddedAlertMessage}
+        </Alert>
+      </Snackbar>
+
       <Dialog
         open={formOpen}
         TransitionComponent={Transition}
@@ -342,6 +507,7 @@ export default function AddSpeedForm({
                 renderInput={(params) => (
                   <TextField
                     {...params}
+                    id={"tags-text-field"}
                     variant="outlined"
                     label="Tags"
                     required

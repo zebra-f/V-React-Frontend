@@ -2,22 +2,27 @@ interface userSpeedBookmarkInterface {
   bookmark_id: number;
   bookmar_category: string;
 }
+
 interface userSpeedFeedbackInterface {
   feedback_id: number;
   feedback_vote: number;
 }
-interface speedInterface {
+
+interface speedBaseInterface {
   description: string;
   estimated: boolean;
-  id: string & { isUUID: true };
   is_public: boolean;
   kmph: number;
   name: string;
-  score: number;
   speed_type: string;
   tags: Array<string>;
-  url: string;
+}
+
+interface speedInterface extends speedBaseInterface {
+  id: string & { isUUID: true };
+  score: number;
   user: string;
+  url: string;
   user_speed_bookmark: null | userSpeedBookmarkInterface;
   user_speed_feedback: null | userSpeedFeedbackInterface;
 }
@@ -40,6 +45,7 @@ interface speedQueryParams {
 export type {
   userSpeedBookmarkInterface,
   userSpeedFeedbackInterface,
+  speedBaseInterface,
   speedInterface,
   responseSpeedDataInterface,
   speedQueryParams,
