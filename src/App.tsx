@@ -131,29 +131,10 @@ export default function App(props: any) {
                 }
               >
                 {["", "speeds"].map((path, index) => (
-                  <Route
-                    key={index}
-                    path={path}
-                    element={
-                      <MySpeeds
-                        measurementSystem={measurementSystem}
-                        setMeasurementSystem={setMeasurementSystem}
-                      />
-                    }
-                  />
+                  <Route key={index} path={path} element={<MySpeeds />} />
                 ))}
-                <Route
-                  path="feedback"
-                  element={
-                    <MySpeedFeedback measurementSystem={measurementSystem} />
-                  }
-                />
-                <Route
-                  path="bookmarks"
-                  element={
-                    <MySpeedBookmarks measurementSystem={measurementSystem} />
-                  }
-                />
+                <Route path="feedback" element={<MySpeedFeedback />} />
+                <Route path="bookmarks" element={<MySpeedBookmarks />} />
               </Route>
             ))}
             <Route path="lengths" element={<ProfileLengths />}></Route>
@@ -172,9 +153,7 @@ export default function App(props: any) {
               <Route
                 key={index}
                 path={path}
-                element={
-                  <PublicProfileSpeeds measurementSystem={measurementSystem} />
-                }
+                element={<PublicProfileSpeeds />}
               />
             ))}
             <Route path="lengths" element={<PublicProfileLengths />} />

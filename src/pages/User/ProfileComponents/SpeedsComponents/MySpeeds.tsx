@@ -14,16 +14,7 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
 
-interface props {
-  setMeasurementSystem: React.Dispatch<
-    React.SetStateAction<"metric" | "imperial">
-  >;
-  measurementSystem: "metric" | "imperial";
-}
-export default function MySpeeds({
-  measurementSystem,
-  setMeasurementSystem,
-}: props) {
+export default function MySpeeds() {
   const [queryParams, setQueryParams] = useState<speedQueryParams>({
     page: 1,
     isPublic: null,
@@ -72,21 +63,21 @@ export default function MySpeeds({
           <Button variant="contained" color="success" onClick={handleAddSpeed}>
             ADD MORE SPEEDS &nbsp;&nbsp; <CloudUploadIcon />
           </Button>
-          <SpeedForm
-            measurementSystem={measurementSystem}
-            setMeasurementSystem={setMeasurementSystem}
-            formOpen={formOpen}
-            setFormOpen={setFormOpen}
-            speedData={null}
-            setSpeedFormResponseData={setSpeedFormResponseData}
-          />
+          {formOpen && (
+            <SpeedForm
+              formOpen={formOpen}
+              setFormOpen={setFormOpen}
+              speedData={null}
+              setSpeedFormResponseData={setSpeedFormResponseData}
+            />
+          )}
         </Box>
+
         <SpeedsTable
           queryParams={queryParams}
           setQueryParams={setQueryParams}
           results={results}
           count={count}
-          measurementSystem={measurementSystem}
           isEditable={true}
           rowType={"regular"}
         />

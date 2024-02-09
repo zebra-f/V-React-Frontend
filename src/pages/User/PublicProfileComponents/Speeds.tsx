@@ -11,10 +11,7 @@ import SpeedsTable from "../../../shared/components/SpeedTable";
 
 import Container from "@mui/material/Container";
 
-interface props {
-  measurementSystem: "metric" | "imperial";
-}
-export default function PublicProfileSpeeds({ measurementSystem }: props) {
+export default function PublicProfileSpeeds() {
   const { userName } = useParams();
 
   const [queryParams, setQueryParams] = useState<speedQueryParams>({
@@ -45,7 +42,6 @@ export default function PublicProfileSpeeds({ measurementSystem }: props) {
           setQueryParams={setQueryParams}
           results={results}
           count={count}
-          measurementSystem={measurementSystem}
           isEditable={false}
           rowType={"regular"}
         />

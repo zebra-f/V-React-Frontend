@@ -59,10 +59,7 @@ async function getAndPrepareBookmarkData({ page = 1 }: feedbackQueryParams) {
   }
 }
 
-interface props {
-  measurementSystem: "metric" | "imperial";
-}
-export default function MySpeedBookmarks({ measurementSystem }: props) {
+export default function MySpeedBookmarks() {
   const [queryParams, setQueryParams] = useState<speedQueryParams>({
     page: 1,
     isPublic: null,
@@ -91,7 +88,6 @@ export default function MySpeedBookmarks({ measurementSystem }: props) {
           setQueryParams={setQueryParams}
           results={results}
           count={count}
-          measurementSystem={measurementSystem}
           isEditable={false}
           rowType={"bookmark"}
         />

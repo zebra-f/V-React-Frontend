@@ -2,13 +2,11 @@ import { useContext, createContext } from "react";
 
 import useLocalStorageState from "use-local-storage-state";
 
-type createContextArg = [
-  "metric" | "imperial",
-  React.Dispatch<React.SetStateAction<"metric" | "imperial">>,
-];
-const MeasurementSystemContext = createContext<createContextArg | undefined>(
-  undefined,
-);
+// type measurementSystemContextArg = [
+//   "metric" | "imperial",
+//   React.Dispatch<React.SetStateAction<"metric" | "imperial">>,
+// ];
+const MeasurementSystemContext = createContext<any | undefined>(undefined);
 
 export function useMeasurementSystem() {
   return useContext(MeasurementSystemContext);

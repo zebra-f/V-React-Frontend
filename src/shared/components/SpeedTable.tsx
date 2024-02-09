@@ -1,7 +1,9 @@
-import { useState, SetStateAction, Dispatch } from "react";
+import { useState, useEffect, useRef, SetStateAction, Dispatch } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useMeasurementSystem } from "../contexts/MeasurementSystem";
+
+import SpeedForm from "./SpeedForm";
 
 import {
   speedInterface,
@@ -54,18 +56,14 @@ import Switch from "@mui/material/Switch";
 function Row(props: {
   key: string & { isUUID: true };
   rowMainData: speedInterface;
-  measurementSystem: "metric" | "imperial";
   isEditable: boolean;
   rowType: "regular" | "feedback" | "bookmark";
 }) {
   const navigate = useNavigate();
 
-  const [measurementSystemTest, setMeasurementSystemTest] =
-    useMeasurementSystem();
+  const [measurementSystem] = useMeasurementSystem();
 
-  console.log(measurementSystemTest);
-
-  const { rowMainData, measurementSystem, isEditable, rowType } = props;
+  const { rowMainData, isEditable, rowType } = props;
   const [speed, setSpeed] = useState<speedInterface>(rowMainData);
 
   const [open, setOpen] = useState(false);
@@ -189,8 +187,35 @@ function Row(props: {
     navigate(`/profile/${userName}/speeds`);
   };
 
+  const [formOpen, setFormOpen] = useState<boolean>(false);
+  const handleEditButton = () => {
+    setFormOpen(true);
+  };
+  const [speedFormResponseData, setSpeedFormResponseData] =
+    useState<speedInterface | null>(null);
+
+  const firstRenderRef = useRef(true);
+  useEffect(() => {
+    if (firstRenderRef.current) {
+      firstRenderRef.current = false;
+      return;
+    }
+    if (speedFormResponseData !== null) {
+      setSpeed(speedFormResponseData);
+    }
+  }, [speedFormResponseData]);
+
   return (
     <>
+      {formOpen && (
+        <SpeedForm
+          formOpen={formOpen}
+          setFormOpen={setFormOpen}
+          speedData={speed}
+          setSpeedFormResponseData={setSpeedFormResponseData}
+        />
+      )}
+
       <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
         <TableCell>
           <IconButton
@@ -278,7 +303,7 @@ function Row(props: {
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <Box sx={{ display: "flex", justifyContent: "space-between" }}>
                 <Stack direction="row" spacing={1}>
                   {speed.tags.map((tag: string) => (
                     <Chip key={tag} label={tag} variant="outlined" />
@@ -308,9 +333,9 @@ function Row(props: {
                     </Button>
                   )}
                   {isEditable && (
-                    <Button>
+                    <Button onClick={handleEditButton}>
                       <Stack direction="row" alignItems="center" gap={1}>
-                        <Typography>&nbsp;Update</Typography>
+                        <Typography>&nbsp;Edit</Typography>
                         <EditIcon color="info" />
                       </Stack>
                     </Button>
@@ -324,7 +349,7 @@ function Row(props: {
                     </Button>
                   )}
                 </ButtonGroup>
-              </div>
+              </Box>
               <Typography variant="h6" gutterBottom component="div" mt={2}>
                 {speed.description}
               </Typography>
@@ -434,7 +459,6 @@ interface speedsTableProps {
   setQueryParams: Dispatch<SetStateAction<speedQueryParams>>;
   results: Array<speedInterface>; // list of Speeds
   count: number; // count of all Speeds available via API
-  measurementSystem: "metric" | "imperial";
   isEditable: boolean; // a user views his own profile
   rowType: "regular" | "feedback" | "bookmark";
 }
@@ -443,7 +467,6 @@ export default function SpeedsTable({
   setQueryParams,
   results,
   count,
-  measurementSystem,
   isEditable,
   rowType,
 }: speedsTableProps) {
@@ -519,7 +542,6 @@ export default function SpeedsTable({
                   <Row
                     key={row.id}
                     rowMainData={row}
-                    measurementSystem={measurementSystem}
                     isEditable={isEditable}
                     rowType={rowType}
                   />

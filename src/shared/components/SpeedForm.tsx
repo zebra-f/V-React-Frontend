@@ -5,6 +5,8 @@ import {
   speedBaseInterface,
 } from "../interfaces/speedInterfaces";
 
+import { useMeasurementSystem } from "../contexts/MeasurementSystem";
+
 import kyClient from "../services/ky";
 
 import Tooltip from "@mui/material/Tooltip";
@@ -36,6 +38,7 @@ import RadioGroup from "@mui/material/RadioGroup";
 import Grid from "@mui/material/Unstable_Grid2";
 import Autocomplete from "@mui/material/Autocomplete";
 import HelpIcon from "@mui/icons-material/Help";
+import EditIcon from "@mui/icons-material/Edit";
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & {
@@ -72,11 +75,36 @@ async function addSpeedRequest(data: speedBaseInterface) {
   }
 }
 
+interface editSpeedRequestData extends speedBaseInterface {
+  id: string & { isUUID: true };
+}
+async function editSpeedRequest(data: editSpeedRequestData) {
+  try {
+    const response: any = await kyClient.backendApi.put(`speeds/${data.id}/`, {
+      json: {
+        name: data.name,
+        description: data.description,
+        speed_type: data.speed_type,
+        tags: data.tags,
+        kmph: data.kmph,
+        estimated: data.estimated,
+        is_public: data.is_public,
+      },
+    });
+    const responseData = await response.json();
+    return { status: response.status, data: responseData };
+  } catch (error: any) {
+    try {
+      const response = await error.response;
+      const responseData = await response.json();
+      return { status: response.status, data: responseData };
+    } catch (_error: any) {
+      return { status: 500, data: {} };
+    }
+  }
+}
+
 interface props {
-  setMeasurementSystem: React.Dispatch<
-    React.SetStateAction<"metric" | "imperial">
-  >;
-  measurementSystem: "metric" | "imperial";
   formOpen: boolean;
   setFormOpen: React.Dispatch<React.SetStateAction<boolean>>;
   speedData: null | speedInterface;
@@ -85,14 +113,14 @@ interface props {
   >;
 }
 export default function SpeedForm({
-  measurementSystem,
-  setMeasurementSystem,
   formOpen,
   setFormOpen,
   speedData,
   setSpeedFormResponseData,
 }: props) {
   const theme = useTheme();
+
+  const [measurementSystem, setMeasurementSystem] = useMeasurementSystem();
 
   const [successSnackbarOpen, setSuccessSnackbarOpen] = useState(false);
   const [speedAddedAlertMessage, setSpeedAddedAlertMessage] = useState("");
@@ -110,22 +138,30 @@ export default function SpeedForm({
     setFormOpen(false);
   };
 
-  const [estimatedChecked, setEstimatedChecked] = useState(false);
+  const [estimatedChecked, setEstimatedChecked] = useState(
+    speedData ? speedData.estimated : false,
+  );
   const handleEstimatedCheckboxChange = (event: any) => {
     setEstimatedChecked(event.target.checked);
   };
-  const [privateChecked, setPrivateChecked] = useState(false);
+  const [privateChecked, setPrivateChecked] = useState(
+    speedData ? !speedData.is_public : false,
+  );
   const handlePrivateCheckboxChange = (event: any) => {
     setPrivateChecked(event.target.checked);
   };
 
-  const [speedType, setSpeedType] = useState("Top");
+  const [speedType, setSpeedType] = useState(
+    speedData
+      ? speedData.speed_type[0].toUpperCase() + speedData.speed_type.slice(1)
+      : "Top",
+  );
   const handleSpeedTypeChange = (event: SelectChangeEvent) => {
     setSpeedType(event.target.value as string);
   };
 
   const [tags, setTags] = useState<Array<string>>(
-    speedData !== null ? speedData.tags : [],
+    speedData ? speedData.tags : [],
   );
 
   const [apiError, setApiError] = useState({
@@ -244,89 +280,142 @@ export default function SpeedForm({
       tags: tags,
     };
 
-    addSpeedRequest(requestData).then((result) => {
-      if (result.status === 201) {
-        (document.getElementById("name") as HTMLInputElement).value = "";
-        (document.getElementById("description") as HTMLInputElement).value = "";
-        (document.getElementById("speed") as HTMLInputElement).value = "";
+    // add data
+    if (!speedData) {
+      addSpeedRequest(requestData).then((result) => {
+        if (result.status === 201) {
+          (document.getElementById("name") as HTMLInputElement).value = "";
+          (document.getElementById("description") as HTMLInputElement).value =
+            "";
+          (document.getElementById("speed") as HTMLInputElement).value = "";
 
-        setSpeedAddedAlertMessage(
-          "Success! You can close this form or add more speeds.",
-        );
-        setSuccessSnackbarOpen(true);
+          setSpeedAddedAlertMessage(
+            "Success! You can close this form or add more speeds.",
+          );
+          setSuccessSnackbarOpen(true);
 
-        setSpeedFormResponseData(result.data);
+          setSpeedFormResponseData(result.data);
 
-        setApiError({ error: false, errorMessage: "" });
-      } else {
-        const data = result.data;
+          setApiError({ error: false, errorMessage: "" });
+        } else {
+          const data = result.data;
 
-        if (result.status == 400) {
-          if ("name" in data) {
-            setNameError({
-              error: true,
-              errorMessage: data.name,
-            });
+          if (result.status == 400) {
+            if ("name" in data) {
+              setNameError({
+                error: true,
+                errorMessage: data.name,
+              });
+              errorFlag = true;
+            }
+            if ("description" in data) {
+              setDescriptionError({
+                error: true,
+                errorMessage: data.description,
+              });
+              errorFlag = true;
+            }
+            if ("kmph" in data) {
+              setSpeedError({
+                error: true,
+                errorMessage: data.password,
+              });
+              errorFlag = true;
+            }
+            if ("tags" in data) {
+              setTagsError({
+                error: true,
+                errorMessage: data.tags,
+              });
+              errorFlag = true;
+            }
+          }
+
+          if ("detail" in result.data) {
+            setApiError({ error: true, errorMessage: result.data.detail });
             errorFlag = true;
           }
-          if ("description" in data) {
-            setDescriptionError({
-              error: true,
-              errorMessage: data.description,
-            });
-            errorFlag = true;
+
+          if (errorFlag) {
+            return;
           }
-          if ("kmph" in data) {
-            setSpeedError({
-              error: true,
-              errorMessage: data.password,
-            });
-            errorFlag = true;
-          }
-          if ("tags" in data) {
-            setTagsError({
-              error: true,
-              errorMessage: data.tags,
-            });
-            errorFlag = true;
-          }
+
+          setApiError({
+            error: true,
+            errorMessage: "Something went wrong. Try again later.",
+          });
         }
+      });
+      // edit speed data
+    } else {
+      editSpeedRequest({ id: speedData.id, ...requestData }).then((result) => {
+        if (result.status === 200) {
+          setSpeedAddedAlertMessage(
+            "Update successful! The form will automatically close in 4 seconds.",
+          );
+          setSuccessSnackbarOpen(true);
 
-        if ("detail" in result.data) {
-          setApiError({ error: true, errorMessage: result.data.detail });
-          errorFlag = true;
+          setSpeedFormResponseData(result.data);
+
+          setApiError({ error: false, errorMessage: "" });
+
+          setTimeout(() => {
+            setFormOpen(false);
+          }, 4000);
+        } else {
+          const data = result.data;
+
+          if (result.status == 400) {
+            if ("name" in data) {
+              setNameError({
+                error: true,
+                errorMessage: data.name,
+              });
+              errorFlag = true;
+            }
+            if ("description" in data) {
+              setDescriptionError({
+                error: true,
+                errorMessage: data.description,
+              });
+              errorFlag = true;
+            }
+            if ("kmph" in data) {
+              setSpeedError({
+                error: true,
+                errorMessage: data.password,
+              });
+              errorFlag = true;
+            }
+            if ("tags" in data) {
+              setTagsError({
+                error: true,
+                errorMessage: data.tags,
+              });
+              errorFlag = true;
+            }
+          }
+
+          if ("detail" in result.data) {
+            setApiError({ error: true, errorMessage: result.data.detail });
+            errorFlag = true;
+          }
+
+          if (errorFlag) {
+            return;
+          }
+
+          setApiError({
+            error: true,
+            errorMessage: "Something went wrong. Try again later.",
+          });
         }
-
-        if (errorFlag) {
-          return;
-        }
-
-        setApiError({
-          error: true,
-          errorMessage: "Something went wrong. Try again later.",
-        });
-      }
-    });
+      });
+    }
   };
 
   return (
     <>
-      <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        open={successSnackbarOpen}
-        autoHideDuration={4000}
-        onClose={handleCloseAlert}
-        sx={{ mt: 6 }}
-      >
-        <Alert
-          onClose={handleCloseAlert}
-          severity="success"
-          sx={{ width: "100%" }}
-        >
-          {speedAddedAlertMessage}
-        </Alert>
-      </Snackbar>
-
       <Dialog
         open={formOpen}
         TransitionComponent={Transition}
@@ -334,6 +423,22 @@ export default function SpeedForm({
         onClose={handleCloseForm}
         aria-describedby="alert-dialog-slide-description"
       >
+        <Snackbar
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+          open={successSnackbarOpen}
+          autoHideDuration={4000}
+          onClose={handleCloseAlert}
+          sx={{ mt: 6 }}
+        >
+          <Alert
+            onClose={handleCloseAlert}
+            severity="success"
+            sx={{ width: "100%" }}
+          >
+            {speedAddedAlertMessage}
+          </Alert>
+        </Snackbar>
+
         <DialogContent>
           <Box
             sx={{
@@ -343,12 +448,25 @@ export default function SpeedForm({
               alignItems: "center",
             }}
           >
-            <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-              <CloudUploadIcon />
-            </Avatar>
-            <Typography component="h1" variant="h5">
-              Add Speed
-            </Typography>
+            {speedData ? (
+              <>
+                <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+                  <EditIcon />
+                </Avatar>
+                <Typography component="h1" variant="h5">
+                  Edit Speed
+                </Typography>
+              </>
+            ) : (
+              <>
+                <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+                  <CloudUploadIcon />
+                </Avatar>
+                <Typography component="h1" variant="h5">
+                  Add Speed
+                </Typography>
+              </>
+            )}
 
             {apiError.error && (
               <Alert
@@ -402,7 +520,6 @@ export default function SpeedForm({
                 }
                 error={descriptionError.error}
               />
-
               <Box sx={{ flexGrow: 2 }}>
                 <FormControl>
                   <RadioGroup
@@ -444,7 +561,7 @@ export default function SpeedForm({
                       id="speed"
                       sx={{ mt: 0 }}
                       defaultValue={
-                        speedData != null
+                        speedData
                           ? measurementSystem === "metric"
                             ? speedData.kmph
                             : (speedData.kmph * 0.621371).toFixed(2)
@@ -478,7 +595,6 @@ export default function SpeedForm({
                   </Grid>
                 </Grid>
               </Box>
-
               <FormGroup>
                 <FormControlLabel
                   checked={estimatedChecked}
@@ -566,7 +682,7 @@ export default function SpeedForm({
                 fullWidth
                 sx={{ mt: 3, mb: 0 }}
               >
-                Add
+                {speedData ? "Edit" : "Add"}
               </Button>
             </Box>
           </Box>
