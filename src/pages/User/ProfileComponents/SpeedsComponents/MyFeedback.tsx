@@ -87,7 +87,9 @@ export default function MySpeedFeedback() {
           queryParams={queryParams}
           setQueryParams={setQueryParams}
           results={results}
+          setResults={setResults}
           count={count}
+          setCount={setCount}
           isEditable={false}
           rowType={"feedback"}
         />

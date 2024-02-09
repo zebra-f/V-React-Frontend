@@ -14,6 +14,7 @@ import {
   createSpeedBookmark,
   deleteSpeedBookmark,
 } from "../../actions/speed/bookmark";
+import { deleteSpeed } from "../services/speeds/deleteData";
 
 import useTheme from "@mui/material/styles/useTheme";
 import Box from "@mui/material/Box";
@@ -52,21 +53,40 @@ import Link from "@mui/material/Link";
 import Fade from "@mui/material/Fade";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
+import CheckIcon from "@mui/icons-material/Check";
+import CloseIcon from "@mui/icons-material/Close";
+import Alert from "@mui/material/Alert";
 
 function Row(props: {
   key: string & { isUUID: true };
   rowMainData: speedInterface;
   isEditable: boolean;
   rowType: "regular" | "feedback" | "bookmark";
+  setResults: React.Dispatch<React.SetStateAction<speedInterface[]>>;
+  setCount: React.Dispatch<React.SetStateAction<number>>;
+  setApiError: React.Dispatch<
+    React.SetStateAction<{ error: boolean; errorMessage: string }>
+  >;
 }) {
   const navigate = useNavigate();
 
   const [measurementSystem] = useMeasurementSystem();
 
-  const { rowMainData, isEditable, rowType } = props;
+  const {
+    rowMainData,
+    isEditable,
+    rowType,
+    setResults,
+    setCount,
+    setApiError,
+  } = props;
   const [speed, setSpeed] = useState<speedInterface>(rowMainData);
 
   const [open, setOpen] = useState(false);
+
+  const handleLinkToUserProfile = (userName: string) => {
+    navigate(`/profile/${userName}/speeds`);
+  };
 
   const handleFeedbackRequestResult = (result: any) => {
     if (result.status === 201 || result.status === 200) {
@@ -81,8 +101,15 @@ function Row(props: {
           score: result.data.speed.score,
         };
       });
+      setApiError({
+        error: false,
+        errorMessage: "",
+      });
     } else {
-      // handle >= 400
+      setApiError({
+        error: true,
+        errorMessage: "Something went wrong. Try again later.",
+      });
     }
   };
   const handleUpvote = () => {
@@ -158,8 +185,15 @@ function Row(props: {
               user_speed_bookmark: userSpeedBookmark,
             };
           });
+          setApiError({
+            error: false,
+            errorMessage: "",
+          });
         } else {
-          // hande >= 400
+          setApiError({
+            error: true,
+            errorMessage: "Something went wrong. Try again later",
+          });
         }
       });
     }
@@ -175,16 +209,46 @@ function Row(props: {
                 user_speed_bookmark: null,
               };
             });
+            setApiError({
+              error: false,
+              errorMessage: "",
+            });
           } else {
-            // handle >= 400
+            setApiError({
+              error: true,
+              errorMessage: "Something went wrong. Try again later",
+            });
           }
         },
       );
     }
   };
 
-  const handleLinkToUserProfile = (userName: string) => {
-    navigate(`/profile/${userName}/speeds`);
+  const [openedConfirmDelete, setOpenedConfirmDelete] = useState(false);
+  const handleCancelDeleteSpeed = () => {
+    setOpenedConfirmDelete(false);
+  };
+  const handleConfirmDeleteSpeed = () => {
+    deleteSpeed({ id: speed.id }).then((result) => {
+      if (result.status === 204) {
+        setResults((prevState) => {
+          return prevState.filter((speed_) => speed_.id !== speed.id);
+        });
+        setCount((prevCount: number) => prevCount - 1);
+        setApiError({
+          error: false,
+          errorMessage: "",
+        });
+      } else {
+        setApiError({
+          error: true,
+          errorMessage: "Something went wrong. Try again later.",
+        });
+      }
+    });
+  };
+  const handleDeleteSpeedButton = () => {
+    setOpenedConfirmDelete(true);
   };
 
   const [formOpen, setFormOpen] = useState<boolean>(false);
@@ -340,11 +404,28 @@ function Row(props: {
                       </Stack>
                     </Button>
                   )}
-                  {isEditable && (
-                    <Button>
+
+                  {isEditable && !openedConfirmDelete && (
+                    <Button onClick={handleDeleteSpeedButton}>
                       <Stack direction="row" alignItems="center" gap={1}>
                         <Typography>&nbsp;Delete</Typography>
                         <DeleteForeverIcon color="error" />
+                      </Stack>
+                    </Button>
+                  )}
+                  {isEditable && openedConfirmDelete && (
+                    <Button onClick={handleConfirmDeleteSpeed}>
+                      <Stack direction="row" alignItems="center" gap={1}>
+                        <Typography>&nbsp;Confirm</Typography>
+                        <CheckIcon color="success" />
+                      </Stack>
+                    </Button>
+                  )}
+                  {isEditable && openedConfirmDelete && (
+                    <Button onClick={handleCancelDeleteSpeed}>
+                      <Stack direction="row" alignItems="center" gap={1}>
+                        <Typography>&nbsp;Cancel</Typography>
+                        <CloseIcon color="error" />
                       </Stack>
                     </Button>
                   )}
@@ -458,7 +539,9 @@ interface speedsTableProps {
   queryParams: speedQueryParams;
   setQueryParams: Dispatch<SetStateAction<speedQueryParams>>;
   results: Array<speedInterface>; // list of Speeds
+  setResults: React.Dispatch<React.SetStateAction<speedInterface[]>>;
   count: number; // count of all Speeds available via API
+  setCount: React.Dispatch<React.SetStateAction<number>>;
   isEditable: boolean; // a user views his own profile
   rowType: "regular" | "feedback" | "bookmark";
 }
@@ -466,7 +549,9 @@ export default function SpeedsTable({
   queryParams,
   setQueryParams,
   results,
+  setResults,
   count,
+  setCount,
   isEditable,
   rowType,
 }: speedsTableProps) {
@@ -489,6 +574,12 @@ export default function SpeedsTable({
   const handleChangeDense = (event: React.ChangeEvent<HTMLInputElement>) => {
     setDense(event.target.checked);
   };
+
+  const [apiError, setApiError] = useState({
+    error: false,
+    errorMessage: "",
+  });
+
   return (
     <Fade in={true}>
       <Paper
@@ -503,6 +594,27 @@ export default function SpeedsTable({
               : "rgba(9, 10, 15, 0.8)",
         }}
       >
+        {apiError.error && (
+          <Alert
+            action={
+              <IconButton
+                aria-label="close"
+                color="inherit"
+                size="small"
+                onClick={() => {
+                  setApiError({ error: false, errorMessage: "" });
+                }}
+              >
+                <CloseIcon fontSize="inherit" />
+              </IconButton>
+            }
+            sx={{ width: "100%", mt: 3 }}
+            severity="error"
+          >
+            {apiError.errorMessage}
+          </Alert>
+        )}
+
         <Box m={2}>
           <FormControlLabel
             control={<Switch checked={dense} onChange={handleChangeDense} />}
@@ -544,6 +656,9 @@ export default function SpeedsTable({
                     rowMainData={row}
                     isEditable={isEditable}
                     rowType={rowType}
+                    setResults={setResults}
+                    setCount={setCount}
+                    setApiError={setApiError}
                   />
                 ))
               ) : (

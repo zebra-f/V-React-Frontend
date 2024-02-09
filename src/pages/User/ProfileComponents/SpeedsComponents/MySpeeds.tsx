@@ -77,7 +77,9 @@ export default function MySpeeds() {
           queryParams={queryParams}
           setQueryParams={setQueryParams}
           results={results}
+          setResults={setResults}
           count={count}
+          setCount={setCount}
           isEditable={true}
           rowType={"regular"}
         />
