@@ -2,6 +2,7 @@ import { Routes, Route, useLocation, useRoutes } from "react-router-dom";
 import { useState } from "react";
 
 import useLocalStorageState from "use-local-storage-state";
+import { MeasurementSystemProvider } from "./shared/contexts/MeasurementSystem";
 
 import Navbar from "./shared/components/Navbar";
 import Home from "./pages/Home/Home";
@@ -63,162 +64,166 @@ export default function App(props: any) {
   });
 
   return (
-    <div className="App">
-      {renderNavbar && (
-        <Navbar
-          setSessionThemeMode={props.setSessionThemeMode}
-          sessionThemeMode={props.sessionThemeMode}
-          isAuthenticated={isAuthenticated}
-          setIsAuthenticated={setIsAuthenticated}
-        />
-      )}
-      <Routes>
-        <Route path="" element={<Home />} />
-        {/* Vees */}
-        <Route
-          path="vees"
-          element={
-            <Vees
-              setMeasurementSystem={setMeasurementSystem}
-              measurementSystem={measurementSystem}
-            />
-          }
-        >
-          {["", "speed"].map((path, index) => (
-            <Route
-              key={index}
-              path={path}
-              element={<Speed measurementSystem={measurementSystem} />}
-            />
-          ))}
-          <Route path="length" element={<Length />} />
-        </Route>
-        {/* Abbout */}
-        <Route path="about" element={<About />} />
-
-        {/* Account */}
-        <Route
-          path="account"
-          element={<Account isAuthenticated={isAuthenticated} />}
-        >
-          {["", "myaccount"].map((path, index) => (
-            <Route key={index} path={path} element={<MyAccount />} />
-          ))}
-          <Route path="changepassword" element={<ChangePassword />} />
-          <Route
-            path="deleteaccount"
-            element={<DeleteAccount setIsAuthenticated={setIsAuthenticated} />}
+    <MeasurementSystemProvider>
+      <div className="App">
+        {renderNavbar && (
+          <Navbar
+            setSessionThemeMode={props.setSessionThemeMode}
+            sessionThemeMode={props.sessionThemeMode}
+            isAuthenticated={isAuthenticated}
+            setIsAuthenticated={setIsAuthenticated}
           />
-        </Route>
-        {/* Profile */}
-        <Route
-          path="account/profile"
-          element={<Profile isAuthenticated={isAuthenticated} />}
-        >
-          {["", "speeds"].map((path, index) => (
+        )}
+        <Routes>
+          <Route path="" element={<Home />} />
+          {/* Vees */}
+          <Route
+            path="vees"
+            element={
+              <Vees
+                setMeasurementSystem={setMeasurementSystem}
+                measurementSystem={measurementSystem}
+              />
+            }
+          >
+            {["", "speed"].map((path, index) => (
+              <Route
+                key={index}
+                path={path}
+                element={<Speed measurementSystem={measurementSystem} />}
+              />
+            ))}
+            <Route path="length" element={<Length />} />
+          </Route>
+          {/* Abbout */}
+          <Route path="about" element={<About />} />
+
+          {/* Account */}
+          <Route
+            path="account"
+            element={<Account isAuthenticated={isAuthenticated} />}
+          >
+            {["", "myaccount"].map((path, index) => (
+              <Route key={index} path={path} element={<MyAccount />} />
+            ))}
+            <Route path="changepassword" element={<ChangePassword />} />
             <Route
-              key={index}
-              path={path}
+              path="deleteaccount"
               element={
-                <ProfileSpeeds
-                  setMeasurementSystem={setMeasurementSystem}
-                  measurementSystem={measurementSystem}
-                />
+                <DeleteAccount setIsAuthenticated={setIsAuthenticated} />
               }
-            >
-              {["", "speeds"].map((path, index) => (
+            />
+          </Route>
+          {/* Profile */}
+          <Route
+            path="account/profile"
+            element={<Profile isAuthenticated={isAuthenticated} />}
+          >
+            {["", "speeds"].map((path, index) => (
+              <Route
+                key={index}
+                path={path}
+                element={
+                  <ProfileSpeeds
+                    setMeasurementSystem={setMeasurementSystem}
+                    measurementSystem={measurementSystem}
+                  />
+                }
+              >
+                {["", "speeds"].map((path, index) => (
+                  <Route
+                    key={index}
+                    path={path}
+                    element={
+                      <MySpeeds
+                        measurementSystem={measurementSystem}
+                        setMeasurementSystem={setMeasurementSystem}
+                      />
+                    }
+                  />
+                ))}
                 <Route
-                  key={index}
-                  path={path}
+                  path="feedback"
                   element={
-                    <MySpeeds
-                      measurementSystem={measurementSystem}
-                      setMeasurementSystem={setMeasurementSystem}
-                    />
+                    <MySpeedFeedback measurementSystem={measurementSystem} />
                   }
                 />
-              ))}
+                <Route
+                  path="bookmarks"
+                  element={
+                    <MySpeedBookmarks measurementSystem={measurementSystem} />
+                  }
+                />
+              </Route>
+            ))}
+            <Route path="lengths" element={<ProfileLengths />}></Route>
+          </Route>
+          {/* Public Profile */}
+          <Route
+            path="profile/:userName?"
+            element={
+              <PublicProfile
+                measurementSystem={measurementSystem}
+                setMeasurementSystem={setMeasurementSystem}
+              />
+            }
+          >
+            {["", "speeds"].map((path, index) => (
               <Route
-                path="feedback"
+                key={index}
+                path={path}
                 element={
-                  <MySpeedFeedback measurementSystem={measurementSystem} />
+                  <PublicProfileSpeeds measurementSystem={measurementSystem} />
                 }
               />
-              <Route
-                path="bookmarks"
-                element={
-                  <MySpeedBookmarks measurementSystem={measurementSystem} />
-                }
-              />
-            </Route>
-          ))}
-          <Route path="lengths" element={<ProfileLengths />}></Route>
-        </Route>
-        {/* Public Profile */}
-        <Route
-          path="profile/:userName?"
-          element={
-            <PublicProfile
-              measurementSystem={measurementSystem}
-              setMeasurementSystem={setMeasurementSystem}
-            />
-          }
-        >
-          {["", "speeds"].map((path, index) => (
-            <Route
-              key={index}
-              path={path}
-              element={
-                <PublicProfileSpeeds measurementSystem={measurementSystem} />
-              }
-            />
-          ))}
-          <Route path="lengths" element={<PublicProfileLengths />} />
-        </Route>
+            ))}
+            <Route path="lengths" element={<PublicProfileLengths />} />
+          </Route>
 
-        {/* Authentication */}
-        <Route
-          path="signin"
-          element={
-            <SignIn
-              isAuthenticated={isAuthenticated}
-              setIsAuthenticated={setIsAuthenticated}
-              googleEventListenerActive={googleEventListenerActive}
-              setGoogleEventListenerActive={setGoogleEventListenerActive}
-            />
-          }
-        />
-        <Route
-          path="signup"
-          element={
-            <SignUp
-              isAuthenticated={isAuthenticated}
-              setIsAuthenticated={setIsAuthenticated}
-              googleEventListenerActive={googleEventListenerActive}
-              setGoogleEventListenerActive={setGoogleEventListenerActive}
-            />
-          }
-        />
-        <Route
-          path="passwordreset"
-          element={<PasswordReset isAuthenticated={isAuthenticated} />}
-        />
-        <Route
-          path="verifyemail"
-          element={<VerifyEmail isAuthenticated={isAuthenticated} />}
-        />
-        <Route
-          path="googlesignup"
-          element={
-            <GoogleSignUp
-              isAuthenticated={isAuthenticated}
-              setIsAuthenticated={setIsAuthenticated}
-            />
-          }
-        />
-        {/* Don't render Navbar */}
-        <Route path="openid/googleredirect" element={<GoogleRedirect />} />
-      </Routes>
-    </div>
+          {/* Authentication */}
+          <Route
+            path="signin"
+            element={
+              <SignIn
+                isAuthenticated={isAuthenticated}
+                setIsAuthenticated={setIsAuthenticated}
+                googleEventListenerActive={googleEventListenerActive}
+                setGoogleEventListenerActive={setGoogleEventListenerActive}
+              />
+            }
+          />
+          <Route
+            path="signup"
+            element={
+              <SignUp
+                isAuthenticated={isAuthenticated}
+                setIsAuthenticated={setIsAuthenticated}
+                googleEventListenerActive={googleEventListenerActive}
+                setGoogleEventListenerActive={setGoogleEventListenerActive}
+              />
+            }
+          />
+          <Route
+            path="passwordreset"
+            element={<PasswordReset isAuthenticated={isAuthenticated} />}
+          />
+          <Route
+            path="verifyemail"
+            element={<VerifyEmail isAuthenticated={isAuthenticated} />}
+          />
+          <Route
+            path="googlesignup"
+            element={
+              <GoogleSignUp
+                isAuthenticated={isAuthenticated}
+                setIsAuthenticated={setIsAuthenticated}
+              />
+            }
+          />
+          {/* Don't render Navbar */}
+          <Route path="openid/googleredirect" element={<GoogleRedirect />} />
+        </Routes>
+      </div>
+    </MeasurementSystemProvider>
   );
 }

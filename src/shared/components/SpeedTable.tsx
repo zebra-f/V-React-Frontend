@@ -1,6 +1,8 @@
 import { useState, SetStateAction, Dispatch } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { useMeasurementSystem } from "../contexts/MeasurementSystem";
+
 import {
   speedInterface,
   speedQueryParams,
@@ -57,6 +59,11 @@ function Row(props: {
   rowType: "regular" | "feedback" | "bookmark";
 }) {
   const navigate = useNavigate();
+
+  const [measurementSystemTest, setMeasurementSystemTest] =
+    useMeasurementSystem();
+
+  console.log(measurementSystemTest);
 
   const { rowMainData, measurementSystem, isEditable, rowType } = props;
   const [speed, setSpeed] = useState<speedInterface>(rowMainData);
