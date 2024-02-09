@@ -28,7 +28,6 @@ import CloseIcon from "@mui/icons-material/Close";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
-import useTheme from "@mui/material/styles/useTheme";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
@@ -118,8 +117,6 @@ export default function SpeedForm({
   speedData,
   setSpeedFormResponseData,
 }: props) {
-  const theme = useTheme();
-
   const [measurementSystem, setMeasurementSystem] = useMeasurementSystem();
 
   const [successSnackbarOpen, setSuccessSnackbarOpen] = useState(false);

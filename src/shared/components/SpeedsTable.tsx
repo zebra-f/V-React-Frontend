@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useMeasurementSystem } from "../contexts/MeasurementSystem";
 
 import SpeedForm from "./SpeedForm";
+import ReportForm from "./ReportForm";
 
 import {
   speedInterface,
@@ -269,6 +270,11 @@ function Row(props: {
     }
   }, [speedFormResponseData]);
 
+  const [reportFormOpen, setReportFormOpen] = useState<boolean>(false);
+  const handleReportButton = () => {
+    setReportFormOpen(true);
+  };
+
   return (
     <>
       {formOpen && (
@@ -277,6 +283,14 @@ function Row(props: {
           setFormOpen={setFormOpen}
           speedData={speed}
           setSpeedFormResponseData={setSpeedFormResponseData}
+        />
+      )}
+
+      {reportFormOpen && (
+        <ReportForm
+          formOpen={reportFormOpen}
+          setFormOpen={setReportFormOpen}
+          speedData={speed}
         />
       )}
 
@@ -389,7 +403,7 @@ function Row(props: {
                   aria-label="outlined primary button group"
                 >
                   {!isEditable && (
-                    <Button>
+                    <Button onClick={handleReportButton}>
                       <Stack direction="row" alignItems="center" gap={1}>
                         <Typography>Report</Typography>
                         <ReportIcon color="error" />

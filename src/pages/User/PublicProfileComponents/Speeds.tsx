@@ -7,7 +7,7 @@ import {
   speedQueryParams,
 } from "../../../shared/interfaces/speedInterfaces";
 
-import SpeedsTable from "../../../shared/components/SpeedTable";
+import SpeedsTable from "../../../shared/components/SpeedsTable";
 
 import Container from "@mui/material/Container";
 

@@ -7,7 +7,7 @@ import {
 } from "../../../../shared/interfaces/speedInterfaces";
 
 import SpeedForm from "../../../../shared/components/SpeedForm";
-import SpeedsTable from "../../../../shared/components/SpeedTable";
+import SpeedsTable from "../../../../shared/components/SpeedsTable";
 
 import Button from "@mui/material/Button";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
