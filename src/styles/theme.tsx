@@ -28,7 +28,7 @@ export default function getTheme(mode: string) {
               paper: "#fbfefb",
             },
             action: {
-              selected: grey[800],
+              selected: grey[200],
               active: grey[800],
               disabled: grey[800],
             },
@@ -53,7 +53,7 @@ export default function getTheme(mode: string) {
               paper: "#011936",
             },
             action: {
-              selected: grey[200],
+              selected: grey[800],
               active: grey[200],
               disabled: grey[200],
             },
@@ -78,7 +78,7 @@ export default function getTheme(mode: string) {
           },
         },
       }),
-    [mode]
+    [mode],
   );
   return theme;
 }
