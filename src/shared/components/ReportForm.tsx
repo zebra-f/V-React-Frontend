@@ -1,11 +1,6 @@
 import { useState, forwardRef } from "react";
 
-import {
-  speedInterface,
-  speedBaseInterface,
-} from "../interfaces/speedInterfaces";
-
-import { useMeasurementSystem } from "../contexts/MeasurementSystem";
+import { speedInterface } from "../interfaces/speedInterfaces";
 
 import kyClient from "../services/ky";
 
@@ -46,8 +41,6 @@ async function reportRequest(data: {
   report_reason: string;
 }) {
   try {
-    console.log("jdksjfksljdfkljsldkfjsldjfsjdf");
-    console.log(data.speed);
     const response: any = await kyClient.backendApi.post("speed-report/", {
       json: {
         speed: data.speed,
@@ -132,8 +125,6 @@ export default function ReportForm({
       return;
     }
 
-    console.log(detail);
-    console.log(reportReason);
     if (detail && reportReason) {
       detail = detail.toString().trim();
       // replace newlines characters with the spaces
@@ -143,7 +134,6 @@ export default function ReportForm({
       return;
     }
 
-    console.log("fdjfkdjfs");
     const requestData = {
       speed: speedData.id,
       detail: detail,
@@ -252,7 +242,7 @@ export default function ReportForm({
               component="form"
               onSubmit={handleSubmit}
               noValidate
-              sx={{ mt: 1, width: "480px" }}
+              sx={{ mt: 1, width: "20em" }}
             >
               <TextField
                 margin="normal"
@@ -285,14 +275,15 @@ export default function ReportForm({
                 multiline={true}
                 rows={4}
                 maxRows={4}
+                sx={{ mb: 0, pb: 0 }}
               />
               <Box display="flex" justifyContent={"flex-end"}>
                 <Typography
-                  variant="subtitle2"
+                  variant="caption"
                   gutterBottom
                   color={256 - detailValue.length < 0 ? "red" : ""}
                 >
-                  Characters left: {256 - detailValue.length}
+                  {256 - detailValue.length}
                 </Typography>
               </Box>
               <Box sx={{ flexGrow: 2, mt: 2 }}>

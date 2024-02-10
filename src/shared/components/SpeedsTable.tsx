@@ -304,6 +304,7 @@ function Row(props: {
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </TableCell>
+
         <TableCell align="right">
           {!(rowType === "bookmark") && (
             <Button onClick={handleUpvote}>
@@ -335,9 +336,21 @@ function Row(props: {
             </Button>
           )}
         </TableCell>
+
         <TableCell component="th" scope="row">
-          <Typography>{speed.name}</Typography>
+          {speed.name.length <= 64 ? (
+            <Typography>{speed.name}</Typography>
+          ) : (
+            <Tooltip
+              enterTouchDelay={0}
+              leaveTouchDelay={2000}
+              title={<Typography fontSize={20}>{speed.name}</Typography>}
+            >
+              <Typography>{speed.name.slice(0, 64)}...</Typography>
+            </Tooltip>
+          )}
         </TableCell>
+
         <TableCell align="right">
           <Tooltip
             title={
@@ -355,6 +368,7 @@ function Row(props: {
             </Typography>
           </Tooltip>
         </TableCell>
+
         <TableCell align="center">
           {(rowType == "regular" || rowType == "bookmark") && (
             <Button

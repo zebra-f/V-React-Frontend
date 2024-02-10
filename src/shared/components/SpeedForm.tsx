@@ -148,6 +148,18 @@ export default function SpeedForm({
     setPrivateChecked(event.target.checked);
   };
 
+  const [nameValue, setNameValue] = useState(speedData ? speedData.name : "");
+  const handleNameChange = (event: any) => {
+    setNameValue(event.target.value as string);
+  };
+
+  const [descriptionValue, setDescriptionValue] = useState(
+    speedData ? speedData.description : "",
+  );
+  const handleDescriptionChange = (event: any) => {
+    setDescriptionValue(event.target.value as string);
+  };
+
   const [speedType, setSpeedType] = useState(
     speedData
       ? speedData.speed_type[0].toUpperCase() + speedData.speed_type.slice(1)
@@ -380,7 +392,7 @@ export default function SpeedForm({
             if ("kmph" in data) {
               setSpeedError({
                 error: true,
-                errorMessage: data.password,
+                errorMessage: data.kmph,
               });
               errorFlag = true;
             }
@@ -501,9 +513,22 @@ export default function SpeedForm({
                 name="name"
                 autoFocus
                 defaultValue={speedData ? speedData.name : null}
+                value={nameValue}
+                onChange={handleNameChange}
                 helperText={nameError.error ? nameError.errorMessage : ""}
                 error={nameError.error}
+                sx={{ mb: 0, pb: 0 }}
               />
+              <Box display="flex" justifyContent="flex-end">
+                <Typography
+                  variant="caption"
+                  gutterBottom
+                  color={128 - nameValue.length < 0 ? "red" : ""}
+                >
+                  {128 - nameValue.length}
+                </Typography>
+              </Box>
+
               <TextField
                 margin="normal"
                 required
@@ -511,12 +536,25 @@ export default function SpeedForm({
                 id="description"
                 label="Description"
                 name="description"
+                value={descriptionValue}
+                onChange={handleDescriptionChange}
                 defaultValue={speedData ? speedData.description : null}
                 helperText={
                   descriptionError.error ? descriptionError.errorMessage : ""
                 }
                 error={descriptionError.error}
+                sx={{ mb: 0, pb: 0 }}
               />
+              <Box display="flex" justifyContent="flex-end">
+                <Typography
+                  variant="caption"
+                  gutterBottom
+                  color={128 - descriptionValue.length < 0 ? "red" : ""}
+                >
+                  {128 - descriptionValue.length}
+                </Typography>
+              </Box>
+
               <Box sx={{ flexGrow: 2 }}>
                 <FormControl>
                   <RadioGroup
@@ -605,9 +643,9 @@ export default function SpeedForm({
                         leaveTouchDelay={4000}
                         title={
                           <Typography fontSize={20}>
-                            Check this box to indicates that the values are not
-                            directly measured but are approximations or
-                            predictions. For example, it might represent the
+                            Check this box to indicate that the speed value is
+                            not directly measured but is approximatated or
+                            predicted. For example, it might represent the
                             estimated top speed of a T-Rex running.
                           </Typography>
                         }
