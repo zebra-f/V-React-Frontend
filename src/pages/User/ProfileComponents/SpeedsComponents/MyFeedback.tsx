@@ -11,15 +11,24 @@ import kyClient from "../../../../shared/services/ky";
 import SpeedsTable from "../../../../shared/components/SpeedsTable";
 
 import Container from "@mui/material/Container";
+import Box from "@mui/material/Box";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormControl from "@mui/material/FormControl";
+import Radio from "@mui/material/Radio";
+import RadioGroup from "@mui/material/RadioGroup";
 
 interface feedbackQueryParams {
   page: number;
+  vote: -1 | 0 | 1 | "";
 }
-async function getFeedbacks({ page = 1 }: feedbackQueryParams) {
+async function getFeedbacks({ page = 1, vote }: feedbackQueryParams) {
   try {
-    const response = await kyClient.backendApi.get(
-      `speeds-feedback/?page=${page}`,
-    );
+    let url = `speeds-feedback/?page=${page}`;
+    if (vote) {
+      url += `&vote=${vote}`;
+    }
+
+    const response = await kyClient.backendApi.get(url);
     const responseData = await response.json();
 
     return { status: response.status, data: responseData };
@@ -34,8 +43,11 @@ async function getFeedbacks({ page = 1 }: feedbackQueryParams) {
   }
 }
 
-async function getAndPrepareFeedbackData({ page = 1 }: feedbackQueryParams) {
-  const { status, data } = await getFeedbacks({ page });
+async function getAndPrepareFeedbackData({
+  page = 1,
+  vote,
+}: feedbackQueryParams) {
+  const { status, data } = await getFeedbacks({ page, vote });
 
   if (status == 200) {
     const count = data.count;
@@ -71,18 +83,65 @@ export default function MySpeedFeedback() {
   const [count, setCount] = useState(0);
   const [results, setResults] = useState<Array<speedInterface>>([]);
 
+  const [vote, setVote] = useState<-1 | 0 | 1 | "">("");
   useEffect(() => {
-    getAndPrepareFeedbackData(queryParams).then((result) => {
-      if (result.status === 200) {
-        setCount(result.count);
-        setResults(result.results);
-      }
-    });
-  }, [queryParams]);
+    getAndPrepareFeedbackData({ page: queryParams.page, vote: vote }).then(
+      (result) => {
+        if (result.status === 200) {
+          setCount(result.count);
+          setResults(result.results);
+        }
+      },
+    );
+  }, [queryParams, vote]);
 
   return (
     <>
       <Container>
+        <Box display="flex" justifyContent="flex-end" mt={2}>
+          <FormControl>
+            <RadioGroup
+              aria-labelledby="vote-radio-group"
+              value={vote}
+              name="vote-radio-group"
+              row
+            >
+              <FormControlLabel
+                value={1}
+                control={<Radio />}
+                label="upvotes"
+                onClick={() => {
+                  setVote(1);
+                  setQueryParams((prevState) => {
+                    return { ...prevState, page: 1 };
+                  });
+                }}
+              />
+              <FormControlLabel
+                value={""}
+                control={<Radio />}
+                label="all"
+                onClick={() => {
+                  setVote("");
+                  setQueryParams((prevState) => {
+                    return { ...prevState, page: 1 };
+                  });
+                }}
+              />
+              <FormControlLabel
+                value={-1}
+                control={<Radio />}
+                label="downvotes"
+                onClick={() => {
+                  setVote(-1);
+                  setQueryParams((prevState) => {
+                    return { ...prevState, page: 1 };
+                  });
+                }}
+              />
+            </RadioGroup>
+          </FormControl>
+        </Box>
         <SpeedsTable
           queryParams={queryParams}
           setQueryParams={setQueryParams}
