@@ -1,24 +1,14 @@
 import { useState } from "react";
 import { Outlet, Link, useLocation } from "react-router-dom";
 
+import MeasurementSystemToogleButtonGroup from "../../../shared/components/MeasurementSystemToogleButtonGroup";
+
 import useTheme from "@mui/material/styles/useTheme";
 import Box from "@mui/material/Box";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-import Typography from "@mui/material/Typography";
-import ToggleButton from "@mui/material/ToggleButton";
-import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 
-interface props {
-  setMeasurementSystem: React.Dispatch<
-    React.SetStateAction<"metric" | "imperial">
-  >;
-  measurementSystem: "metric" | "imperial";
-}
-export default function ProfileSpeeds({
-  setMeasurementSystem,
-  measurementSystem,
-}: props) {
+export default function ProfileSpeeds() {
   const location = useLocation();
   let initialValue = 0;
   if (location.pathname.includes("feedback")) {
@@ -36,14 +26,6 @@ export default function ProfileSpeeds({
       ? "rgba(0, 0, 0, 0.1)"
       : "rgba(233, 236, 239, 0.7)";
 
-  const handleAlignment = (
-    event: React.MouseEvent<HTMLElement>,
-    newAlignment: "metric" | "imperial",
-  ) => {
-    if (newAlignment !== null) {
-      setMeasurementSystem(newAlignment);
-    }
-  };
   return (
     <>
       <Box
@@ -74,42 +56,7 @@ export default function ProfileSpeeds({
           />
         </Tabs>
 
-        <ToggleButtonGroup
-          orientation="vertical"
-          value={measurementSystem}
-          exclusive
-          onChange={handleAlignment}
-          aria-label="text alignment"
-          sx={{
-            p: 1,
-            pt: 1.2,
-            // bgcolor: theme.palette.background.default,
-            borderRadius: 0,
-          }}
-        >
-          <ToggleButton
-            value="metric"
-            aria-label="left aligned"
-            size="small"
-            sx={{
-              mx: 1,
-              maxHeight: 26,
-            }}
-          >
-            <Typography mt={0}>metric</Typography>
-          </ToggleButton>
-          <ToggleButton
-            value="imperial"
-            aria-label="right aligned"
-            size="small"
-            sx={{
-              mx: 1,
-              maxHeight: 26,
-            }}
-          >
-            <Typography mt={0}>imperial</Typography>
-          </ToggleButton>
-        </ToggleButtonGroup>
+        <MeasurementSystemToogleButtonGroup />
       </Box>
       <Outlet />
     </>

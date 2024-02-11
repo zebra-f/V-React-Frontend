@@ -1,4 +1,4 @@
-import { Routes, Route, useLocation, useRoutes } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { useState } from "react";
 
 import useLocalStorageState from "use-local-storage-state";
@@ -44,11 +44,6 @@ export default function App(props: any) {
     "isAuthenticated",
     { defaultValue: false },
   );
-  const [measurementSystem, setMeasurementSystem] = useLocalStorageState<
-    "metric" | "imperial"
-  >("measurementSystem", {
-    defaultValue: "metric",
-  });
 
   const [googleEventListenerActive, setGoogleEventListenerActive] =
     useState(false);
@@ -77,21 +72,9 @@ export default function App(props: any) {
         <Routes>
           <Route path="" element={<Home />} />
           {/* Vees */}
-          <Route
-            path="vees"
-            element={
-              <Vees
-                setMeasurementSystem={setMeasurementSystem}
-                measurementSystem={measurementSystem}
-              />
-            }
-          >
+          <Route path="vees" element={<Vees />}>
             {["", "speed"].map((path, index) => (
-              <Route
-                key={index}
-                path={path}
-                element={<Speed measurementSystem={measurementSystem} />}
-              />
+              <Route key={index} path={path} element={<Speed />} />
             ))}
             <Route path="length" element={<Length />} />
           </Route>
@@ -120,16 +103,7 @@ export default function App(props: any) {
             element={<Profile isAuthenticated={isAuthenticated} />}
           >
             {["", "speeds"].map((path, index) => (
-              <Route
-                key={index}
-                path={path}
-                element={
-                  <ProfileSpeeds
-                    setMeasurementSystem={setMeasurementSystem}
-                    measurementSystem={measurementSystem}
-                  />
-                }
-              >
+              <Route key={index} path={path} element={<ProfileSpeeds />}>
                 {["", "speeds"].map((path, index) => (
                   <Route key={index} path={path} element={<MySpeeds />} />
                 ))}
@@ -140,15 +114,7 @@ export default function App(props: any) {
             <Route path="lengths" element={<ProfileLengths />}></Route>
           </Route>
           {/* Public Profile */}
-          <Route
-            path="profile/:userName?"
-            element={
-              <PublicProfile
-                measurementSystem={measurementSystem}
-                setMeasurementSystem={setMeasurementSystem}
-              />
-            }
-          >
+          <Route path="profile/:userName?" element={<PublicProfile />}>
             {["", "speeds"].map((path, index) => (
               <Route
                 key={index}

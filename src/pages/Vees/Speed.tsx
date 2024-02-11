@@ -2,15 +2,14 @@ import { useState, useEffect, forwardRef } from "react";
 
 import useLocalStorageState from "use-local-storage-state";
 
+import { useMeasurementSystem } from "../../shared/contexts/MeasurementSystem";
+
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Unstable_Grid2";
 import Button from "@mui/material/Button";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemText from "@mui/material/ListItemText";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Container from "@mui/material/Container";
@@ -44,7 +43,7 @@ const Transition = forwardRef(function Transition(
   props: TransitionProps & {
     children: React.ReactElement<any, any>;
   },
-  ref: React.Ref<unknown>
+  ref: React.Ref<unknown>,
 ) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -97,23 +96,22 @@ const placeholderSpeedData: any[] = [
   },
 ];
 
-interface AppProps {
-  measurementSystem: "metric" | "imperial";
-}
-
-export default function Speed(props: AppProps) {
+export default function Speed() {
   const theme = useTheme();
+
+  const [measurementSystem, setMeasurementSystem] = useMeasurementSystem();
+
   const [distance, setDistance] = useLocalStorageState<number>("distance", {
     defaultValue: 2,
   });
   const [distanceForm, setDistanceForm] = useState<string>(() => `${distance}`);
   const [distanceUnit, setDistanceUnit] = useState<string>(() =>
-    props.measurementSystem === "metric" ? "km" : "mi"
+    measurementSystem === "metric" ? "km" : "mi",
   );
 
   useEffect(() => {
-    setDistanceUnit(props.measurementSystem === "metric" ? "km" : "mi");
-  }, [props.measurementSystem]);
+    setDistanceUnit(measurementSystem === "metric" ? "km" : "mi");
+  }, [measurementSystem]);
 
   // set `Unit` form, input handle
   const handleUnitChange = (event: SelectChangeEvent) => {
@@ -139,10 +137,8 @@ export default function Speed(props: AppProps) {
         break;
     }
   };
-  const disabledUnitMetric =
-    props.measurementSystem === "imperial" ? true : false;
-  const disabledUnitImperial =
-    props.measurementSystem === "metric" ? true : false;
+  const disabledUnitMetric = measurementSystem === "imperial" ? true : false;
+  const disabledUnitImperial = measurementSystem === "metric" ? true : false;
 
   // set `<distance>` form, input handle
   const handleDistanceForm = (e: any) => {
@@ -240,7 +236,7 @@ export default function Speed(props: AppProps) {
     switch (calledBy) {
       case "Form":
         setSpeedData((prev) => {
-          return props.measurementSystem === "metric"
+          return measurementSystem === "metric"
             ? [
                 ...prev,
                 {
@@ -351,7 +347,6 @@ export default function Speed(props: AppProps) {
         <Grid id={"svg"} xs={4} sm={8} md={8} boxShadow={5}>
           <SpeedSVG
             speedData={speedData}
-            measurementSystem={props.measurementSystem}
             handleAddIconOpen={handleAddIconOpen}
             distance={distance}
             handleDistanceIconIconOpen={handleDistanceIconIconOpen}
@@ -418,7 +413,7 @@ export default function Speed(props: AppProps) {
                   <TableRow>
                     <TableCell>Name</TableCell>
                     <TableCell align="right">
-                      {props.measurementSystem === "metric" ? "kmph" : "mph"}
+                      {measurementSystem === "metric" ? "kmph" : "mph"}
                     </TableCell>
                     <TableCell align="right"></TableCell>
                   </TableRow>
@@ -437,7 +432,7 @@ export default function Speed(props: AppProps) {
                         {d.name}
                       </TableCell>
                       <TableCell align="right">
-                        {props.measurementSystem === "metric"
+                        {measurementSystem === "metric"
                           ? Number.parseFloat(String(d.kmph)).toFixed(2)
                           : Number.parseFloat(String(d.mph)).toFixed(2)}
                       </TableCell>
@@ -496,9 +491,7 @@ export default function Speed(props: AppProps) {
           <TextField
             id="outlined-basic"
             label={
-              props.measurementSystem == "metric"
-                ? "Speed (km/h)"
-                : "Speed (mph)"
+              measurementSystem == "metric" ? "Speed (km/h)" : "Speed (mph)"
             }
             variant="outlined"
             name="speed"

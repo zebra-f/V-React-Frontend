@@ -1,42 +1,19 @@
 import * as React from "react";
 import { useState } from "react";
 
-import useLocalStorageState from "use-local-storage-state";
+import MeasurementSystemToogleButtonGroup from "../../shared/components/MeasurementSystemToogleButtonGroup";
 
 import useTheme from "@mui/material/styles/useTheme";
 import Box from "@mui/material/Box";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import { Outlet, Link } from "react-router-dom";
-import Typography from "@mui/material/Typography";
-import ToggleButton from "@mui/material/ToggleButton";
-import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 
-interface AppProps {
-  setMeasurementSystem: React.Dispatch<
-    React.SetStateAction<"metric" | "imperial">
-  >;
-  measurementSystem: "metric" | "imperial";
-}
-
-export default function Vees(props: AppProps) {
+export default function Vees() {
   const theme = useTheme();
   const [value, setValue] = useState(0);
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
-  };
-  const [alignment, setAlignment] = useState<"metric" | "imperial">(
-    props.measurementSystem
-  );
-
-  const handleAlignment = (
-    event: React.MouseEvent<HTMLElement>,
-    newAlignment: "metric" | "imperial"
-  ) => {
-    if (newAlignment !== null) {
-      setAlignment(newAlignment);
-      props.setMeasurementSystem(newAlignment);
-    }
   };
   const backgroundColor =
     theme.palette.mode === "dark"
@@ -61,42 +38,7 @@ export default function Vees(props: AppProps) {
           />
         </Tabs>
 
-        <ToggleButtonGroup
-          orientation="vertical"
-          value={alignment}
-          exclusive
-          onChange={handleAlignment}
-          aria-label="text alignment"
-          sx={{
-            p: 1,
-            pt: 1.2,
-            // bgcolor: theme.palette.background.default,
-            borderRadius: 0,
-          }}
-        >
-          <ToggleButton
-            value="metric"
-            aria-label="left aligned"
-            size="small"
-            sx={{
-              mx: 1,
-              maxHeight: 26,
-            }}
-          >
-            <Typography mt={0}>metric</Typography>
-          </ToggleButton>
-          <ToggleButton
-            value="imperial"
-            aria-label="right aligned"
-            size="small"
-            sx={{
-              mx: 1,
-              maxHeight: 26,
-            }}
-          >
-            <Typography mt={0}>imperial</Typography>
-          </ToggleButton>
-        </ToggleButtonGroup>
+        <MeasurementSystemToogleButtonGroup />
       </Box>
       <Outlet />
     </>

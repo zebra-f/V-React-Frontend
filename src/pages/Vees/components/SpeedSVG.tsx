@@ -2,8 +2,6 @@ import { useState, useEffect, useRef, useContext } from "react";
 
 import * as d3 from "d3";
 
-import useLocalStorageState from "use-local-storage-state";
-
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import ButtonGroup from "@mui/material/ButtonGroup";
@@ -14,6 +12,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import AddIcon from "@mui/icons-material/Add";
 import StraightenIcon from "@mui/icons-material/Straighten";
 import useTheme from "@mui/material/styles/useTheme";
+import { useMeasurementSystem } from "../../../shared/contexts/MeasurementSystem";
 
 interface SpeedProps {
   speedData: {
@@ -22,7 +21,6 @@ interface SpeedProps {
     kmph: number;
     mph: number;
   }[];
-  measurementSystem: "metric" | "imperial";
   handleAddIconOpen: () => void;
   distance: number;
   handleDistanceIconIconOpen: () => void;
@@ -32,6 +30,8 @@ export default function SpeedSVG(props: SpeedProps) {
   const theme = useTheme();
   const color: string = theme.palette.mode === "light" ? "#3d5a80" : "#98c1d9";
   const prevTheme = useRef(theme);
+
+  const [measurementSystem] = useMeasurementSystem();
 
   const SVG_WIDTH = 960;
   let overFive = props.speedData.length <= 5 ? 0 : props.speedData.length - 5;
@@ -167,13 +167,7 @@ export default function SpeedSVG(props: SpeedProps) {
         speedChart.selectAll(".xAxis").remove();
       };
     }
-  }, [
-    selection,
-    props.speedData,
-    theme,
-    props.distance,
-    props.measurementSystem,
-  ]);
+  }, [selection, props.speedData, theme, props.distance, measurementSystem]);
   useEffect(() => {}, [theme]);
 
   const elapsedRef = useRef<number>(0);
@@ -185,11 +179,11 @@ export default function SpeedSVG(props: SpeedProps) {
     for (const index in props.speedData) {
       tempElapsedMax = Math.max(
         tempElapsedMax,
-        calcualteTransitionDuration(props.speedData[index])
+        calcualteTransitionDuration(props.speedData[index]),
       );
     }
     setElapsedMax(tempElapsedMax);
-  }, [props.speedData, props.measurementSystem, props.distance]);
+  }, [props.speedData, measurementSystem, props.distance]);
 
   const t = () => {
     const t = d3.timer((elapsed) => {
@@ -218,7 +212,7 @@ export default function SpeedSVG(props: SpeedProps) {
     mph: number;
   }) {
     let timeHours: null | number = null;
-    if (props.measurementSystem === "metric") {
+    if (measurementSystem === "metric") {
       timeHours = props.distance / d.kmph;
     } else {
       timeHours = props.distance / d.mph;
@@ -302,7 +296,7 @@ export default function SpeedSVG(props: SpeedProps) {
   }
   useEffect(() => {
     handleResetButton();
-  }, [props.measurementSystem, props.distance, props.speedData]);
+  }, [measurementSystem, props.distance, props.speedData]);
 
   return (
     <Box my={1} display="flex" justifyContent="center" flexDirection={"column"}>
@@ -342,7 +336,7 @@ export default function SpeedSVG(props: SpeedProps) {
           className="props.distance"
         >
           Distance: {props.distance}{" "}
-          {props.measurementSystem === "metric" ? "km" : "mi"}
+          {measurementSystem === "metric" ? "km" : "mi"}
         </text>
         <line
           x1={BAR_X_COORD}
@@ -451,17 +445,17 @@ function stopWatch(elapsed: number) {
       ? "0" + minutes + 1 + ":00" + ":" + oneHundredth
       : minutes + 1 + ":00" + ":" + oneHundredth
     : minutes < 10
-    ? "0" +
-      minutes +
-      ":" +
-      (Number(seconds) < 10 ? "0" : "") +
-      seconds +
-      ":" +
-      oneHundredth
-    : minutes +
-      ":" +
-      (Number(seconds) < 10 ? "0" : "") +
-      seconds +
-      ":" +
-      oneHundredth;
+      ? "0" +
+        minutes +
+        ":" +
+        (Number(seconds) < 10 ? "0" : "") +
+        seconds +
+        ":" +
+        oneHundredth
+      : minutes +
+        ":" +
+        (Number(seconds) < 10 ? "0" : "") +
+        seconds +
+        ":" +
+        oneHundredth;
 }
