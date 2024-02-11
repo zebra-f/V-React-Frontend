@@ -1,8 +1,7 @@
 import { Routes, Route, useLocation } from "react-router-dom";
 import { useState } from "react";
 
-import useLocalStorageState from "use-local-storage-state";
-import { MeasurementSystemProvider } from "./shared/contexts/MeasurementSystem";
+import AppProvidersProvider from "./shared/contexts/AppProvidersProvider";
 
 import Navbar from "./shared/components/Navbar";
 import Home from "./pages/Home/Home";
@@ -40,11 +39,6 @@ import PublicProfileSpeeds from "./pages/User/PublicProfileComponents/Speeds";
 import PublicProfileLengths from "./pages/User/PublicProfileComponents/Lengths";
 
 export default function App(props: any) {
-  const [isAuthenticated, setIsAuthenticated] = useLocalStorageState(
-    "isAuthenticated",
-    { defaultValue: false },
-  );
-
   const [googleEventListenerActive, setGoogleEventListenerActive] =
     useState(false);
 
@@ -59,14 +53,12 @@ export default function App(props: any) {
   });
 
   return (
-    <MeasurementSystemProvider>
+    <AppProvidersProvider>
       <div className="App">
         {renderNavbar && (
           <Navbar
             setSessionThemeMode={props.setSessionThemeMode}
             sessionThemeMode={props.sessionThemeMode}
-            isAuthenticated={isAuthenticated}
-            setIsAuthenticated={setIsAuthenticated}
           />
         )}
         <Routes>
@@ -82,26 +74,15 @@ export default function App(props: any) {
           <Route path="about" element={<About />} />
 
           {/* Account */}
-          <Route
-            path="account"
-            element={<Account isAuthenticated={isAuthenticated} />}
-          >
+          <Route path="account" element={<Account />}>
             {["", "myaccount"].map((path, index) => (
               <Route key={index} path={path} element={<MyAccount />} />
             ))}
             <Route path="changepassword" element={<ChangePassword />} />
-            <Route
-              path="deleteaccount"
-              element={
-                <DeleteAccount setIsAuthenticated={setIsAuthenticated} />
-              }
-            />
+            <Route path="deleteaccount" element={<DeleteAccount />} />
           </Route>
           {/* Profile */}
-          <Route
-            path="account/profile"
-            element={<Profile isAuthenticated={isAuthenticated} />}
-          >
+          <Route path="account/profile" element={<Profile />}>
             {["", "speeds"].map((path, index) => (
               <Route key={index} path={path} element={<ProfileSpeeds />}>
                 {["", "speeds"].map((path, index) => (
@@ -130,8 +111,6 @@ export default function App(props: any) {
             path="signin"
             element={
               <SignIn
-                isAuthenticated={isAuthenticated}
-                setIsAuthenticated={setIsAuthenticated}
                 googleEventListenerActive={googleEventListenerActive}
                 setGoogleEventListenerActive={setGoogleEventListenerActive}
               />
@@ -141,34 +120,18 @@ export default function App(props: any) {
             path="signup"
             element={
               <SignUp
-                isAuthenticated={isAuthenticated}
-                setIsAuthenticated={setIsAuthenticated}
                 googleEventListenerActive={googleEventListenerActive}
                 setGoogleEventListenerActive={setGoogleEventListenerActive}
               />
             }
           />
-          <Route
-            path="passwordreset"
-            element={<PasswordReset isAuthenticated={isAuthenticated} />}
-          />
-          <Route
-            path="verifyemail"
-            element={<VerifyEmail isAuthenticated={isAuthenticated} />}
-          />
-          <Route
-            path="googlesignup"
-            element={
-              <GoogleSignUp
-                isAuthenticated={isAuthenticated}
-                setIsAuthenticated={setIsAuthenticated}
-              />
-            }
-          />
+          <Route path="passwordreset" element={<PasswordReset />} />
+          <Route path="verifyemail" element={<VerifyEmail />} />
+          <Route path="googlesignup" element={<GoogleSignUp />} />
           {/* Don't render Navbar */}
           <Route path="openid/googleredirect" element={<GoogleRedirect />} />
         </Routes>
       </div>
-    </MeasurementSystemProvider>
+    </AppProvidersProvider>
   );
 }

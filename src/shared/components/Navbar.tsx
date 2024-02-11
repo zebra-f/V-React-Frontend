@@ -10,6 +10,8 @@ import {
 import { useNavigate } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 
+import { useIsAuthenticated } from "../contexts/IsAuthenticated";
+
 import signOut from "../../actions/signOut";
 
 import CssBaseline from "@mui/material/CssBaseline";
@@ -45,14 +47,10 @@ import { ColorModeContext } from "../../styles/ColorModeApp";
 const pages = ["Home", "Vees", "About"];
 
 interface props {
-  isAuthenticated: boolean;
-  setIsAuthenticated: Dispatch<React.SetStateAction<boolean>>;
   sessionThemeMode: string;
   setSessionThemeMode: Dispatch<React.SetStateAction<string>>;
 }
 export default function Navbar({
-  isAuthenticated,
-  setIsAuthenticated,
   sessionThemeMode,
   setSessionThemeMode,
 }: props) {
@@ -85,6 +83,8 @@ export default function Navbar({
       }
     />
   ));
+
+  const [isAuthenticated, setIsAuthenticated] = useIsAuthenticated();
 
   const navigate = useNavigate();
   const handleSignInClick = () => {
@@ -230,7 +230,7 @@ export default function Navbar({
   };
 
   const handleSignOut = () => {
-    signOut(isAuthenticated, setIsAuthenticated).then((signedOut) => {
+    signOut(isAuthenticated, setIsAuthenticated).then((signedOut: boolean) => {
       if (signedOut) {
         setErrorSnackbarOpen(false);
         setSuccessSignOutSnackbarOpen(true);

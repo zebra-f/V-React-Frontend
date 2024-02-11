@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 import { useRedirectAuthenticatedUserEffect } from "../../shared/hooks/useEffect";
+import { useIsAuthenticated } from "../../shared/contexts/IsAuthenticated";
 
 import kyClient from "../../shared/services/ky";
 import signIn from "../../actions/signIn";
@@ -22,7 +23,6 @@ import Alert from "@mui/material/Alert";
 import GoogleIcon from "@mui/icons-material/Google";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
-import { access } from "fs";
 
 interface signInData {
   email: string;
@@ -50,14 +50,10 @@ async function requestSignIn(data: signInData) {
 }
 
 interface props {
-  isAuthenticated: boolean;
-  setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
   googleEventListenerActive: boolean;
   setGoogleEventListenerActive: React.Dispatch<React.SetStateAction<boolean>>;
 }
 function SignIn({
-  isAuthenticated,
-  setIsAuthenticated,
   googleEventListenerActive,
   setGoogleEventListenerActive,
 }: props) {
@@ -66,6 +62,7 @@ function SignIn({
     navigate(to);
   };
 
+  const [isAuthenticated, setIsAuthenticated] = useIsAuthenticated();
   useRedirectAuthenticatedUserEffect(isAuthenticated, "/");
 
   const [apiError, setApiError] = useState({ error: false, errorMessage: "" });
@@ -179,10 +176,6 @@ function SignIn({
     navigate("/passwordreset");
   };
 
-  // Google
-  const handleGoogleSignIn = () => {
-    open;
-  };
   return (
     <>
       <Container component="main" maxWidth="xs">
@@ -268,7 +261,7 @@ function SignIn({
                   googleEventListenerActive,
                   setGoogleEventListenerActive,
                   setIsAuthenticated,
-                  navigateHandler
+                  navigateHandler,
                 )
               }
               variant="outlined"

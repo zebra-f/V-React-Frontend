@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 import { useRedirectAuthenticatedUserEffect } from "../../../shared/hooks/useEffect";
+import { useIsAuthenticated } from "../../../shared/contexts/IsAuthenticated";
 
 import kyClient from "../../../shared/services/ky";
 import signIn from "../../../actions/signIn";
@@ -35,7 +36,7 @@ async function requestGoogleSignUp(data: signUpData) {
       "token/google/callback/",
       {
         json: data,
-      }
+      },
     );
     const responseData = await response.json();
     return { status: response.status, data: responseData };
@@ -50,15 +51,12 @@ async function requestGoogleSignUp(data: signUpData) {
   }
 }
 
-interface props {
-  isAuthenticated: boolean;
-  setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
-}
-function GoogleSignUp({ isAuthenticated, setIsAuthenticated }: props) {
+function GoogleSignUp() {
   const theme = useTheme();
 
   const navigate = useNavigate();
 
+  const [isAuthenticated, setIsAuthenticated] = useIsAuthenticated();
   useRedirectAuthenticatedUserEffect(isAuthenticated, "/");
 
   const [apiError, setApiError] = useState({

@@ -1,12 +1,11 @@
 import { useRedirectAuthenticatedUserEffect } from "../../shared/hooks/useEffect";
+import { useIsAuthenticated } from "../../shared/contexts/IsAuthenticated";
 
 import passwordResetEmail from "./components/passwordResetEmail";
 import passwordResetPassword from "./components/passwordResetPassword";
 
-interface props {
-  isAuthenticated: boolean;
-}
-function PasswordReset({ isAuthenticated }: props) {
+function PasswordReset() {
+  const [isAuthenticated] = useIsAuthenticated();
   useRedirectAuthenticatedUserEffect(isAuthenticated, "/");
 
   const urlParams = new URLSearchParams(window.location.search);

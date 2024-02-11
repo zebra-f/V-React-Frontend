@@ -1,12 +1,11 @@
 import { useRedirectAuthenticatedUserEffect } from "../../shared/hooks/useEffect";
+import { useIsAuthenticated } from "../../shared/contexts/IsAuthenticated";
 
 import verifyEmail from "./components/verifyEmail";
 import verifyEmailResendEmail from "./components/verifyEmailResendEmail";
 
-interface props {
-  isAuthenticated: boolean;
-}
-function VerifyEmail({ isAuthenticated }: props) {
+function VerifyEmail() {
+  const [isAuthenticated] = useIsAuthenticated();
   useRedirectAuthenticatedUserEffect(isAuthenticated, "/");
 
   const urlParams = new URLSearchParams(window.location.search);

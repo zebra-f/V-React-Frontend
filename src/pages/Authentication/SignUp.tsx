@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 import { useRedirectAuthenticatedUserEffect } from "../../shared/hooks/useEffect";
+import { useIsAuthenticated } from "../../shared/contexts/IsAuthenticated";
 
 import kyClient from "../../shared/services/ky";
 
@@ -55,14 +56,10 @@ async function requestSignUp(data: signUpData) {
 }
 
 interface props {
-  isAuthenticated: boolean;
-  setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
   googleEventListenerActive: boolean;
   setGoogleEventListenerActive: React.Dispatch<React.SetStateAction<boolean>>;
 }
 function SignUp({
-  isAuthenticated,
-  setIsAuthenticated,
   googleEventListenerActive,
   setGoogleEventListenerActive,
 }: props) {
@@ -73,13 +70,14 @@ function SignUp({
     navigate(to);
   };
 
+  const [isAuthenticated, setIsAuthenticated] = useIsAuthenticated();
   useRedirectAuthenticatedUserEffect(isAuthenticated, "/");
 
   const [successSnackbarOpen, setSuccessSnackbarOpen] = useState(false);
   const [signedUpAlertMessage, setSignedUpAlertMessage] = useState("");
   const handleCloseAlert = (
     event?: React.SyntheticEvent | Event,
-    reason?: string
+    reason?: string,
   ) => {
     if (reason === "clickaway") {
       return;
@@ -248,7 +246,7 @@ function SignUp({
     }).then((result) => {
       if (result.status === 201) {
         setSignedUpAlertMessage(
-          `A verification email will be promptly sent to this address: ${result.data.email}`
+          `A verification email will be promptly sent to this address: ${result.data.email}`,
         );
         setSuccessSnackbarOpen(true);
         setApiError({ error: false, errorMessage: "" });
@@ -458,7 +456,7 @@ function SignUp({
                   googleEventListenerActive,
                   setGoogleEventListenerActive,
                   setIsAuthenticated,
-                  navigateHandler
+                  navigateHandler,
                 )
               }
               variant="outlined"

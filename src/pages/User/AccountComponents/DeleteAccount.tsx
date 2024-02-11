@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 
 import jwt from "../../../utils/jwt";
 
+import { useIsAuthenticated } from "../../../shared/contexts/IsAuthenticated";
+
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
@@ -34,17 +36,16 @@ async function requestDeleteAccount(id: string) {
     }
   }
 }
-interface props {
-  setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
-}
-export default function DeleteAccount({ setIsAuthenticated }: props) {
+export default function DeleteAccount() {
   const navigate = useNavigate();
+
+  const [, setIsAuthenticated] = useIsAuthenticated();
 
   const [successSnackbarOpen, setSuccessSnackbarOpen] = useState(false);
   const [successAlertMessage, setSuccessAlertMessage] = useState("");
   const handleCloseAlert = (
     event?: React.SyntheticEvent | Event,
-    reason?: string
+    reason?: string,
   ) => {
     if (reason === "clickaway") {
       return;
@@ -110,7 +111,7 @@ export default function DeleteAccount({ setIsAuthenticated }: props) {
         localStorage.removeItem("access");
         setIsAuthenticated(false);
         const deleteInput = document.getElementById(
-          "deleteInput"
+          "deleteInput",
         ) as HTMLInputElement;
         deleteInput.value = "";
         navigate("/");

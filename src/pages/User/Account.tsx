@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { useRedirectAnonUserEffect } from "../../shared/hooks/useEffect";
+import { useIsAuthenticated } from "../../shared/contexts/IsAuthenticated";
 
 import { mainListItems, secondaryListItems } from "./listItems";
 
@@ -45,10 +46,7 @@ const Drawer = styled(MuiDrawer, {
   },
 }));
 
-interface props {
-  isAuthenticated: boolean;
-}
-export default function Account({ isAuthenticated }: props) {
+export default function Account() {
   const theme = useTheme();
   const backgroundColor =
     theme.palette.mode === "dark"
@@ -56,6 +54,7 @@ export default function Account({ isAuthenticated }: props) {
       : // ? "linear-gradient(0deg, rgba(9,10,15,1) 0%, rgba(27,39,53,0.2) 100%)"
         "rgba(0,0,0,0)";
 
+  const [isAuthenticated] = useIsAuthenticated();
   useRedirectAnonUserEffect(isAuthenticated, "/");
 
   const [open, setOpen] = useState(false);
