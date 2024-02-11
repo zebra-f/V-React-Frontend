@@ -1,52 +1,19 @@
-import { useState, useEffect, forwardRef } from "react";
+import { useState, useEffect } from "react";
 
 import useLocalStorageState from "use-local-storage-state";
 
-import { useMeasurementSystem } from "../../shared/contexts/MeasurementSystem";
+import SpeedDisplayPanel from "./speedComponents/SpeedDisplayPanel";
+import SpeedDialogForms from "./speedComponents/SpeedDialogForms";
+import SpeedTable from "./speedComponents/SpeedTable";
+
+import { v4 as uuidv4 } from "uuid";
 
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Unstable_Grid2";
-import Button from "@mui/material/Button";
-import IconButton from "@mui/material/IconButton";
-import DeleteIcon from "@mui/icons-material/Delete";
 import Container from "@mui/material/Container";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import Slide from "@mui/material/Slide";
-import { TransitionProps } from "@mui/material/transitions/";
-import AddBoxIcon from "@mui/icons-material/AddBox";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
-import InputLabel from "@mui/material/InputLabel";
-import useTheme from "@mui/material/styles/useTheme";
-
-import { v4 as uuidv4 } from "uuid";
-
-import SpeedSVG from "./components/SpeedSVG";
-
-import * as React from "react";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-
-const Transition = forwardRef(function Transition(
-  props: TransitionProps & {
-    children: React.ReactElement<any, any>;
-  },
-  ref: React.Ref<unknown>,
-) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
 
 interface Film {
   title: string;
@@ -97,81 +64,6 @@ const placeholderSpeedData: any[] = [
 ];
 
 export default function Speed() {
-  const theme = useTheme();
-
-  const [measurementSystem, setMeasurementSystem] = useMeasurementSystem();
-
-  const [distance, setDistance] = useLocalStorageState<number>("distance", {
-    defaultValue: 2,
-  });
-  const [distanceForm, setDistanceForm] = useState<string>(() => `${distance}`);
-  const [distanceUnit, setDistanceUnit] = useState<string>(() =>
-    measurementSystem === "metric" ? "km" : "mi",
-  );
-
-  useEffect(() => {
-    setDistanceUnit(measurementSystem === "metric" ? "km" : "mi");
-  }, [measurementSystem]);
-
-  // set `Unit` form, input handle
-  const handleUnitChange = (event: SelectChangeEvent) => {
-    const value = event.target.value as string;
-    setDistanceUnit(value);
-
-    switch (value) {
-      case "km":
-      case "mi":
-        setDistance(Number(distanceForm));
-        break;
-      case "m":
-        setDistance(Number(distanceForm) * 0.001);
-        break;
-      case "cm":
-        setDistance(Number(distanceForm) * 0.00001);
-        break;
-      case "yd":
-        setDistance(Number(distanceForm) * 0.000568);
-        break;
-      case "ft":
-        setDistance(Number(distanceForm) * 0.000189394);
-        break;
-    }
-  };
-  const disabledUnitMetric = measurementSystem === "imperial" ? true : false;
-  const disabledUnitImperial = measurementSystem === "metric" ? true : false;
-
-  // set `<distance>` form, input handle
-  const handleDistanceForm = (e: any) => {
-    const value: string = e.target.value.trim();
-    setDistanceForm((prev) => {
-      if (value.toLowerCase() !== value.toUpperCase() || isNaN(value as any)) {
-        return prev;
-      }
-      return e.target.value.trim();
-    });
-    if (!isNaN(value as any)) {
-      switch (distanceUnit) {
-        case "km":
-        case "mi":
-          setDistance(Number(value));
-          break;
-        case "m":
-          setDistance(Number(value) * 0.001);
-          break;
-        case "cm":
-          setDistance(Number(value) * 0.00001);
-          break;
-        case "yd":
-          setDistance(Number(value) * 0.000568);
-          break;
-        case "ft":
-          setDistance(Number(value) * 0.000189394);
-          break;
-      }
-      // setDistance(Number(value));
-    }
-  };
-
   const [speedData, setSpeedData] = useLocalStorageState<
     {
       id: string;
@@ -183,94 +75,8 @@ export default function Speed() {
   >("speedData", {
     defaultValue: placeholderSpeedData,
   });
-  const [speedDataForm, setSpeedDataForm] = useState(() => {
-    return {
-      name: "",
-      speed: "",
-    };
-  });
-  // set `Name` and `Speed (mph/kmph)` form, input handle
-  const handleSpeedDataForm = (e: any) => {
-    let value = e.target.value.trim();
-    if (e.target.name === "speed") {
-      if (value.toLowerCase() == value.toUpperCase() && !isNaN(value as any)) {
-        setSpeedDataForm({
-          ...speedDataForm,
-          [e.target.name]: e.target.value.trim(),
-        });
-      }
-    } else {
-      setSpeedDataForm({
-        ...speedDataForm,
-        [e.target.name]: e.target.value.trim(),
-      });
-    }
-  };
 
-  const addSpeedDataForm = () => {
-    if (speedDataForm.name.length < 1) {
-      // pass
-    } else if (
-      isNaN(speedDataForm.speed as any) ||
-      speedDataForm.speed === ""
-    ) {
-      // pass
-    } else {
-      addSpeedData("Form");
-      setSpeedDataForm({
-        name: "",
-        speed: "",
-      });
-    }
-  };
-  const handleAddSpeedDataForm = (e: any) => {
-    addSpeedDataForm();
-  };
-  const handleEnterSpeedDataForm = (e: any) => {
-    if (e.key == "Enter") {
-      addSpeedDataForm();
-    }
-  };
-
-  const addSpeedData = (calledBy: string) => {
-    switch (calledBy) {
-      case "Form":
-        setSpeedData((prev) => {
-          return measurementSystem === "metric"
-            ? [
-                ...prev,
-                {
-                  id: uuidv4(),
-                  name: speedDataForm.name,
-                  kmph: Number(speedDataForm.speed),
-                  mph: Number(speedDataForm.speed) * 0.621371,
-                  internal: true,
-                },
-              ]
-            : [
-                ...prev,
-                {
-                  id: uuidv4(),
-                  name: speedDataForm.name,
-                  kmph: Number(speedDataForm.speed) * 1.60934,
-                  mph: Number(speedDataForm.speed),
-                  internal: true,
-                },
-              ];
-        });
-        break;
-    }
-  };
-
-  const handleDeleteDataFromList = (id: string) => {
-    setSpeedData((prev) => {
-      return prev.filter((d) => d.id !== id);
-    });
-  };
-
-  // Seatching
-  // Seatching
-  // Seatching
+  // Searching
 
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState<readonly Film[]>([]);
@@ -302,50 +108,27 @@ export default function Speed() {
     }
   }, [open]);
 
-  // SVG
-  // SVG
-  // SVG
+  // Dialog Forms
 
-  function distanceUnitLabel() {
-    switch (distanceUnit) {
-      case "km":
-        return "kilometres";
-      case "m":
-        return "metres";
-      case "cm":
-        return "centimetres";
-      case "mi":
-        return "miles";
-      case "yd":
-        return "yards";
-      case "ft":
-        return "feet";
-      default:
-        return "";
-    }
-  }
+  const [distance, setDistance] = useLocalStorageState<number>("distance", {
+    defaultValue: 2,
+  });
 
   const [openAddIcon, setOpenAddIcon] = useState(false);
   const handleAddIconOpen = () => {
     setOpenAddIcon(true);
-  };
-  const handleAddIconClose = () => {
-    setOpenAddIcon(false);
   };
 
   const [openDistanceIcon, setOpenDistanceIcon] = useState(false);
   const handleDistanceIconIconOpen = () => {
     setOpenDistanceIcon(true);
   };
-  const handleDistanceIconClose = () => {
-    setOpenDistanceIcon(false);
-  };
 
   return (
     <Container maxWidth="xl">
       <Grid mt={4} container spacing={2} columns={{ xs: 4, sm: 8, md: 12 }}>
         <Grid id={"svg"} xs={4} sm={8} md={8} boxShadow={5}>
-          <SpeedSVG
+          <SpeedDisplayPanel
             speedData={speedData}
             handleAddIconOpen={handleAddIconOpen}
             distance={distance}
@@ -390,195 +173,20 @@ export default function Speed() {
               )}
             />
           </Box>
-          <Box display="flex" justifyContent="center" my={2}>
-            <TableContainer
-              sx={{
-                pt: 0.84,
-                backgroundColor:
-                  theme.palette.mode === "light"
-                    ? "rgba(251, 254, 251, 0.6)"
-                    : "rgba(9, 10, 15, 0.8)",
-                borderBottom: `thin solid ${
-                  theme.palette.mode === "light" ? "#3d5a80" : "#98c1d9"
-                }}`,
-              }}
-            >
-              <Table
-                aria-label="simple table"
-                stickyHeader
-                padding="normal"
-                size="small"
-              >
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Name</TableCell>
-                    <TableCell align="right">
-                      {measurementSystem === "metric" ? "kmph" : "mph"}
-                    </TableCell>
-                    <TableCell align="right"></TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {speedData.map((d) => (
-                    <TableRow
-                      key={d.id}
-                      sx={{
-                        "&:last-child td, &:last-child th": {
-                          border: 0,
-                        },
-                      }}
-                    >
-                      <TableCell component="th" scope="row">
-                        {d.name}
-                      </TableCell>
-                      <TableCell align="right">
-                        {measurementSystem === "metric"
-                          ? Number.parseFloat(String(d.kmph)).toFixed(2)
-                          : Number.parseFloat(String(d.mph)).toFixed(2)}
-                      </TableCell>
-                      <TableCell align="right">
-                        <IconButton
-                          edge="end"
-                          aria-label="delete"
-                          onClick={() => handleDeleteDataFromList(d.id)}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Box>
+
+          <SpeedTable speedData={speedData} setSpeedData={setSpeedData} />
         </Grid>
       </Grid>
 
-      {/* Speed Form */}
-      <Dialog
-        open={openAddIcon}
-        TransitionComponent={Transition}
-        keepMounted
-        onClose={handleAddIconClose}
-        onKeyDown={handleEnterSpeedDataForm}
-        aria-describedby="alert-dialog-slide-description"
-      >
-        <DialogTitle>{"Add as many as you like"}</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            (data entered here is stored in your local storage)
-          </DialogContentText>
-        </DialogContent>
-        <Box
-          display="flex"
-          justifyContent="space-around"
-          // my={2}
-          sx={{
-            "& .MuiTextField-root": { m: 0.5 },
-          }}
-          // component="form"
-          // noValidate
-          // autoComplete="off"
-        >
-          <TextField
-            id="outlined-basic"
-            label="Name"
-            variant="outlined"
-            name="name"
-            onChange={handleSpeedDataForm}
-            value={speedDataForm.name}
-          />
-          <TextField
-            id="outlined-basic"
-            label={
-              measurementSystem == "metric" ? "Speed (km/h)" : "Speed (mph)"
-            }
-            variant="outlined"
-            name="speed"
-            onChange={handleSpeedDataForm}
-            value={speedDataForm.speed}
-          />
-          <IconButton
-            sx={{
-              mr: 1,
-              mt: 1,
-              minHeight: "20px",
-              minWidth: "20px",
-              maxWidth: "50px",
-              height: "100%",
-              width: "20%",
-            }}
-            onClick={handleAddSpeedDataForm}
-            color="success"
-          >
-            <AddBoxIcon fontSize="large" />
-          </IconButton>
-        </Box>
-        <DialogActions>
-          <Button onClick={handleAddIconClose}>Close</Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Disntace Form */}
-      <Dialog
-        open={openDistanceIcon}
-        TransitionComponent={Transition}
-        keepMounted
-        onClose={handleDistanceIconClose}
-        aria-describedby="alert-dialog-slide-description"
-      >
-        <DialogTitle>{"Set your preferred distance"}</DialogTitle>
-        <DialogContent></DialogContent>
-        <Box display="flex" justifyContent="space-around">
-          <TextField
-            id="outlined-basic"
-            label={distanceUnitLabel()}
-            variant="outlined"
-            name="distance"
-            onChange={handleDistanceForm}
-            value={distanceForm}
-            sx={{ ml: 1 }}
-          />
-          <FormControl
-            sx={{
-              ml: 1,
-              mr: 1,
-            }}
-          >
-            <InputLabel id="demo-simple-select-label">Unit</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={distanceUnit}
-              label="Units"
-              onChange={handleUnitChange}
-            >
-              <MenuItem value={"mi"} disabled={disabledUnitImperial}>
-                mi
-              </MenuItem>
-              <MenuItem value={"yd"} disabled={disabledUnitImperial}>
-                yd
-              </MenuItem>
-              <MenuItem value={"ft"} disabled={disabledUnitImperial}>
-                ft
-              </MenuItem>
-              <MenuItem value={"km"} disabled={disabledUnitMetric}>
-                km
-              </MenuItem>
-              <MenuItem value={"m"} disabled={disabledUnitMetric}>
-                m
-              </MenuItem>
-              <MenuItem value={"cm"} disabled={disabledUnitMetric}>
-                cm
-              </MenuItem>
-            </Select>
-          </FormControl>
-        </Box>
-
-        <DialogActions>
-          <Button onClick={handleDistanceIconClose}>Close</Button>
-        </DialogActions>
-      </Dialog>
+      <SpeedDialogForms
+        setSpeedData={setSpeedData}
+        openAddIcon={openAddIcon}
+        setOpenAddIcon={setOpenAddIcon}
+        openDistanceIcon={openDistanceIcon}
+        setOpenDistanceIcon={setOpenDistanceIcon}
+        distance={distance}
+        setDistance={setDistance}
+      />
     </Container>
   );
 }

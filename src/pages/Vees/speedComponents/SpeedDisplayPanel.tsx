@@ -14,7 +14,7 @@ import StraightenIcon from "@mui/icons-material/Straighten";
 import useTheme from "@mui/material/styles/useTheme";
 import { useMeasurementSystem } from "../../../shared/contexts/MeasurementSystem";
 
-interface SpeedProps {
+interface speedDisplayProps {
   speedData: {
     id: string;
     name: string;
@@ -25,8 +25,7 @@ interface SpeedProps {
   distance: number;
   handleDistanceIconIconOpen: () => void;
 }
-
-export default function SpeedSVG(props: SpeedProps) {
+export default function SpeedDisplayPanel(props: speedDisplayProps) {
   const theme = useTheme();
   const color: string = theme.palette.mode === "light" ? "#3d5a80" : "#98c1d9";
   const prevTheme = useRef(theme);
@@ -359,13 +358,6 @@ export default function SpeedSVG(props: SpeedProps) {
           y2={SVG_HEIGTH - BAR_X_COORD}
           stroke={color}
         />
-        {/* <line
-          x1={SVG_WIDTH}
-          y1={1}
-          x2={SVG_WIDTH - BAR_X_COORD * 4}
-          y2={1}
-          stroke={color}
-        /> */}
       </svg>
       <Box
         display="flex"
