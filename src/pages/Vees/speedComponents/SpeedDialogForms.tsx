@@ -2,6 +2,9 @@ import { useState, useEffect, forwardRef, ReactElement, Ref } from "react";
 
 import { useMeasurementSystem } from "../../../shared/contexts/MeasurementSystem";
 
+import { useVeesSpeedData } from "../../../shared/contexts/VeesSpeedData";
+import { veesSpeedDataInterface } from "../../../shared/contexts/VeesSpeedData";
+
 import { v4 as uuidv4 } from "uuid";
 
 import TextField from "@mui/material/TextField";
@@ -49,6 +52,8 @@ export default function SpeedDialogForms({
   setDistance,
 }: speedDialogFormsProps) {
   const [measurementSystem] = useMeasurementSystem();
+
+  const [, setVeesSpeedData] = useVeesSpeedData();
 
   // Distance Form
 
@@ -193,12 +198,44 @@ export default function SpeedDialogForms({
   const addSpeedData = (calledBy: string) => {
     switch (calledBy) {
       case "Form":
+        const localId = uuidv4();
+
+        setVeesSpeedData((prev: Array<veesSpeedDataInterface>) => {
+          return measurementSystem == "metric"
+            ? [
+                ...prev,
+                {
+                  local: true,
+                  localSpeed: {
+                    id: localId,
+                    name: speedDataForm.name,
+                    kmph: Number(speedDataForm.speed),
+                    mph: Number(speedDataForm.speed) * 0.621371,
+                  },
+                  externalSpeed: null,
+                },
+              ]
+            : [
+                ...prev,
+                {
+                  local: true,
+                  localSpeed: {
+                    id: localId,
+                    name: speedDataForm.name,
+                    kmph: Number(speedDataForm.speed) * 1.60934,
+                    mph: Number(speedDataForm.speed),
+                  },
+                  externalSpeed: null,
+                },
+              ];
+        });
+
         setSpeedData((prev: any) => {
           return measurementSystem === "metric"
             ? [
                 ...prev,
                 {
-                  id: uuidv4(),
+                  id: localId,
                   name: speedDataForm.name,
                   kmph: Number(speedDataForm.speed),
                   mph: Number(speedDataForm.speed) * 0.621371,
@@ -208,7 +245,7 @@ export default function SpeedDialogForms({
             : [
                 ...prev,
                 {
-                  id: uuidv4(),
+                  id: localId,
                   name: speedDataForm.name,
                   kmph: Number(speedDataForm.speed) * 1.60934,
                   mph: Number(speedDataForm.speed),

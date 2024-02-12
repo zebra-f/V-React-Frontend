@@ -2,9 +2,11 @@ import { useState, useEffect } from "react";
 
 import useLocalStorageState from "use-local-storage-state";
 
+import { useVeesSpeedData } from "../../shared/contexts/VeesSpeedData";
+
 import SpeedDisplayPanel from "./speedComponents/SpeedDisplayPanel";
 import SpeedDialogForms from "./speedComponents/SpeedDialogForms";
-import SpeedTable from "./speedComponents/SpeedTable";
+import SpeedsTable from "./speedComponents/SpeedsTable";
 
 import { v4 as uuidv4 } from "uuid";
 
@@ -25,6 +27,7 @@ function sleep(delay = 0) {
     setTimeout(resolve, delay);
   });
 }
+
 const placeholderSpeedData: any[] = [
   {
     id: uuidv4(),
@@ -64,6 +67,9 @@ const placeholderSpeedData: any[] = [
 ];
 
 export default function Speed() {
+  const [veesSpeedData, setVeesSpeedData] = useVeesSpeedData();
+  console.log(veesSpeedData);
+
   const [speedData, setSpeedData] = useLocalStorageState<
     {
       id: string;
@@ -126,17 +132,19 @@ export default function Speed() {
 
   return (
     <Container maxWidth="xl">
-      <Grid mt={4} container spacing={2} columns={{ xs: 4, sm: 8, md: 12 }}>
-        <Grid id={"svg"} xs={4} sm={8} md={8} boxShadow={5}>
-          <SpeedDisplayPanel
-            speedData={speedData}
-            handleAddIconOpen={handleAddIconOpen}
-            distance={distance}
-            handleDistanceIconIconOpen={handleDistanceIconIconOpen}
-          />
+      <Grid mt={4} container={true} spacing={2}>
+        <Grid id={"svg"} xs={12} sm={12} md={8}>
+          <Box boxShadow={5} p={1}>
+            <SpeedDisplayPanel
+              speedData={speedData}
+              handleAddIconOpen={handleAddIconOpen}
+              distance={distance}
+              handleDistanceIconIconOpen={handleDistanceIconIconOpen}
+            />
+          </Box>
         </Grid>
 
-        <Grid xs={4} sm={8} md={4}>
+        <Grid xs={12} sm={12} md={4}>
           <Box display="flex" justifyContent="center" my={2}>
             <Autocomplete
               id="asynchronous-demo"
@@ -174,7 +182,7 @@ export default function Speed() {
             />
           </Box>
 
-          <SpeedTable speedData={speedData} setSpeedData={setSpeedData} />
+          <SpeedsTable speedData={speedData} setSpeedData={setSpeedData} />
         </Grid>
       </Grid>
 
