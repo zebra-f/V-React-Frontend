@@ -7,6 +7,8 @@ import {
   veesSpeedDataInterface,
 } from "../../../shared/contexts/VeesSpeedData";
 
+import AddedBy from "../../../shared/components/speedsTableComponents/AddedBy";
+
 import useTheme from "@mui/material/styles/useTheme";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
@@ -20,6 +22,9 @@ import TableRow from "@mui/material/TableRow";
 import Collapse from "@mui/material/Collapse";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import Chip from "@mui/material/Chip";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
 
 interface rowProps {
   rowMainData: veesSpeedDataInterface;
@@ -27,6 +32,8 @@ interface rowProps {
 function Row({ rowMainData }: rowProps) {
   const [, setVeesSpeedData] = useVeesSpeedData();
   const [measurementSystem] = useMeasurementSystem();
+
+  const [speed, setSpeed] = useState(rowMainData);
 
   const handleDeleteDataFromList = (id: string) => {
     setVeesSpeedData((prev: veesSpeedDataInterface[]) => {
@@ -48,7 +55,7 @@ function Row({ rowMainData }: rowProps) {
           },
         }}
       >
-        <TableCell>
+        <TableCell sx={{ mr: 0, pr: 1, ml: 0, pl: 1 }}>
           {!rowMainData.local && (
             <IconButton
               aria-label="expand row"
@@ -59,13 +66,13 @@ function Row({ rowMainData }: rowProps) {
             </IconButton>
           )}
         </TableCell>
-        <TableCell component="th" scope="row">
-          {rowMainData.localSpeed.name}
+        <TableCell component="th" scope="row" sx={{ ml: 0, pl: 0 }}>
+          {speed.localSpeed.name}
         </TableCell>
         <TableCell align="right">
           {measurementSystem === "metric"
-            ? Number.parseFloat(String(rowMainData.localSpeed.kmph)).toFixed(2)
-            : Number.parseFloat(String(rowMainData.localSpeed.mph)).toFixed(2)}
+            ? Number.parseFloat(String(speed.localSpeed.kmph)).toFixed(2)
+            : Number.parseFloat(String(speed.localSpeed.mph)).toFixed(2)}
         </TableCell>
         <TableCell align="right">
           <IconButton
@@ -82,8 +89,19 @@ function Row({ rowMainData }: rowProps) {
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
-              <h1>Placeholder</h1>
-              <h1>Placeholder</h1>
+              <Stack direction="row" spacing={1}>
+                {speed.externalSpeed?.tags.map((tag: string) => (
+                  <Chip key={tag} label={tag} variant="outlined" />
+                ))}
+              </Stack>
+
+              <Typography variant="h6" gutterBottom component="div" mt={2}>
+                {speed.externalSpeed?.description}
+              </Typography>
+
+              {speed.externalSpeed && (
+                <AddedBy user={speed.externalSpeed.user} />
+              )}
             </Box>
           </Collapse>
         </TableCell>
