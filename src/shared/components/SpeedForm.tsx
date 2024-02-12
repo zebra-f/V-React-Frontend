@@ -512,7 +512,6 @@ export default function SpeedForm({
                 label="Name"
                 name="name"
                 autoFocus
-                defaultValue={speedData ? speedData.name : null}
                 value={nameValue}
                 onChange={handleNameChange}
                 helperText={nameError.error ? nameError.errorMessage : ""}
@@ -538,7 +537,6 @@ export default function SpeedForm({
                 name="description"
                 value={descriptionValue}
                 onChange={handleDescriptionChange}
-                defaultValue={speedData ? speedData.description : null}
                 helperText={
                   descriptionError.error ? descriptionError.errorMessage : ""
                 }
@@ -599,7 +597,7 @@ export default function SpeedForm({
                         speedData
                           ? measurementSystem === "metric"
                             ? speedData.kmph
-                            : (speedData.kmph * 0.621371).toFixed(2)
+                            : speedData.kmph * 0.621371
                           : null
                       }
                       helperText={

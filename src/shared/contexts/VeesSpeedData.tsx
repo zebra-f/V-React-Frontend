@@ -1,15 +1,10 @@
 import { useContext, createContext } from "react";
 import { v4 as uuidv4 } from "uuid";
 
-import { speedBaseInterface } from "../interfaces/speedInterfaces";
+import { speedInterface } from "../interfaces/speedInterfaces";
 
 import useLocalStorageState from "use-local-storage-state";
 
-interface externalSpeedInterface extends speedBaseInterface {
-  id: string & { isUUID: true };
-  user: string;
-  score: number;
-}
 export interface veesSpeedDataInterface {
   local: boolean; // local only
   localSpeed: {
@@ -18,7 +13,7 @@ export interface veesSpeedDataInterface {
     kmph: number;
     mph: number;
   };
-  externalSpeed: null | externalSpeedInterface;
+  externalSpeed: null | speedInterface;
 }
 
 const VeesSpeedDataContext = createContext<any | undefined>(undefined);

@@ -22,7 +22,7 @@ interface speedInterface extends speedBaseInterface {
   id: string & { isUUID: true };
   score: number;
   user: string;
-  url: string;
+  url: null | string;
   user_speed_bookmark: null | userSpeedBookmarkInterface;
   user_speed_feedback: null | userSpeedFeedbackInterface;
 }

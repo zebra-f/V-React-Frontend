@@ -2,6 +2,10 @@ import { useState, useEffect, useRef, SetStateAction, Dispatch } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useMeasurementSystem } from "../contexts/MeasurementSystem";
+import {
+  useVeesSpeedData,
+  veesSpeedDataInterface,
+} from "../contexts/VeesSpeedData";
 
 import SpeedForm from "./SpeedForm";
 import ReportForm from "./ReportForm";
@@ -57,6 +61,7 @@ import Switch from "@mui/material/Switch";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import Alert from "@mui/material/Alert";
+import BeenhereIcon from "@mui/icons-material/Beenhere";
 
 function Row(props: {
   key: string & { isUUID: true };
@@ -72,6 +77,7 @@ function Row(props: {
   const navigate = useNavigate();
 
   const [measurementSystem] = useMeasurementSystem();
+  const [veesSpeedData, setVeesSpeedData] = useVeesSpeedData();
 
   const {
     rowMainData,
@@ -275,6 +281,33 @@ function Row(props: {
     setReportFormOpen(true);
   };
 
+  const [addedToVees, setAddedToVees] = useState(false);
+  if (!addedToVees) {
+    veesSpeedData.forEach((veesSpeed: veesSpeedDataInterface) => {
+      if (veesSpeed.localSpeed.id === speed.id) {
+        setAddedToVees(true);
+      }
+    });
+  }
+  const handleAddToVeesSpeedData = () => {
+    setVeesSpeedData((prev: veesSpeedDataInterface[]) => {
+      return [
+        ...prev,
+        {
+          local: false,
+          localSpeed: {
+            id: speed.id,
+            name: speed.name,
+            kmph: speed.kmph,
+            mph: speed.kmph * 0.621371,
+          },
+          externalSpeed: speed,
+        },
+      ];
+    });
+    setAddedToVees(true);
+  };
+
   return (
     <>
       {formOpen && (
@@ -354,17 +387,24 @@ function Row(props: {
         <TableCell align="right">
           <Tooltip
             title={
-              <Typography fontSize={20}>
-                {speed.estimated
-                  ? speed.speed_type + " (estimated)"
-                  : speed.speed_type}
-              </Typography>
+              <>
+                <Typography fontSize={20}>
+                  {speed.estimated
+                    ? speed.speed_type + " (estimated) "
+                    : speed.speed_type}
+                </Typography>
+                <Typography>
+                  {measurementSystem == "metric"
+                    ? `${speed.kmph} kmph`
+                    : `${speed.kmph * 0.621371} mph`}
+                </Typography>
+              </>
             }
           >
             <Typography>
               {measurementSystem == "metric"
-                ? `${speed.kmph} kmph`
-                : `${(speed.kmph * 0.621371).toFixed(2)} mph`}
+                ? `${Number(String(speed.kmph.toFixed(speed.kmph < 1 ? 10 : 2)))} kmph`
+                : `${Number(String((speed.kmph * 0.621371).toFixed(speed.kmph * 0.621371 < 1 ? 10 : 2)))} mph`}
             </Typography>
           </Tooltip>
         </TableCell>
@@ -387,7 +427,15 @@ function Row(props: {
           )}
         </TableCell>
         <TableCell>
-          <AddIcon />
+          {addedToVees ? (
+            <Button disabled={true}>
+              <BeenhereIcon color="success" />
+            </Button>
+          ) : (
+            <Button onClick={handleAddToVeesSpeedData}>
+              <AddIcon />
+            </Button>
+          )}
         </TableCell>
       </TableRow>
 
@@ -662,18 +710,18 @@ export default function SpeedsTable({
               <TableRow>
                 <TableCell width={"10%"} />
                 <TableCell width={"5%"} align="right" />
-                <TableCell align="center" width={"5%"}>
+                <TableCell align="center" width={"10%"}>
                   Score
                 </TableCell>
                 <TableCell width={"5%"} align="left" />
                 <TableCell align="left" width={"40%"}>
                   Name
                 </TableCell>
-                <TableCell align="right" width={"20%"}>
+                <TableCell align="right" width={"25%"}>
                   Speed
                 </TableCell>
-                <TableCell align="center" width={"8%"}></TableCell>
-                <TableCell align="center" width={"12%"}></TableCell>
+                <TableCell align="center" width={"5%"}></TableCell>
+                <TableCell align="center" width={"5%"}></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
