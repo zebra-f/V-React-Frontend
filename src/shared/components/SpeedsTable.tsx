@@ -409,7 +409,7 @@ function Row(props: {
           </Tooltip>
         </TableCell>
 
-        <TableCell align="center">
+        <TableCell align="center" sx={{ pr: 1, pl: 1 }}>
           {(rowType == "regular" || rowType == "bookmark") && (
             <Button
               onClick={() => {
@@ -426,7 +426,7 @@ function Row(props: {
             </Button>
           )}
         </TableCell>
-        <TableCell>
+        <TableCell align="center" sx={{ ml: 0, pl: 0 }}>
           {addedToVees ? (
             <Button disabled={true}>
               <BeenhereIcon color="success" />
