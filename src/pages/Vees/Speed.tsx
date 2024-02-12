@@ -2,13 +2,9 @@ import { useState, useEffect } from "react";
 
 import useLocalStorageState from "use-local-storage-state";
 
-import { useVeesSpeedData } from "../../shared/contexts/VeesSpeedData";
-
 import SpeedDisplayPanel from "./speedComponents/SpeedDisplayPanel";
 import SpeedDialogForms from "./speedComponents/SpeedDialogForms";
 import SpeedsTable from "./speedComponents/SpeedsTable";
-
-import { v4 as uuidv4 } from "uuid";
 
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
@@ -28,60 +24,7 @@ function sleep(delay = 0) {
   });
 }
 
-const placeholderSpeedData: any[] = [
-  {
-    id: uuidv4(),
-    name: "Mitsubishi 3000GT",
-    kmph: 257.5,
-    mph: 160.0,
-    internal: true,
-  },
-  {
-    id: uuidv4(),
-    name: "Human",
-    kmph: 37.0,
-    mph: 22.99,
-    internal: true,
-  },
-  {
-    id: uuidv4(),
-    name: "Lockheed Martin F-22 Raptor",
-    kmph: 2414.0,
-    mph: 1499.99,
-    internal: true,
-  },
-
-  {
-    id: uuidv4(),
-    name: "Earth",
-    kmph: 107226.0,
-    mph: 66627.1475,
-    internal: true,
-  },
-  {
-    id: uuidv4(),
-    name: "Cheetah",
-    kmph: 112.0,
-    mph: 69.59,
-  },
-];
-
 export default function Speed() {
-  const [veesSpeedData, setVeesSpeedData] = useVeesSpeedData();
-  console.log(veesSpeedData);
-
-  const [speedData, setSpeedData] = useLocalStorageState<
-    {
-      id: string;
-      name: string;
-      kmph: number;
-      mph: number;
-      internal: boolean;
-    }[]
-  >("speedData", {
-    defaultValue: placeholderSpeedData,
-  });
-
   // Searching
 
   const [open, setOpen] = useState(false);
@@ -126,9 +69,17 @@ export default function Speed() {
   };
 
   const [openDistanceIcon, setOpenDistanceIcon] = useState(false);
-  const handleDistanceIconIconOpen = () => {
+  const handleDistanceIconOpen = () => {
     setOpenDistanceIcon(true);
   };
+
+  const [openSettingsIcon, setOpenSettingsIcon] = useState(false);
+  const handleSettingsIconOpen = () => {
+    setOpenSettingsIcon(true);
+  };
+
+  const [alwaysDisplayElapsedTime, setAlwaysDisplayElapsedTime] =
+    useState<boolean>(false);
 
   return (
     <Container maxWidth="xl">
@@ -136,10 +87,11 @@ export default function Speed() {
         <Grid id={"svg"} xs={12} sm={12} md={8}>
           <Box boxShadow={5} p={1}>
             <SpeedDisplayPanel
-              speedData={speedData}
-              handleAddIconOpen={handleAddIconOpen}
               distance={distance}
-              handleDistanceIconIconOpen={handleDistanceIconIconOpen}
+              alwaysDisplayElapsedTime={alwaysDisplayElapsedTime}
+              handleAddIconOpen={handleAddIconOpen}
+              handleDistanceIconOpen={handleDistanceIconOpen}
+              handleSettingsIconOpen={handleSettingsIconOpen}
             />
           </Box>
         </Grid>
@@ -182,18 +134,21 @@ export default function Speed() {
             />
           </Box>
 
-          <SpeedsTable speedData={speedData} setSpeedData={setSpeedData} />
+          <SpeedsTable />
         </Grid>
       </Grid>
 
       <SpeedDialogForms
-        setSpeedData={setSpeedData}
+        distance={distance}
+        setDistance={setDistance}
         openAddIcon={openAddIcon}
         setOpenAddIcon={setOpenAddIcon}
         openDistanceIcon={openDistanceIcon}
         setOpenDistanceIcon={setOpenDistanceIcon}
-        distance={distance}
-        setDistance={setDistance}
+        openSettingsIcon={openSettingsIcon}
+        setOpenSettingsIcon={setOpenSettingsIcon}
+        alwaysDisplayElapsedTime={alwaysDisplayElapsedTime}
+        setAlwaysDisplayElapsedTime={setAlwaysDisplayElapsedTime}
       />
     </Container>
   );

@@ -22,19 +22,13 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
 interface rowProps {
-  rowMainData: any;
-  setSpeedData: any;
+  rowMainData: veesSpeedDataInterface;
 }
-function Row({ setSpeedData, rowMainData }: rowProps) {
+function Row({ rowMainData }: rowProps) {
   const [, setVeesSpeedData] = useVeesSpeedData();
-
   const [measurementSystem] = useMeasurementSystem();
 
   const handleDeleteDataFromList = (id: string) => {
-    setSpeedData((prev: any) => {
-      return prev.filter((d: any) => d.id !== id);
-    });
-
     setVeesSpeedData((prev: veesSpeedDataInterface[]) => {
       return prev.filter(
         (data: veesSpeedDataInterface) => data.localSpeed.id !== id,
@@ -44,6 +38,7 @@ function Row({ setSpeedData, rowMainData }: rowProps) {
 
   // collapse
   const [open, setOpen] = useState(false);
+
   return (
     <>
       <TableRow
@@ -54,27 +49,29 @@ function Row({ setSpeedData, rowMainData }: rowProps) {
         }}
       >
         <TableCell>
-          <IconButton
-            aria-label="expand row"
-            size="small"
-            onClick={() => setOpen(!open)}
-          >
-            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-          </IconButton>
+          {!rowMainData.local && (
+            <IconButton
+              aria-label="expand row"
+              size="small"
+              onClick={() => setOpen(!open)}
+            >
+              {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+            </IconButton>
+          )}
         </TableCell>
         <TableCell component="th" scope="row">
-          {rowMainData.name}
+          {rowMainData.localSpeed.name}
         </TableCell>
         <TableCell align="right">
           {measurementSystem === "metric"
-            ? Number.parseFloat(String(rowMainData.kmph)).toFixed(2)
-            : Number.parseFloat(String(rowMainData.mph)).toFixed(2)}
+            ? Number.parseFloat(String(rowMainData.localSpeed.kmph)).toFixed(2)
+            : Number.parseFloat(String(rowMainData.localSpeed.mph)).toFixed(2)}
         </TableCell>
         <TableCell align="right">
           <IconButton
             edge="end"
             aria-label="delete"
-            onClick={() => handleDeleteDataFromList(rowMainData.id)}
+            onClick={() => handleDeleteDataFromList(rowMainData.localSpeed.id)}
           >
             <DeleteIcon />
           </IconButton>
@@ -95,16 +92,10 @@ function Row({ setSpeedData, rowMainData }: rowProps) {
   );
 }
 
-interface speedTableProps {
-  speedData: any;
-  setSpeedData: any;
-}
-export default function SpeedsTable({
-  speedData,
-  setSpeedData,
-}: speedTableProps) {
+export default function SpeedsTable() {
   const theme = useTheme();
 
+  const [veesSpeedData] = useVeesSpeedData();
   const [measurementSystem] = useMeasurementSystem();
 
   return (
@@ -138,12 +129,8 @@ export default function SpeedsTable({
             </TableRow>
           </TableHead>
           <TableBody>
-            {speedData.map((data: any) => (
-              <Row
-                key={data.id}
-                setSpeedData={setSpeedData}
-                rowMainData={data}
-              />
+            {veesSpeedData.map((data: veesSpeedDataInterface) => (
+              <Row key={data.localSpeed.id} rowMainData={data} />
             ))}
           </TableBody>
         </Table>

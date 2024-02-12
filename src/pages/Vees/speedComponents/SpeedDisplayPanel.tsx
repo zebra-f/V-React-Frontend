@@ -1,6 +1,9 @@
-import { useState, useEffect, useRef, useContext } from "react";
+import { useState, useEffect, useRef } from "react";
 
 import * as d3 from "d3";
+
+import { useVeesSpeedData } from "../../../shared/contexts/VeesSpeedData";
+import { veesSpeedDataInterface } from "../../../shared/contexts/VeesSpeedData";
 
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -15,15 +18,11 @@ import useTheme from "@mui/material/styles/useTheme";
 import { useMeasurementSystem } from "../../../shared/contexts/MeasurementSystem";
 
 interface speedDisplayProps {
-  speedData: {
-    id: string;
-    name: string;
-    kmph: number;
-    mph: number;
-  }[];
-  handleAddIconOpen: () => void;
   distance: number;
-  handleDistanceIconIconOpen: () => void;
+  alwaysDisplayElapsedTime: boolean;
+  handleAddIconOpen: () => void;
+  handleDistanceIconOpen: () => void;
+  handleSettingsIconOpen: () => void;
 }
 export default function SpeedDisplayPanel(props: speedDisplayProps) {
   const theme = useTheme();
@@ -32,8 +31,10 @@ export default function SpeedDisplayPanel(props: speedDisplayProps) {
 
   const [measurementSystem] = useMeasurementSystem();
 
+  const [veesSpeedData] = useVeesSpeedData();
+
   const SVG_WIDTH = 960;
-  let overFive = props.speedData.length <= 5 ? 0 : props.speedData.length - 5;
+  let overFive = veesSpeedData.length <= 5 ? 0 : veesSpeedData.length - 5;
   const SVG_HEIGTH = 400 + overFive * 50;
   const BAR_X_COORD = 20;
   const BAR_Y_COORD = 60;
@@ -49,12 +50,7 @@ export default function SpeedDisplayPanel(props: speedDisplayProps) {
   const [speedChartBarsSelection, setSpeedChartBarsSelection] =
     useState<null | d3.Selection<
       d3.BaseType | SVGRectElement,
-      {
-        id: string;
-        name: string;
-        kmph: number;
-        mph: number;
-      },
+      veesSpeedDataInterface,
       d3.BaseType,
       unknown
     >>(null);
@@ -71,40 +67,40 @@ export default function SpeedDisplayPanel(props: speedDisplayProps) {
       speedChart
         .select(".SpeedChartBarsNameText")
         .selectAll("text")
-        .data(props.speedData)
+        .data(veesSpeedData)
         .join("text")
         .attr("font-size", 25)
         .attr("fill", color)
-        .text((d) => {
-          return d.name.slice(0, 70);
+        .text((d: any) => {
+          return d.localSpeed.name.slice(0, 70);
         })
         .attr("y", (_, i) => i * 50 + (29 + BAR_Y_COORD))
         .attr("x", BAR_X_COORD * 2);
 
-      let speedChartBars = null;
+      let speedChartBars: any = null;
       if (theme === prevTheme.current) {
         speedChart
           .select(".SpeedChartBarsElapsedText")
           .selectAll("text")
-          .data(props.speedData)
+          .data(veesSpeedData)
           .join("text")
-          .attr("font-size", 0)
+          .attr("font-size", props.alwaysDisplayElapsedTime ? 25 : 0)
           .attr("fill", color)
-          .attr("id", (d) => {
-            return "id" + d.id;
+          .attr("id", (d: any) => {
+            return "id" + d.localSpeed.id;
           })
-          .text((d) => {
+          .text((d: any) => {
             if (elapsedRef.current) {
               elapsedRef.current = 0;
             }
-            return stopWatch(calcualteTransitionDuration(d));
+            return stopWatch(calcualteTransitionDuration(d.localSpeed));
           })
           .attr("y", (_, i) => i * 50 + (29 + BAR_Y_COORD))
           .attr("x", SVG_WIDTH - 200);
 
         speedChartBars = speedChart
           .selectAll("rect")
-          .data(props.speedData)
+          .data(veesSpeedData)
           .join("rect")
           .attr("width", 0)
           .attr("height", BAR_HEIGHT)
@@ -125,24 +121,24 @@ export default function SpeedDisplayPanel(props: speedDisplayProps) {
         speedChart
           .select(".SpeedChartBarsElapsedText")
           .selectAll("text")
-          .data(props.speedData)
+          .data(veesSpeedData)
           .join("text")
           .attr("fill", color)
-          .attr("id", (d) => {
-            return "id" + d.id;
+          .attr("id", (d: any) => {
+            return "id" + d.localSpeed.id;
           })
-          .text((d) => {
+          .text((d: any) => {
             if (elapsedRef.current) {
               elapsedRef.current = 0;
             }
-            return stopWatch(calcualteTransitionDuration(d));
+            return stopWatch(calcualteTransitionDuration(d.localSpeed));
           })
           .attr("y", (_, i) => i * 50 + (29 + BAR_Y_COORD))
           .attr("x", SVG_WIDTH - 200);
 
         speedChartBars = speedChart
           .selectAll("rect")
-          .data(props.speedData)
+          .data(veesSpeedData)
           .attr("fill", (_) => {
             return getColor(theme.palette.mode);
           });
@@ -166,7 +162,14 @@ export default function SpeedDisplayPanel(props: speedDisplayProps) {
         speedChart.selectAll(".xAxis").remove();
       };
     }
-  }, [selection, props.speedData, theme, props.distance, measurementSystem]);
+  }, [
+    selection,
+    veesSpeedData,
+    theme,
+    props.distance,
+    props.alwaysDisplayElapsedTime,
+    measurementSystem,
+  ]);
   useEffect(() => {}, [theme]);
 
   const elapsedRef = useRef<number>(0);
@@ -175,14 +178,14 @@ export default function SpeedDisplayPanel(props: speedDisplayProps) {
   const [elapsedMax, setElapsedMax] = useState<number>(0);
   useEffect(() => {
     let tempElapsedMax = 0;
-    for (const index in props.speedData) {
+    for (const index in veesSpeedData) {
       tempElapsedMax = Math.max(
         tempElapsedMax,
-        calcualteTransitionDuration(props.speedData[index]),
+        calcualteTransitionDuration(veesSpeedData[index].localSpeed),
       );
     }
     setElapsedMax(tempElapsedMax);
-  }, [props.speedData, measurementSystem, props.distance]);
+  }, [veesSpeedData, measurementSystem, props.distance]);
 
   const t = () => {
     const t = d3.timer((elapsed) => {
@@ -229,7 +232,7 @@ export default function SpeedDisplayPanel(props: speedDisplayProps) {
           .transition()
           .ease(d3.easeLinear)
           .duration((d) => {
-            return calcualteTransitionDuration(d);
+            return calcualteTransitionDuration(d.localSpeed);
           })
           .attr("width", SVG_WIDTH - BAR_X_COORD * 2)
           .on("end", (d) => {
@@ -237,7 +240,7 @@ export default function SpeedDisplayPanel(props: speedDisplayProps) {
               selection
                 .select(".SpeedChart")
                 .select(".SpeedChartBarsElapsedText")
-                .select(`#id${d.id}`)
+                .select(`#id${d.localSpeed.id}`)
                 .attr("font-size", 25);
             }
           });
@@ -295,7 +298,12 @@ export default function SpeedDisplayPanel(props: speedDisplayProps) {
   }
   useEffect(() => {
     handleResetButton();
-  }, [measurementSystem, props.distance, props.speedData]);
+  }, [
+    measurementSystem,
+    props.distance,
+    props.alwaysDisplayElapsedTime,
+    veesSpeedData,
+  ]);
 
   return (
     <Box my={1} display="flex" justifyContent="center" flexDirection={"column"}>
@@ -390,10 +398,10 @@ export default function SpeedDisplayPanel(props: speedDisplayProps) {
           <Button onClick={props.handleAddIconOpen}>
             <AddIcon />
           </Button>
-          <Button onClick={props.handleDistanceIconIconOpen}>
+          <Button onClick={props.handleDistanceIconOpen}>
             <StraightenIcon />
           </Button>
-          <Button>
+          <Button onClick={props.handleSettingsIconOpen}>
             <SettingsIcon />
           </Button>
         </ButtonGroup>

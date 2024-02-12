@@ -20,9 +20,11 @@ import Slide from "@mui/material/Slide";
 import { TransitionProps } from "@mui/material/transitions/";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import InputLabel from "@mui/material/InputLabel";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormControl from "@mui/material/FormControl";
+import Switch from "@mui/material/Switch";
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & {
@@ -34,22 +36,28 @@ const Transition = forwardRef(function Transition(
 });
 
 interface speedDialogFormsProps {
-  setSpeedData: any;
+  distance: number;
+  setDistance: any;
   openAddIcon: boolean;
   setOpenAddIcon: any;
   openDistanceIcon: boolean;
   setOpenDistanceIcon: any;
-  distance: number;
-  setDistance: any;
+  openSettingsIcon: boolean;
+  setOpenSettingsIcon: any;
+  alwaysDisplayElapsedTime: boolean;
+  setAlwaysDisplayElapsedTime: any;
 }
 export default function SpeedDialogForms({
-  setSpeedData,
+  distance,
+  setDistance,
   openAddIcon,
   setOpenAddIcon,
   openDistanceIcon,
   setOpenDistanceIcon,
-  distance,
-  setDistance,
+  openSettingsIcon,
+  setOpenSettingsIcon,
+  alwaysDisplayElapsedTime,
+  setAlwaysDisplayElapsedTime,
 }: speedDialogFormsProps) {
   const [measurementSystem] = useMeasurementSystem();
 
@@ -62,7 +70,6 @@ export default function SpeedDialogForms({
     measurementSystem === "metric" ? "km" : "mi",
   );
 
-  // set default unit
   useEffect(() => {
     setDistanceUnit(measurementSystem === "metric" ? "km" : "mi");
   }, [measurementSystem]);
@@ -121,7 +128,6 @@ export default function SpeedDialogForms({
           setDistance(Number(value) * 0.000189394);
           break;
       }
-      // setDistance(Number(value));
     }
   };
 
@@ -230,31 +236,16 @@ export default function SpeedDialogForms({
               ];
         });
 
-        setSpeedData((prev: any) => {
-          return measurementSystem === "metric"
-            ? [
-                ...prev,
-                {
-                  id: localId,
-                  name: speedDataForm.name,
-                  kmph: Number(speedDataForm.speed),
-                  mph: Number(speedDataForm.speed) * 0.621371,
-                  internal: true,
-                },
-              ]
-            : [
-                ...prev,
-                {
-                  id: localId,
-                  name: speedDataForm.name,
-                  kmph: Number(speedDataForm.speed) * 1.60934,
-                  mph: Number(speedDataForm.speed),
-                  internal: true,
-                },
-              ];
-        });
         break;
     }
+  };
+
+  // Settings
+
+  const handleChangeElapsedTime = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setAlwaysDisplayElapsedTime(event.target.checked);
   };
 
   const handleAddIconClose = () => {
@@ -262,6 +253,9 @@ export default function SpeedDialogForms({
   };
   const handleDistanceIconClose = () => {
     setOpenDistanceIcon(false);
+  };
+  const handleSettingsIconClose = () => {
+    setOpenSettingsIcon(false);
   };
 
   return (
@@ -275,57 +269,50 @@ export default function SpeedDialogForms({
         onKeyDown={handleEnterSpeedDataForm}
         aria-describedby="alert-dialog-slide-description"
       >
-        <DialogTitle>{"Add as many as you like"}</DialogTitle>
+        <DialogTitle>{"Quick data entry"}</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            (data entered here is stored in your local storage)
-          </DialogContentText>
-        </DialogContent>
-        <Box
-          display="flex"
-          justifyContent="space-around"
-          // my={2}
-          sx={{
-            "& .MuiTextField-root": { m: 0.5 },
-          }}
-          // component="form"
-          // noValidate
-          // autoComplete="off"
-        >
-          <TextField
-            id="outlined-basic"
-            label="Name"
-            variant="outlined"
-            name="name"
-            onChange={handleSpeedDataForm}
-            value={speedDataForm.name}
-          />
-          <TextField
-            id="outlined-basic"
-            label={
-              measurementSystem == "metric" ? "Speed (km/h)" : "Speed (mph)"
-            }
-            variant="outlined"
-            name="speed"
-            onChange={handleSpeedDataForm}
-            value={speedDataForm.speed}
-          />
-          <IconButton
+          <DialogContentText></DialogContentText>
+          <Box
+            display="flex"
+            justifyContent="space-around"
             sx={{
-              mr: 1,
-              mt: 1,
-              minHeight: "20px",
-              minWidth: "20px",
-              maxWidth: "50px",
-              height: "100%",
-              width: "20%",
+              "& .MuiTextField-root": { m: 0.5 },
             }}
-            onClick={handleAddSpeedDataForm}
-            color="success"
           >
-            <AddBoxIcon fontSize="large" />
-          </IconButton>
-        </Box>
+            <TextField
+              id="outlined-basic"
+              label="Name"
+              variant="outlined"
+              name="name"
+              onChange={handleSpeedDataForm}
+              value={speedDataForm.name}
+            />
+            <TextField
+              id="outlined-basic"
+              label={
+                measurementSystem == "metric" ? "Speed (km/h)" : "Speed (mph)"
+              }
+              variant="outlined"
+              name="speed"
+              onChange={handleSpeedDataForm}
+              value={speedDataForm.speed}
+            />
+            <IconButton
+              sx={{
+                mt: 1,
+                minHeight: "20px",
+                minWidth: "20px",
+                maxWidth: "50px",
+                height: "100%",
+                width: "20%",
+              }}
+              onClick={handleAddSpeedDataForm}
+              color="success"
+            >
+              <AddBoxIcon fontSize="large" />
+            </IconButton>
+          </Box>
+        </DialogContent>
         <DialogActions>
           <Button onClick={handleAddIconClose}>Close</Button>
         </DialogActions>
@@ -340,55 +327,83 @@ export default function SpeedDialogForms({
         aria-describedby="alert-dialog-slide-description"
       >
         <DialogTitle>{"Set your preferred distance"}</DialogTitle>
-        <DialogContent></DialogContent>
-        <Box display="flex" justifyContent="space-around">
-          <TextField
-            id="outlined-basic"
-            label={distanceUnitLabel()}
-            variant="outlined"
-            name="distance"
-            onChange={handleDistanceForm}
-            value={distanceForm}
-            sx={{ ml: 1 }}
-          />
-          <FormControl
-            sx={{
-              ml: 1,
-              mr: 1,
-            }}
-          >
-            <InputLabel id="demo-simple-select-label">Unit</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={distanceUnit}
-              label="Units"
-              onChange={handleUnitChange}
+        <DialogContent>
+          <Box display="flex" justifyContent="space-around" mt={2}>
+            <TextField
+              id="outlined-basic"
+              label={distanceUnitLabel()}
+              variant="outlined"
+              name="distance"
+              onChange={handleDistanceForm}
+              value={distanceForm}
+              sx={{ ml: 1 }}
+            />
+            <FormControl
+              sx={{
+                ml: 1,
+                mr: 1,
+              }}
             >
-              <MenuItem value={"mi"} disabled={disabledUnitImperial}>
-                mi
-              </MenuItem>
-              <MenuItem value={"yd"} disabled={disabledUnitImperial}>
-                yd
-              </MenuItem>
-              <MenuItem value={"ft"} disabled={disabledUnitImperial}>
-                ft
-              </MenuItem>
-              <MenuItem value={"km"} disabled={disabledUnitMetric}>
-                km
-              </MenuItem>
-              <MenuItem value={"m"} disabled={disabledUnitMetric}>
-                m
-              </MenuItem>
-              <MenuItem value={"cm"} disabled={disabledUnitMetric}>
-                cm
-              </MenuItem>
-            </Select>
-          </FormControl>
-        </Box>
-
+              <InputLabel id="demo-simple-select-label">Unit</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={distanceUnit}
+                label="Units"
+                onChange={handleUnitChange}
+              >
+                <MenuItem value={"mi"} disabled={disabledUnitImperial}>
+                  mi
+                </MenuItem>
+                <MenuItem value={"yd"} disabled={disabledUnitImperial}>
+                  yd
+                </MenuItem>
+                <MenuItem value={"ft"} disabled={disabledUnitImperial}>
+                  ft
+                </MenuItem>
+                <MenuItem value={"km"} disabled={disabledUnitMetric}>
+                  km
+                </MenuItem>
+                <MenuItem value={"m"} disabled={disabledUnitMetric}>
+                  m
+                </MenuItem>
+                <MenuItem value={"cm"} disabled={disabledUnitMetric}>
+                  cm
+                </MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+        </DialogContent>
         <DialogActions>
           <Button onClick={handleDistanceIconClose}>Close</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Settings */}
+      <Dialog
+        open={openSettingsIcon}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={handleSettingsIconClose}
+        aria-describedby="alert-dialog-slide-description"
+      >
+        <DialogTitle>{"Settings"}</DialogTitle>
+        <DialogContent>
+          <Box m={2}>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={alwaysDisplayElapsedTime}
+                  onChange={handleChangeElapsedTime}
+                />
+              }
+              label="Always display elapsed time"
+            />
+          </Box>
+          <DialogContentText></DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleSettingsIconClose}>Close</Button>
         </DialogActions>
       </Dialog>
     </>
