@@ -74,7 +74,7 @@ function Row({ rowMainData }: rowProps) {
             ? Number.parseFloat(String(speed.localSpeed.kmph)).toFixed(2)
             : Number.parseFloat(String(speed.localSpeed.mph)).toFixed(2)}
         </TableCell>
-        <TableCell align="right">
+        <TableCell align="right" sx={{ ml: 0, pl: 0 }}>
           <IconButton
             edge="end"
             aria-label="delete"

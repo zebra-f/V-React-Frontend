@@ -72,7 +72,10 @@ export default function SpeedDisplayPanel(props: speedDisplayProps) {
         .attr("font-size", 25)
         .attr("fill", color)
         .text((d: any) => {
-          return d.localSpeed.name.slice(0, 70);
+          if (d.localSpeed.name.length > 48) {
+            return d.localSpeed.name.slice(0, 48) + "...";
+          }
+          return d.localSpeed.name;
         })
         .attr("y", (_, i) => i * 50 + (29 + BAR_Y_COORD))
         .attr("x", BAR_X_COORD * 2);
