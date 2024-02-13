@@ -12,6 +12,10 @@ import About from "./pages/About/About";
 import Length from "./pages/Vees/Length";
 import Speed from "./pages/Vees/Speed";
 
+import Data from "./pages/VeesData/Data";
+import SpeedsList from "./pages/VeesData/SpeedsList";
+import SpeedDetail from "./pages/VeesData/SpeedDetail";
+
 import SignIn from "./pages/Authentication/SignIn";
 import SignUp from "./pages/Authentication/SignUp";
 import PasswordReset from "./pages/Authentication/PasswordReset";
@@ -70,8 +74,15 @@ export default function App(props: any) {
             ))}
             <Route path="length" element={<Length />} />
           </Route>
-          {/* Abbout */}
-          <Route path="about" element={<About />} />
+
+          {/* Data */}
+          <Route path="data" element={<Data />}>
+            {["", "speeds"].map((path, index) => (
+              <Route key={index} path={path} element={<SpeedsList />} />
+            ))}
+            <Route path="length" element={<Length />} />
+          </Route>
+          <Route path="data/speeds/:speedId" element={<SpeedDetail />} />
 
           {/* Account */}
           <Route path="account" element={<Account />}>
@@ -81,6 +92,7 @@ export default function App(props: any) {
             <Route path="changepassword" element={<ChangePassword />} />
             <Route path="deleteaccount" element={<DeleteAccount />} />
           </Route>
+
           {/* Profile */}
           <Route path="account/profile" element={<Profile />}>
             {["", "speeds"].map((path, index) => (

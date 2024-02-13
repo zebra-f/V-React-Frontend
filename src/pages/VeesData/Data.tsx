@@ -9,7 +9,7 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import { Outlet, Link } from "react-router-dom";
 
-export default function Vees() {
+export default function Data() {
   const theme = useTheme();
   const [value, setValue] = useState(0);
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -29,12 +29,13 @@ export default function Vees() {
         style={{ background: backgroundColor }}
       >
         <Tabs value={value} onChange={handleChange} centered>
-          <Tab sx={{ pt: 5 }} label="Speed" to="/vees/speed" component={Link} />
+          <Tab sx={{ pt: 5 }} label="Speed" to="data/speeds" component={Link} />
           <Tab
             sx={{ pt: 5 }}
             label="Length"
-            to="/vees/length"
+            to="/data/lengths"
             component={Link}
+            disabled={true}
           />
         </Tabs>
 

@@ -73,4 +73,20 @@ async function getAndPrepareSpeedsData(
   }
 }
 
-export { getSpeeds, getAndPrepareSpeedsData };
+async function getSpeed(id: string) {
+  try {
+    const response = await kyClient.backendApi.get(`speeds/${id}/`);
+    const responseData = await response.json();
+    return { status: response.status, data: responseData };
+  } catch (error: any) {
+    try {
+      const response = await error.response;
+      const responseData = await response.json();
+      return { status: response.status, data: responseData };
+    } catch (_error: any) {
+      return { status: 500, data: {} };
+    }
+  }
+}
+
+export { getSpeeds, getAndPrepareSpeedsData, getSpeed };
