@@ -1,16 +1,15 @@
 import { useState, useEffect, useRef, SetStateAction, Dispatch } from "react";
 
 import { useMeasurementSystem } from "../contexts/MeasurementSystem";
-import {
-  useVeesSpeedData,
-  veesSpeedDataInterface,
-} from "../contexts/VeesSpeedData";
+import { useVeesSpeedData } from "../contexts/VeesSpeedData";
 
 import SpeedForm from "./SpeedForm";
 import AddedBy from "./speedsTableComponents/AddedBy";
 import Report from "./speedsTableComponents/Report";
 import Feedback from "./speedsTableComponents/Feedback";
 import Bookmark from "./speedsTableComponents/Bookmark";
+import LinkToSpeed from "./speedsTableComponents/LinkToSpeed";
+import AddToVees from "./speedsTableComponents/AddToVees";
 
 import {
   speedInterface,
@@ -32,7 +31,6 @@ import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import AddIcon from "@mui/icons-material/Add";
 import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
@@ -53,7 +51,6 @@ import Switch from "@mui/material/Switch";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import Alert from "@mui/material/Alert";
-import BeenhereIcon from "@mui/icons-material/Beenhere";
 
 function Row(props: {
   key: string & { isUUID: true };
@@ -125,33 +122,6 @@ function Row(props: {
       setSpeed(speedFormResponseData);
     }
   }, [speedFormResponseData]);
-
-  const [addedToVees, setAddedToVees] = useState(false);
-  if (!addedToVees) {
-    veesSpeedData.forEach((veesSpeed: veesSpeedDataInterface) => {
-      if (veesSpeed.localSpeed.id === speed.id) {
-        setAddedToVees(true);
-      }
-    });
-  }
-  const handleAddToVeesSpeedData = () => {
-    setVeesSpeedData((prev: veesSpeedDataInterface[]) => {
-      return [
-        ...prev,
-        {
-          local: false,
-          localSpeed: {
-            id: speed.id,
-            name: speed.name,
-            kmph: speed.kmph,
-            mph: speed.kmph * 0.621371,
-          },
-          externalSpeed: speed,
-        },
-      ];
-    });
-    setAddedToVees(true);
-  };
 
   return (
     <>
@@ -233,15 +203,7 @@ function Row(props: {
           )}
         </TableCell>
         <TableCell align="center" sx={{ ml: 0, pl: 0 }}>
-          {addedToVees ? (
-            <Button disabled={true}>
-              <BeenhereIcon color="success" />
-            </Button>
-          ) : (
-            <Button onClick={handleAddToVeesSpeedData}>
-              <AddIcon />
-            </Button>
-          )}
+          <AddToVees speed={speed} />
         </TableCell>
       </TableRow>
 
@@ -255,6 +217,9 @@ function Row(props: {
                     <Chip key={tag} label={tag} variant="outlined" />
                   ))}
                 </Stack>
+
+                <LinkToSpeed speedId={speed.id} />
+
                 {isEditable && (
                   <Stack direction="row" alignItems="center" gap={1}>
                     <Typography>
@@ -496,10 +461,10 @@ export default function SpeedsTable({
             <TableHead>
               <TableRow>
                 <TableCell width={"5%"} />
-                <TableCell align="center" width={"25%"}>
+                <TableCell align="center" width={"20%"}>
                   Score
                 </TableCell>
-                <TableCell align="left" width={"40%"}>
+                <TableCell align="left" width={"45%"}>
                   Name
                 </TableCell>
                 <TableCell align="right" width={"25%"}>
