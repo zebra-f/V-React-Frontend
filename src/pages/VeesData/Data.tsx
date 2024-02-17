@@ -29,7 +29,12 @@ export default function Data() {
         style={{ background: backgroundColor }}
       >
         <Tabs value={value} onChange={handleChange} centered>
-          <Tab sx={{ pt: 5 }} label="Speed" to="data/speeds" component={Link} />
+          <Tab
+            sx={{ pt: 5 }}
+            label="Speed"
+            to="/data/speeds"
+            component={Link}
+          />
           <Tab
             sx={{ pt: 5 }}
             label="Length"
