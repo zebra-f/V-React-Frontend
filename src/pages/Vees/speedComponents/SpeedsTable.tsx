@@ -26,6 +26,7 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Tooltip from "@mui/material/Tooltip";
+import Slide from "@mui/material/Slide";
 
 interface rowProps {
   rowMainData: veesSpeedDataInterface;
@@ -130,42 +131,44 @@ export default function SpeedsTable() {
   const [measurementSystem] = useMeasurementSystem();
 
   return (
-    <Box display="flex" justifyContent="center" my={2}>
-      <TableContainer
-        sx={{
-          pt: 0.83,
-          backgroundColor:
-            theme.palette.mode === "light"
-              ? "rgba(251, 254, 251, 0.6)"
-              : "rgba(9, 10, 15, 0.8)",
-          borderBottom: `thin solid ${
-            theme.palette.mode === "light" ? "#3d5a80" : "#98c1d9"
-          }}`,
-        }}
-      >
-        <Table
-          aria-label="simple table"
-          stickyHeader
-          padding="normal"
-          size="small"
+    <Slide in={true} direction="up" mountOnEnter unmountOnExit>
+      <Box display="flex" justifyContent="center" my={2}>
+        <TableContainer
+          sx={{
+            pt: 0.83,
+            backgroundColor:
+              theme.palette.mode === "light"
+                ? "rgba(251, 254, 251, 0.6)"
+                : "rgba(9, 10, 15, 0.8)",
+            borderBottom: `thin solid ${
+              theme.palette.mode === "light" ? "#3d5a80" : "#98c1d9"
+            }}`,
+          }}
         >
-          <TableHead>
-            <TableRow>
-              <TableCell align="left"></TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell align="right">
-                {measurementSystem === "metric" ? "kmph" : "mph"}
-              </TableCell>
-              <TableCell align="right"></TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {veesSpeedData.map((data: veesSpeedDataInterface) => (
-              <Row key={data.localSpeed.id} rowMainData={data} />
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Box>
+          <Table
+            aria-label="simple table"
+            stickyHeader
+            padding="normal"
+            size="small"
+          >
+            <TableHead>
+              <TableRow>
+                <TableCell align="left"></TableCell>
+                <TableCell>Name</TableCell>
+                <TableCell align="right">
+                  {measurementSystem === "metric" ? "kmph" : "mph"}
+                </TableCell>
+                <TableCell align="right"></TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {veesSpeedData.map((data: veesSpeedDataInterface) => (
+                <Row key={data.localSpeed.id} rowMainData={data} />
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
+    </Slide>
   );
 }

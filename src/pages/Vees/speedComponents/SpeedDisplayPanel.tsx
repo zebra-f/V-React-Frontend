@@ -4,6 +4,7 @@ import * as d3 from "d3";
 
 import { useVeesSpeedData } from "../../../shared/contexts/VeesSpeedData";
 import { veesSpeedDataInterface } from "../../../shared/contexts/VeesSpeedData";
+import { useMeasurementSystem } from "../../../shared/contexts/MeasurementSystem";
 
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -15,7 +16,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import AddIcon from "@mui/icons-material/Add";
 import StraightenIcon from "@mui/icons-material/Straighten";
 import useTheme from "@mui/material/styles/useTheme";
-import { useMeasurementSystem } from "../../../shared/contexts/MeasurementSystem";
+import Slide from "@mui/material/Slide";
 
 interface speedDisplayProps {
   distance: number;
@@ -309,107 +310,114 @@ export default function SpeedDisplayPanel(props: speedDisplayProps) {
   ]);
 
   return (
-    <Box my={1} display="flex" justifyContent="center" flexDirection={"column"}>
-      <svg
-        id="SpeedChart"
-        viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGTH}`}
-        preserveAspectRatio="xMidYMid meet"
-        ref={svgRef}
-      >
-        <rect
-          width="100%"
-          height="100%"
-          fill={
-            theme.palette.mode === "light"
-              ? "rgba(251, 254, 251, 0.6)"
-              : "rgba(9, 10, 15, 0.8)"
-          }
-        />
-
-        <g className="SpeedChart">
-          <g className="SpeedChartAxis"></g>
-          <g className="SpeedChartBarsNameText"></g>
-          <g className="SpeedChartBarsElapsedText"></g>
-        </g>
-        <text
-          fontSize={36}
-          fill={color}
-          x={SVG_WIDTH - 200}
-          y={SVG_HEIGTH - 2 * 20}
-          className="timer"
-        ></text>
-        <text
-          fontSize={36}
-          fill={color}
-          x={BAR_X_COORD * 2}
-          y={SVG_HEIGTH - 2 * 20}
-          className="props.distance"
-        >
-          Distance: {props.distance}{" "}
-          {measurementSystem === "metric" ? "km" : "mi"}
-        </text>
-        <line
-          x1={BAR_X_COORD}
-          y1={SVG_HEIGTH - BAR_X_COORD}
-          x2={SVG_WIDTH}
-          y2={SVG_HEIGTH - BAR_X_COORD}
-          stroke={color}
-        />
-        <line
-          x1={BAR_X_COORD}
-          y1={SVG_HEIGTH - BAR_Y_COORD}
-          x2={BAR_X_COORD}
-          y2={SVG_HEIGTH - BAR_X_COORD}
-          stroke={color}
-        />
-        <line
-          x1={SVG_WIDTH}
-          y1={1}
-          x2={SVG_WIDTH}
-          y2={SVG_HEIGTH - BAR_X_COORD}
-          stroke={color}
-        />
-      </svg>
+    <Slide in={true} direction="right" mountOnEnter unmountOnExit>
       <Box
+        my={1}
         display="flex"
-        justifyContent="space-between"
-        sx={{
-          p: 0.2,
-        }}
+        justifyContent="center"
+        flexDirection={"column"}
       >
-        <ButtonGroup size="medium" disableElevation variant="text">
-          {!inProgress ? (
-            <Button onClick={handleStartButton}>
-              <PlayArrowIcon />
-            </Button>
-          ) : (
-            <Button onClick={handlePauseButton}>
-              <PauseIcon />
-            </Button>
-          )}
-
-          <Button onClick={handleResetButton}>
-            <RestartAltIcon />
-          </Button>
-        </ButtonGroup>
-        <ButtonGroup
-          sx={{ mr: 2 }}
-          size="medium"
-          disableElevation
-          variant="text"
+        <svg
+          id="SpeedChart"
+          viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGTH}`}
+          preserveAspectRatio="xMidYMid meet"
+          ref={svgRef}
         >
-          <Button onClick={props.handleAddIconOpen}>
-            <AddIcon />
-          </Button>
-          <Button onClick={props.handleDistanceIconOpen}>
-            <StraightenIcon />
-          </Button>
-          <Button onClick={props.handleSettingsIconOpen}>
-            <SettingsIcon />
-          </Button>
-        </ButtonGroup>
+          <rect
+            width="100%"
+            height="100%"
+            fill={
+              theme.palette.mode === "light"
+                ? "rgba(251, 254, 251, 0.6)"
+                : "rgba(9, 10, 15, 0.8)"
+            }
+          />
+
+          <g className="SpeedChart">
+            <g className="SpeedChartAxis"></g>
+            <g className="SpeedChartBarsNameText"></g>
+            <g className="SpeedChartBarsElapsedText"></g>
+          </g>
+          <text
+            fontSize={36}
+            fill={color}
+            x={SVG_WIDTH - 200}
+            y={SVG_HEIGTH - 2 * 20}
+            className="timer"
+          ></text>
+          <text
+            fontSize={36}
+            fill={color}
+            x={BAR_X_COORD * 2}
+            y={SVG_HEIGTH - 2 * 20}
+            className="props.distance"
+          >
+            Distance: {props.distance}{" "}
+            {measurementSystem === "metric" ? "km" : "mi"}
+          </text>
+          <line
+            x1={BAR_X_COORD}
+            y1={SVG_HEIGTH - BAR_X_COORD}
+            x2={SVG_WIDTH}
+            y2={SVG_HEIGTH - BAR_X_COORD}
+            stroke={color}
+          />
+          <line
+            x1={BAR_X_COORD}
+            y1={SVG_HEIGTH - BAR_Y_COORD}
+            x2={BAR_X_COORD}
+            y2={SVG_HEIGTH - BAR_X_COORD}
+            stroke={color}
+          />
+          <line
+            x1={SVG_WIDTH}
+            y1={1}
+            x2={SVG_WIDTH}
+            y2={SVG_HEIGTH - BAR_X_COORD}
+            stroke={color}
+          />
+        </svg>
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          sx={{
+            p: 0.2,
+          }}
+        >
+          <ButtonGroup size="medium" disableElevation variant="text">
+            {!inProgress ? (
+              <Button onClick={handleStartButton}>
+                <PlayArrowIcon />
+              </Button>
+            ) : (
+              <Button onClick={handlePauseButton}>
+                <PauseIcon />
+              </Button>
+            )}
+
+            <Button onClick={handleResetButton}>
+              <RestartAltIcon />
+            </Button>
+          </ButtonGroup>
+          <ButtonGroup
+            sx={{ mr: 2 }}
+            size="medium"
+            disableElevation
+            variant="text"
+          >
+            <Button onClick={props.handleAddIconOpen}>
+              <AddIcon />
+            </Button>
+            <Button onClick={props.handleDistanceIconOpen}>
+              <StraightenIcon />
+            </Button>
+            <Button onClick={props.handleSettingsIconOpen}>
+              <SettingsIcon />
+            </Button>
+          </ButtonGroup>
+        </Box>
       </Box>
-    </Box>
+    </Slide>
   );
 }
 

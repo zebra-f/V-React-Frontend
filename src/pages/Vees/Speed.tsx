@@ -12,12 +12,12 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Unstable_Grid2";
 import Container from "@mui/material/Container";
+import Slide from "@mui/material/Slide";
 
 interface Film {
   title: string;
   year: number;
 }
-
 function sleep(delay = 0) {
   return new Promise((resolve) => {
     setTimeout(resolve, delay);
@@ -98,40 +98,42 @@ export default function Speed() {
 
         <Grid xs={12} sm={12} md={4}>
           <Box display="flex" justifyContent="center" my={2}>
-            <Autocomplete
-              id="asynchronous-demo"
-              sx={{ width: 400 }}
-              open={open}
-              onOpen={() => {
-                setOpen(true);
-              }}
-              onClose={() => {
-                setOpen(false);
-              }}
-              isOptionEqualToValue={(option, value) =>
-                option.title === value.title
-              }
-              getOptionLabel={(option) => option.title}
-              options={options}
-              loading={loading}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Search"
-                  InputProps={{
-                    ...params.InputProps,
-                    endAdornment: (
-                      <>
-                        {loading ? (
-                          <CircularProgress color="inherit" size={20} />
-                        ) : null}
-                        {params.InputProps.endAdornment}
-                      </>
-                    ),
-                  }}
-                />
-              )}
-            />
+            <Slide in={true} direction="left" mountOnEnter unmountOnExit>
+              <Autocomplete
+                id="asynchronous-demo"
+                sx={{ width: 400 }}
+                open={open}
+                onOpen={() => {
+                  setOpen(true);
+                }}
+                onClose={() => {
+                  setOpen(false);
+                }}
+                isOptionEqualToValue={(option, value) =>
+                  option.title === value.title
+                }
+                getOptionLabel={(option) => option.title}
+                options={options}
+                loading={loading}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Search"
+                    InputProps={{
+                      ...params.InputProps,
+                      endAdornment: (
+                        <>
+                          {loading ? (
+                            <CircularProgress color="inherit" size={20} />
+                          ) : null}
+                          {params.InputProps.endAdornment}
+                        </>
+                      ),
+                    }}
+                  />
+                )}
+              />
+            </Slide>
           </Box>
 
           <SpeedsTable />
