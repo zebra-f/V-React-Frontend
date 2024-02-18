@@ -8,6 +8,7 @@ import {
 } from "../../../shared/contexts/VeesSpeedData";
 
 import AddedBy from "../../../shared/components/speedsTableComponents/AddedBy";
+import TagChip from "../../../shared/components/speedsTableComponents/TagChip";
 
 import useTheme from "@mui/material/styles/useTheme";
 import Box from "@mui/material/Box";
@@ -22,9 +23,9 @@ import TableRow from "@mui/material/TableRow";
 import Collapse from "@mui/material/Collapse";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
+import Tooltip from "@mui/material/Tooltip";
 
 interface rowProps {
   rowMainData: veesSpeedDataInterface;
@@ -67,7 +68,19 @@ function Row({ rowMainData }: rowProps) {
           )}
         </TableCell>
         <TableCell component="th" scope="row" sx={{ ml: 0, pl: 0 }}>
-          {speed.localSpeed.name}
+          {speed.localSpeed.name.length > 30 ? (
+            <Tooltip
+              enterTouchDelay={0}
+              leaveTouchDelay={2000}
+              title={
+                <Typography fontSize={20}>{speed.localSpeed.name}</Typography>
+              }
+            >
+              <Typography>{speed.localSpeed.name.slice(0, 30)}...</Typography>
+            </Tooltip>
+          ) : (
+            speed.localSpeed.name.slice(0, 30) + "..."
+          )}
         </TableCell>
         <TableCell align="right">
           {measurementSystem === "metric"
@@ -91,7 +104,7 @@ function Row({ rowMainData }: rowProps) {
             <Box sx={{ margin: 1 }}>
               <Stack direction="row" spacing={1}>
                 {speed.externalSpeed?.tags.map((tag: string) => (
-                  <Chip key={tag} label={tag} variant="outlined" />
+                  <TagChip key={tag} tag={tag} />
                 ))}
               </Stack>
 

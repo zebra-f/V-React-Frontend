@@ -10,6 +10,7 @@ import Feedback from "./speedsTableComponents/Feedback";
 import Bookmark from "./speedsTableComponents/Bookmark";
 import LinkToSpeed from "./speedsTableComponents/LinkToSpeed";
 import AddToVees from "./speedsTableComponents/AddToVees";
+import TagChip from "./speedsTableComponents/TagChip";
 
 import {
   speedInterface,
@@ -31,7 +32,6 @@ import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
@@ -64,7 +64,6 @@ function Row(props: {
   >;
 }) {
   const [measurementSystem] = useMeasurementSystem();
-  const [veesSpeedData, setVeesSpeedData] = useVeesSpeedData();
 
   const {
     rowMainData,
@@ -214,7 +213,7 @@ function Row(props: {
               <Box sx={{ display: "flex", justifyContent: "space-between" }}>
                 <Stack direction="row" spacing={1}>
                   {speed.tags.map((tag: string) => (
-                    <Chip key={tag} label={tag} variant="outlined" />
+                    <TagChip key={tag} tag={tag} />
                   ))}
                 </Stack>
 

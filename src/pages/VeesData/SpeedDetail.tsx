@@ -13,12 +13,12 @@ import Feedback from "../../shared/components/speedsTableComponents/Feedback";
 import AddedBy from "../../shared/components/speedsTableComponents/AddedBy";
 import AddToVees from "../../shared/components/speedsTableComponents/AddToVees";
 import MeasurementSystemToogleButtonGroup from "../../shared/components/MeasurementSystemToogleButtonGroup";
+import TagChip from "../../shared/components/speedsTableComponents/TagChip";
 
 import useTheme from "@mui/material/styles/useTheme";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
 import Divider from "@mui/material/Divider";
 import Tooltip from "@mui/material/Tooltip";
@@ -96,16 +96,11 @@ export default function SpeedDetail() {
         {speed && (
           <Box>
             <Box display="flex" justifyContent="space-between">
-              <Container>
+              <Stack direction="row" spacing={1}>
                 {speed.tags.map((tag: string) => (
-                  <Chip
-                    key={tag}
-                    label={tag}
-                    variant="outlined"
-                    sx={{ mr: 1 }}
-                  />
+                  <TagChip key={tag} tag={tag} />
                 ))}
-              </Container>
+              </Stack>
 
               <Stack direction={"row"}>
                 <Bookmark

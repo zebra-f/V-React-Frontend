@@ -37,12 +37,10 @@ function getQueryParams(searchParams: any): speedQueryParams {
   for (const entry of searchParams.entries()) {
     const [key, val]: keyValuePair = entry;
     if (key === "tags") {
-      if (val.length > 3) {
-        if (!queryParams["speedTags"]) {
-          queryParams["speedTags"] = [];
-        }
-        queryParams["speedTags"].push(...val.split(","));
+      if (!queryParams["speedTags"]) {
+        queryParams["speedTags"] = [];
       }
+      queryParams["speedTags"].push(...val.split(","));
     }
     if (key === "speed_type") {
       if (["constant", "relative", "top", "average"].indexOf(val) !== -1) {
@@ -59,6 +57,7 @@ export default function SpeedsList() {
 
   const [searchParams] = useSearchParams();
   // initial load sets searchParams as default queryParams
+  console.log(searchParams);
   const [queryParams, setQueryParams] = useState<speedQueryParams>(
     getQueryParams(searchParams),
   );
