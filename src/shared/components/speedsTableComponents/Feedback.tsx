@@ -1,6 +1,12 @@
+import { useState } from "react";
+
+import { useIsAuthenticated } from "../../contexts/IsAuthenticated";
+
 import { makeSpeedFeedback } from "../../../actions/speed/feedback";
 
 import { speedInterface } from "../../interfaces/speedInterfaces";
+
+import BackdropNavigateAnon from "./BackdropNavigateAnon";
 
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -20,6 +26,10 @@ export default function Feedback({
   setSpeed,
   setApiError,
 }: feedbackPropsInterface) {
+  const [isAuthenticated] = useIsAuthenticated();
+  const [backdropNavigateAnonOpen, setBackdropNavigateAnonOpen] =
+    useState(false);
+
   const handleFeedbackRequestResult = (result: any) => {
     if (result.status === 201 || result.status === 200) {
       const userSpeedFeedback = {
@@ -52,6 +62,11 @@ export default function Feedback({
   };
 
   const handleUpvote = () => {
+    if (!isAuthenticated) {
+      setBackdropNavigateAnonOpen(true);
+      return;
+    }
+
     // create
     if (!speed.user_speed_feedback) {
       makeSpeedFeedback(null, speed.id, 1, true).then((result) => {
@@ -82,6 +97,11 @@ export default function Feedback({
   };
 
   const handleDownvote = () => {
+    if (!isAuthenticated) {
+      setBackdropNavigateAnonOpen(true);
+      return;
+    }
+
     // create
     if (!speed.user_speed_feedback) {
       makeSpeedFeedback(null, speed.id, -1, true).then((result) => {
@@ -116,6 +136,10 @@ export default function Feedback({
       display="flex"
       justifyContent={rowType === "bookmark" ? "center" : "space-between"}
     >
+      <BackdropNavigateAnon
+        backdropNavigateAnonOpen={backdropNavigateAnonOpen}
+        setBackdropNavigateAnonOpen={setBackdropNavigateAnonOpen}
+      />
       {!(rowType === "bookmark") && (
         <Button onClick={handleUpvote}>
           <ThumbUpAltIcon

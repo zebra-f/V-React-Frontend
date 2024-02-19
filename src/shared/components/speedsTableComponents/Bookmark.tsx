@@ -1,7 +1,12 @@
+import { useState } from "react";
+
 import { createSpeedBookmark } from "../../../actions/speed/bookmark";
 import { deleteSpeedBookmark } from "../../../actions/speed/bookmark";
 
 import { speedInterface } from "../../interfaces/speedInterfaces";
+import { useIsAuthenticated } from "../../contexts/IsAuthenticated";
+
+import BackdropNavigateAnon from "./BackdropNavigateAnon";
 
 import StarOutlineIcon from "@mui/icons-material/StarOutline";
 import Button from "@mui/material/Button";
@@ -16,7 +21,15 @@ export default function Bookmark({
   setSpeed,
   setApiError,
 }: bookmarkPropsInterface) {
+  const [isAuthenticaed] = useIsAuthenticated();
+  const [backdropNavigateAnonOpen, setBackdropNavigateAnonOpen] =
+    useState(false);
+
   const handleCreateBookmark = () => {
+    if (!isAuthenticaed) {
+      setBackdropNavigateAnonOpen(true);
+      return;
+    }
     if (!speed.user_speed_bookmark) {
       createSpeedBookmark(speed.id, null).then((result) => {
         if (result.status === 201) {
@@ -83,18 +96,24 @@ export default function Bookmark({
   };
 
   return (
-    <Button
-      onClick={() => {
-        if (!speed.user_speed_bookmark) {
-          handleCreateBookmark();
-        } else {
-          handleDeleteBookmark();
-        }
-      }}
-    >
-      <StarOutlineIcon
-        color={speed.user_speed_bookmark ? "warning" : "primary"}
+    <>
+      <BackdropNavigateAnon
+        backdropNavigateAnonOpen={backdropNavigateAnonOpen}
+        setBackdropNavigateAnonOpen={setBackdropNavigateAnonOpen}
       />
-    </Button>
+      <Button
+        onClick={() => {
+          if (!speed.user_speed_bookmark) {
+            handleCreateBookmark();
+          } else {
+            handleDeleteBookmark();
+          }
+        }}
+      >
+        <StarOutlineIcon
+          color={speed.user_speed_bookmark ? "warning" : "primary"}
+        />
+      </Button>
+    </>
   );
 }
