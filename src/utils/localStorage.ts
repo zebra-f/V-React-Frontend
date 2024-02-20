@@ -1,7 +1,9 @@
+import { v4 as uuidv4 } from "uuid";
+
 import { veesSpeedDataInterface } from "../shared//contexts/VeesSpeedData";
 
 function clearVeesSpeedData() {
-  // clears some fields of veesSpeedData after users logs out
+  // clears some fields of veesSpeedData after user logs out
 
   const veesSpeedDataStringRepresentation =
     localStorage.getItem("veesSpeedData");
@@ -17,6 +19,7 @@ function clearVeesSpeedData() {
       if (!speed.externalSpeed.is_public) {
         speed.externalSpeed = null;
         speed.local = true;
+        speed.localSpeed.id = uuidv4();
       }
     }
   });
