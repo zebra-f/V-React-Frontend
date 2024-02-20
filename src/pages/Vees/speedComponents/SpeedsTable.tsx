@@ -9,6 +9,7 @@ import {
 
 import AddedBy from "../../../shared/components/speedsTableComponents/AddedBy";
 import TagChip from "../../../shared/components/speedsTableComponents/TagChip";
+import LinkToSpeed from "../../../shared/components/speedsTableComponents/LinkToSpeed";
 
 import useTheme from "@mui/material/styles/useTheme";
 import Box from "@mui/material/Box";
@@ -80,7 +81,7 @@ function Row({ rowMainData }: rowProps) {
               <Typography>{speed.localSpeed.name.slice(0, 30)}...</Typography>
             </Tooltip>
           ) : (
-            speed.localSpeed.name.slice(0, 30) + "..."
+            speed.localSpeed.name.slice(0, 30)
           )}
         </TableCell>
         <TableCell align="right">
@@ -103,11 +104,14 @@ function Row({ rowMainData }: rowProps) {
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
-              <Stack direction="row" spacing={1}>
-                {speed.externalSpeed?.tags.map((tag: string) => (
-                  <TagChip key={tag} tag={tag} />
-                ))}
-              </Stack>
+              <Box display="flex" justifyContent="space-between">
+                <Stack direction="row" spacing={1}>
+                  {speed.externalSpeed?.tags.map((tag: string) => (
+                    <TagChip key={tag} tag={tag} />
+                  ))}
+                </Stack>
+                <LinkToSpeed speedId={speed.externalSpeed?.id} />
+              </Box>
 
               <Typography variant="h6" gutterBottom component="div" mt={2}>
                 {speed.externalSpeed?.description}

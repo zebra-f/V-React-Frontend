@@ -1,6 +1,10 @@
 import { useState } from "react";
 
 import { useIsAuthenticated } from "../../contexts/IsAuthenticated";
+import {
+  useVeesSpeedData,
+  veesSpeedDataInterface,
+} from "../../contexts/VeesSpeedData";
 
 import { makeSpeedFeedback } from "../../../actions/speed/feedback";
 
@@ -27,6 +31,8 @@ export default function Feedback({
   setApiError,
 }: feedbackPropsInterface) {
   const [isAuthenticated] = useIsAuthenticated();
+  const [, setVeesSpeedData] = useVeesSpeedData();
+
   const [backdropNavigateAnonOpen, setBackdropNavigateAnonOpen] =
     useState(false);
 
@@ -36,6 +42,17 @@ export default function Feedback({
         feedback_id: result.data.id,
         feedback_vote: result.data.vote,
       };
+      setVeesSpeedData((prevState: Array<veesSpeedDataInterface>) => {
+        prevState.forEach((speed_: veesSpeedDataInterface) => {
+          if (
+            speed_.externalSpeed &&
+            speed_.localSpeed.id === result.data.speed.id
+          ) {
+            speed_.externalSpeed.user_speed_feedback = userSpeedFeedback;
+          }
+        });
+        return prevState;
+      });
       if (setSpeed) {
         setSpeed((prevState) => {
           return {

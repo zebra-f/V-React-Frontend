@@ -1,5 +1,7 @@
 import ky from "ky";
 
+import { clearVeesSpeedData } from "../../utils/localStorage";
+
 const apiUrl = import.meta.env.VITE_REACT_API_URL;
 
 const baseBackendApi = ky.create({ prefixUrl: apiUrl });
@@ -74,6 +76,7 @@ let backendApi = baseBackendApi.extend({
 function forceSignOut() {
   localStorage.setItem("isAuthenticated", "false");
   localStorage.removeItem("access");
+  clearVeesSpeedData();
   window.location.replace(window.location.href);
 }
 

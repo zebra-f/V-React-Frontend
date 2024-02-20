@@ -14,6 +14,9 @@ export interface veesSpeedDataInterface {
     mph: number;
   };
   externalSpeed: null | speedInterface;
+  // set only if externalSpeed comes from a source that has
+  // no fields like user feedback and bookmark (not even null)
+  externalSpeedBasic?: true;
 }
 
 const VeesSpeedDataContext = createContext<any | undefined>(undefined);
@@ -160,9 +163,9 @@ const placeholderVeesSpeedData: veesSpeedDataInterface[] = [
     local: true,
     localSpeed: {
       id: uuidv4(),
-      name: "Electric Eel",
-      kmph: 5,
-      mph: 3.11,
+      name: "Killer Whale (Record Holder, Short Burst)",
+      kmph: 55.5,
+      mph: 34.49,
     },
     externalSpeed: null,
   },

@@ -1,6 +1,6 @@
 interface userSpeedBookmarkInterface {
   bookmark_id: number;
-  bookmar_category: string;
+  bookmark_category: string;
 }
 
 interface userSpeedFeedbackInterface {

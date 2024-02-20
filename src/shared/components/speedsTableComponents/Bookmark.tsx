@@ -1,5 +1,10 @@
 import { useState } from "react";
 
+import {
+  useVeesSpeedData,
+  veesSpeedDataInterface,
+} from "../../contexts/VeesSpeedData";
+
 import { createSpeedBookmark } from "../../../actions/speed/bookmark";
 import { deleteSpeedBookmark } from "../../../actions/speed/bookmark";
 
@@ -22,6 +27,8 @@ export default function Bookmark({
   setApiError,
 }: bookmarkPropsInterface) {
   const [isAuthenticaed] = useIsAuthenticated();
+  const [, setVeesSpeedData] = useVeesSpeedData();
+
   const [backdropNavigateAnonOpen, setBackdropNavigateAnonOpen] =
     useState(false);
 
@@ -37,6 +44,17 @@ export default function Bookmark({
             bookmark_id: result.data.id,
             bookmark_category: result.data.category,
           };
+          setVeesSpeedData((prevState: Array<veesSpeedDataInterface>) => {
+            prevState.forEach((speed_: veesSpeedDataInterface) => {
+              if (
+                speed_.externalSpeed &&
+                speed_.localSpeed.id === result.data.speed.id
+              ) {
+                speed_.externalSpeed.user_speed_bookmark = userSpeedBookmark;
+              }
+            });
+            return prevState;
+          });
           if (setSpeed) {
             setSpeed((prevState: any) => {
               return {
@@ -68,6 +86,14 @@ export default function Bookmark({
       deleteSpeedBookmark(speed.user_speed_bookmark.bookmark_id).then(
         (result) => {
           if (result.status === 204) {
+            setVeesSpeedData((prevState: Array<veesSpeedDataInterface>) => {
+              prevState.forEach((speed_: veesSpeedDataInterface) => {
+                if (speed_.externalSpeed && speed_.localSpeed.id === speed.id) {
+                  speed_.externalSpeed.user_speed_bookmark = null;
+                }
+              });
+              return prevState;
+            });
             if (setSpeed) {
               setSpeed((prevState) => {
                 return {

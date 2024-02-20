@@ -74,7 +74,6 @@ export default function App(props: any) {
             ))}
             <Route path="length" element={<Length />} />
           </Route>
-
           {/* Data */}
           <Route path="data" element={<Data />}>
             {["", "speeds"].map((path, index) => (
@@ -84,6 +83,9 @@ export default function App(props: any) {
           </Route>
           <Route path="data/speeds/:speedId" element={<SpeedDetail />} />
 
+          {/* About */}
+          <Route path="about" element={<About />} />
+
           {/* Account */}
           <Route path="account" element={<Account />}>
             {["", "myaccount"].map((path, index) => (
@@ -92,7 +94,6 @@ export default function App(props: any) {
             <Route path="changepassword" element={<ChangePassword />} />
             <Route path="deleteaccount" element={<DeleteAccount />} />
           </Route>
-
           {/* Profile */}
           <Route path="account/profile" element={<Profile />}>
             {["", "speeds"].map((path, index) => (

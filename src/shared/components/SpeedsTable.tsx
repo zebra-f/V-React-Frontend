@@ -1,7 +1,10 @@
 import { useState, useEffect, useRef, SetStateAction, Dispatch } from "react";
 
 import { useMeasurementSystem } from "../contexts/MeasurementSystem";
-import { useVeesSpeedData } from "../contexts/VeesSpeedData";
+import {
+  useVeesSpeedData,
+  veesSpeedDataInterface,
+} from "../contexts/VeesSpeedData";
 
 import SpeedForm from "./SpeedForm";
 import AddedBy from "./speedsTableComponents/AddedBy";
@@ -64,7 +67,7 @@ function Row(props: {
   >;
 }) {
   const [measurementSystem] = useMeasurementSystem();
-
+  const [veesSpeedData, setVeesSpeedData] = useVeesSpeedData();
   const {
     rowMainData,
     isEditable,
@@ -88,6 +91,16 @@ function Row(props: {
           return prevState.filter((speed_) => speed_.id !== speed.id);
         });
         setCount((prevCount: number) => prevCount - 1);
+        setVeesSpeedData((prevState: Array<veesSpeedDataInterface>) => {
+          prevState.forEach((speed_: veesSpeedDataInterface) => {
+            if (speed_.localSpeed.id === speed.id) {
+              speed_.externalSpeed = null;
+              speed_.local = true;
+            }
+          });
+          return prevState;
+        });
+
         setApiError({
           error: false,
           errorMessage: "",

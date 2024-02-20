@@ -6,6 +6,10 @@ import {
 } from "../interfaces/speedInterfaces";
 
 import { useMeasurementSystem } from "../contexts/MeasurementSystem";
+import {
+  useVeesSpeedData,
+  veesSpeedDataInterface,
+} from "../contexts/VeesSpeedData";
 
 import kyClient from "../services/ky";
 
@@ -117,6 +121,8 @@ export default function SpeedForm({
   speedData,
   setSpeedFormResponseData,
 }: props) {
+  const [, setVeesSpeedData] = useVeesSpeedData();
+
   const [measurementSystem, setMeasurementSystem] = useMeasurementSystem();
 
   const [successSnackbarOpen, setSuccessSnackbarOpen] = useState(false);
@@ -365,6 +371,18 @@ export default function SpeedForm({
           setSuccessSnackbarOpen(true);
 
           setSpeedFormResponseData(result.data);
+          setVeesSpeedData((prevState: Array<veesSpeedDataInterface>) => {
+            prevState.forEach((speed_: veesSpeedDataInterface) => {
+              if (speed_.localSpeed.id === result.data.id) {
+                speed_.externalSpeed = result.data;
+                speed_.local = false;
+                speed_.localSpeed.name = result.data.name;
+                speed_.localSpeed.kmph = result.data.kmph;
+                speed_.localSpeed.mph = result.data.kmph * 0.621371;
+              }
+            });
+            return prevState;
+          });
 
           setApiError({ error: false, errorMessage: "" });
 

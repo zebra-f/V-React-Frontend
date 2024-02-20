@@ -1,8 +1,10 @@
 import kyClient from "../shared/services/ky";
 
+import { clearVeesSpeedData } from "../utils/localStorage";
+
 export default async function signOut(
   isAuthenticated: boolean,
-  setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>
+  setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>,
 ) {
   if (!isAuthenticated) {
     return false;
@@ -19,6 +21,7 @@ export default async function signOut(
     }
     return false;
   }
+  clearVeesSpeedData();
   setIsAuthenticated(false);
   if ("access" in localStorage) {
     localStorage.removeItem("access");
