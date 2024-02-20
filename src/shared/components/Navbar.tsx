@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 
 import { useIsAuthenticated } from "../contexts/IsAuthenticated";
+import { useVeesSpeedData } from "../contexts/VeesSpeedData";
 
 import signOut from "../../actions/signOut";
 
@@ -54,6 +55,8 @@ export default function Navbar({
   sessionThemeMode,
   setSessionThemeMode,
 }: props) {
+  const [, setVeesSpeedData] = useVeesSpeedData();
+
   const colorMode = useContext(ColorModeContext);
   const changeColorMode = () => {
     colorMode.toggleColorMode();
@@ -232,6 +235,16 @@ export default function Navbar({
   const handleSignOut = () => {
     signOut(isAuthenticated, setIsAuthenticated).then((signedOut: boolean) => {
       if (signedOut) {
+        if (localStorage.getItem("veesSpeedData")) {
+          const veesSpeedDataStringRepresentation =
+            localStorage.getItem("veesSpeedData");
+          if (veesSpeedDataStringRepresentation) {
+            const parsedVeesSpeedData = JSON.parse(
+              veesSpeedDataStringRepresentation,
+            );
+            setVeesSpeedData(parsedVeesSpeedData);
+          }
+        }
         setErrorSnackbarOpen(false);
         setSuccessSignOutSnackbarOpen(true);
 

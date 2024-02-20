@@ -3,7 +3,9 @@ import { v4 as uuidv4 } from "uuid";
 import { veesSpeedDataInterface } from "../shared//contexts/VeesSpeedData";
 
 function clearVeesSpeedData() {
-  // clears some fields of veesSpeedData after user logs out
+  // WARNING: this function doesn't clear in-memory data held by
+  // useVeesSpeedData, solutions: refresh page (programatically), or use
+  // setVeesSpeedData() with the current localStorage value of veesSpeedData
 
   const veesSpeedDataStringRepresentation =
     localStorage.getItem("veesSpeedData");
