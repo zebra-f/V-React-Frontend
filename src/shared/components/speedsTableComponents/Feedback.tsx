@@ -48,6 +48,7 @@ export default function Feedback({
             speed_.externalSpeed &&
             speed_.localSpeed.id === result.data.speed.id
           ) {
+            speed_.externalSpeed.score = result.data.speed.score;
             speed_.externalSpeed.user_speed_feedback = userSpeedFeedback;
           }
         });

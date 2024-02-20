@@ -16,7 +16,7 @@ export interface veesSpeedDataInterface {
   externalSpeed: null | speedInterface;
   // set only if externalSpeed comes from a source that has
   // no fields like user feedback and bookmark (not even null)
-  externalSpeedBasic?: true;
+  externalSpeedBasic?: true | false;
 }
 
 const VeesSpeedDataContext = createContext<any | undefined>(undefined);

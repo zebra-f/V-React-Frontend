@@ -9,7 +9,13 @@ import {
 } from "../../contexts/VeesSpeedData";
 import { speedInterface } from "../../interfaces/speedInterfaces";
 
-export default function AddToVees({ speed }: { speed: speedInterface }) {
+export default function AddToVees({
+  speed,
+  speedBasic,
+}: {
+  speed: speedInterface;
+  speedBasic: false | true;
+}) {
   const [veesSpeedData, setVeesSpeedData] = useVeesSpeedData();
 
   const [addedToVees, setAddedToVees] = useState(false);
@@ -34,6 +40,7 @@ export default function AddToVees({ speed }: { speed: speedInterface }) {
             mph: speed.kmph * 0.621371,
           },
           externalSpeed: speed,
+          externalSpeedBasic: speedBasic,
         },
       ];
     });

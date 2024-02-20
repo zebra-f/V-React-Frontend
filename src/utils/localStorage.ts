@@ -16,6 +16,7 @@ function clearVeesSpeedData() {
     if (speed.externalSpeed) {
       speed.externalSpeed.user_speed_feedback = null;
       speed.externalSpeed.user_speed_bookmark = null;
+      speed.externalSpeedBasic = true;
       if (!speed.externalSpeed.is_public) {
         speed.externalSpeed = null;
         speed.local = true;

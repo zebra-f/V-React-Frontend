@@ -67,7 +67,7 @@ function Row(props: {
   >;
 }) {
   const [measurementSystem] = useMeasurementSystem();
-  const [veesSpeedData, setVeesSpeedData] = useVeesSpeedData();
+  const [, setVeesSpeedData] = useVeesSpeedData();
   const {
     rowMainData,
     isEditable,
@@ -215,7 +215,10 @@ function Row(props: {
           )}
         </TableCell>
         <TableCell align="center" sx={{ ml: 0, pl: 0 }}>
-          <AddToVees speed={speed} />
+          <AddToVees
+            speed={speed}
+            speedBasic={rowType === "regular" ? false : true}
+          />
         </TableCell>
       </TableRow>
 

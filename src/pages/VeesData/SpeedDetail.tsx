@@ -108,7 +108,7 @@ export default function SpeedDetail() {
                   setSpeed={setSpeed}
                   setApiError={setApiError}
                 />
-                <AddToVees speed={speed} />
+                <AddToVees speed={speed} speedBasic={false} />
               </Stack>
             </Box>
 
