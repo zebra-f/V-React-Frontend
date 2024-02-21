@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 import { useRedirectAuthenticatedUserEffect } from "../../../shared/hooks/useEffect";
@@ -25,6 +24,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import useTheme from "@mui/material/styles/useTheme";
 import Tooltip from "@mui/material/Tooltip";
+import Stack from "@mui/material/Stack";
 
 interface signUpData {
   username: string;
@@ -53,8 +53,6 @@ async function requestGoogleSignUp(data: signUpData) {
 
 function GoogleSignUp() {
   const theme = useTheme();
-
-  const navigate = useNavigate();
 
   const [isAuthenticated, setIsAuthenticated] = useIsAuthenticated();
   useRedirectAuthenticatedUserEffect(isAuthenticated, "/");
@@ -193,7 +191,14 @@ function GoogleSignUp() {
     }
     requestGoogleSignUp(requestData).then((result) => {
       if (result.status === 200) {
+        (document.getElementById("username") as HTMLInputElement).value = "";
+        (document.getElementById("password") as HTMLInputElement).value = "";
+        (
+          document.getElementById("confirm-password") as HTMLInputElement
+        ).value = "";
+
         setApiError({ error: false, errorMessage: "" });
+        // isAuthenticated state change will redirect user
         signIn(result.data.access, setIsAuthenticated);
       } else {
         const data = result.data;
@@ -230,15 +235,6 @@ function GoogleSignUp() {
         });
       }
     });
-  };
-
-  // Sign In
-  const handleSignInLink = () => {
-    navigate("/signin");
-  };
-
-  const handleResendLink = () => {
-    navigate("/verifyemail");
   };
 
   const openTermsWindow = (url: string) => {
@@ -305,13 +301,23 @@ function GoogleSignUp() {
               control={<Checkbox size="small" />}
               label={
                 <span style={{ fontSize: "0.8rem" }}>
-                  {"Optional password "}{" "}
-                  <Tooltip
-                    title="For enhanced convenience, you can provide your password to sign in with your email directly, without having to access your Google account.
-                             You can skip this step and add your password at any time in the future by clicking on 'Forgot password?' located within the 'Sign In' tab."
-                  >
-                    <InfoIcon sx={{ fontSize: "1.2rem" }} />
-                  </Tooltip>
+                  <Stack direction="row" gap={1}>
+                    {"Optional password "}{" "}
+                    <Tooltip
+                      title={
+                        <Typography fontSize={20}>
+                          For convenience, you can provide your password to have
+                          an additional option to sign in with your email
+                          directly, without having to access your Google
+                          account. You can skip this step and set your password
+                          at any time in the future by clicking on 'Forgot
+                          password?' located within the 'Sign In' tab.
+                        </Typography>
+                      }
+                    >
+                      <InfoIcon sx={{ fontSize: "1.2rem" }} />
+                    </Tooltip>
+                  </Stack>
                 </span>
               }
             />
@@ -320,10 +326,10 @@ function GoogleSignUp() {
             margin="normal"
             fullWidth
             disabled={passwordCheckboxChecked ? false : true}
+            id="password"
             name="password"
             label="Password"
             type="password"
-            id="password"
             autoComplete="current-password"
             helperText={passwordError.error ? passwordError.errorMessage : ""}
             error={passwordError.error}
@@ -332,10 +338,10 @@ function GoogleSignUp() {
             margin="normal"
             fullWidth
             disabled={passwordCheckboxChecked ? false : true}
+            id="confirm-password"
             name="confirm-password"
             label="Confirm Password"
             type="password"
-            id="confirm-password"
             autoComplete="current-password"
             helperText={passwordError.error ? passwordError.errorMessage : ""}
             error={passwordError.error}

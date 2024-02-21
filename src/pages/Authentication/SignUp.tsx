@@ -245,6 +245,13 @@ function SignUp({
       password: password,
     }).then((result) => {
       if (result.status === 201) {
+        (document.getElementById("username") as HTMLInputElement).value = "";
+        (document.getElementById("email") as HTMLInputElement).value = "";
+        (document.getElementById("password") as HTMLInputElement).value = "";
+        (
+          document.getElementById("confirm-password") as HTMLInputElement
+        ).value = "";
+
         setSignedUpAlertMessage(
           `A verification email will be promptly sent to this address: ${result.data.email}`,
         );
@@ -396,10 +403,10 @@ function SignUp({
               margin="normal"
               required
               fullWidth
+              id="password"
               name="password"
               label="Password"
               type="password"
-              id="password"
               autoComplete="current-password"
               helperText={passwordError.error ? passwordError.errorMessage : ""}
               error={passwordError.error}
@@ -408,10 +415,10 @@ function SignUp({
               margin="normal"
               required
               fullWidth
+              id="confirm-password"
               name="confirm-password"
               label="Confirm Password"
               type="password"
-              id="confirm-password"
               autoComplete="current-password"
               helperText={passwordError.error ? passwordError.errorMessage : ""}
               error={passwordError.error}
