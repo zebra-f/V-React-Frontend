@@ -1,14 +1,16 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 
+import kyClient from "../../../shared/services/ky";
+
+import useLocalStorageState from "use-local-storage-state";
 import { useMeasurementSystem } from "../../../shared/contexts/MeasurementSystem";
-
 import { useIsAuthenticated } from "../../../shared/contexts/IsAuthenticated";
 import {
   useVeesSpeedData,
   veesSpeedDataInterface,
 } from "../../../shared/contexts/VeesSpeedData";
 import { getSpeed } from "../../../shared/services/speeds/getData";
-
+import { responseSpeedDataInterface } from "../../../shared/interfaces/speedInterfaces";
 import { speedInterface } from "../../../shared/interfaces/speedInterfaces";
 import { setApiErrorType } from "../../../shared/interfaces/apiInterfaces";
 
@@ -38,10 +40,23 @@ import Typography from "@mui/material/Typography";
 import Tooltip from "@mui/material/Tooltip";
 import Slide from "@mui/material/Slide";
 import Divider from "@mui/material/Divider";
+import CasinoIcon from "@mui/icons-material/Casino";
+import Button from "@mui/material/Button";
 
-interface resultInterface {
-  status: number;
-  data: speedInterface;
+async function getRandomBasicSpeeds() {
+  try {
+    const response = await kyClient.backendApi.get("speeds/random-list/");
+    const responseData: responseSpeedDataInterface = await response.json();
+    return { status: response.status, data: responseData };
+  } catch (error: any) {
+    try {
+      const response = await error.response;
+      const responseData = await response.json();
+      return { status: response.status, data: responseData };
+    } catch (_error: any) {
+      return { status: 500, data: {} };
+    }
+  }
 }
 
 interface rowProps {
@@ -216,14 +231,89 @@ function Row({ rowMainData, setApiError }: rowProps) {
 export default function SpeedsTable() {
   const theme = useTheme();
 
-  const [veesSpeedData] = useVeesSpeedData();
+  const [veesSpeedData, setVeesSpeedData] = useVeesSpeedData();
   const [measurementSystem] = useMeasurementSystem();
 
   const [apiError, setApiError] = useState({ error: false, errorMessage: "" });
 
+  // Random
+  const randomBasicSpeeds = useRef<speedInterface[]>([]);
+  let recursiveCallsCounter = 0;
+  const addRandomSpeed = () => {
+    if (recursiveCallsCounter >= 2) {
+      setApiError({
+        error: true,
+        errorMessage:
+          "Sorry, there are not enough Speeds to choose from. Try again in few days.",
+      });
+      return;
+    }
+    if (randomBasicSpeeds.current.length > 0) {
+      const randomBasicSpeed: speedInterface | undefined =
+        randomBasicSpeeds.current.pop();
+
+      if (!randomBasicSpeed) {
+        return;
+      } else {
+        let alreadySet = false;
+        veesSpeedData.forEach((data: veesSpeedDataInterface) => {
+          if (
+            data.externalSpeed &&
+            data.externalSpeed.id === randomBasicSpeed.id
+          ) {
+            alreadySet = true;
+          }
+        });
+        if (alreadySet) {
+          addRandomSpeed();
+          return;
+        }
+      }
+
+      const randomVeesSpeed: veesSpeedDataInterface = {
+        local: false,
+        localSpeed: {
+          id: randomBasicSpeed.id,
+          name: randomBasicSpeed.name,
+          kmph: randomBasicSpeed.kmph,
+          mph: randomBasicSpeed.kmph * 0.621371,
+        },
+        externalSpeed: randomBasicSpeed,
+        externalSpeedBasic: true,
+      };
+      setVeesSpeedData((prevState: veesSpeedDataInterface[]) => {
+        return [...prevState, randomVeesSpeed];
+      });
+    } else {
+      // Api call
+      getRandomBasicSpeeds().then((result) => {
+        if (result.status === 200) {
+          randomBasicSpeeds.current = result.data.results;
+          setTimeout(
+            () => {
+              recursiveCallsCounter++;
+              addRandomSpeed();
+            },
+            recursiveCallsCounter > 0 ? 700 : 0,
+          );
+        } else {
+          setApiError({
+            error: true,
+            errorMessage: "Something went wrong, try again later.",
+          });
+        }
+      });
+    }
+  };
+
   return (
     <Slide in={true} direction="up" mountOnEnter unmountOnExit>
-      <Box display="flex" justifyContent="center" my={2}>
+      <Box
+        display="flex"
+        justifyContent="center"
+        flexDirection={"column"}
+        my={2}
+      >
         <ApiError apiError={apiError} setApiError={setApiError} />
 
         <TableContainer
@@ -244,6 +334,15 @@ export default function SpeedsTable() {
             padding="normal"
             size="small"
           >
+            <caption>
+              <Box display="flex" justifyContent="center">
+                <Button onClick={addRandomSpeed}>
+                  <Stack direction="row" spacing={1}>
+                    <Typography>Add Random Speed </Typography> <CasinoIcon />
+                  </Stack>
+                </Button>
+              </Box>
+            </caption>
             <TableHead>
               <TableRow>
                 <TableCell align="left"></TableCell>
