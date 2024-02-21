@@ -7,6 +7,7 @@ import {
   speedQueryParams,
 } from "../../shared/interfaces/speedInterfaces";
 
+import ApiError from "../../shared/components/ApiError";
 import SpeedsTable from "../../shared/components/SpeedsTable";
 
 import Container from "@mui/material/Container";
@@ -55,9 +56,10 @@ function getQueryParams(searchParams: any): speedQueryParams {
 export default function SpeedsList() {
   const navigate = useNavigate();
 
+  const [apiError, setApiError] = useState({ error: false, errorMessage: "" });
+
   const [searchParams] = useSearchParams();
   // initial load sets searchParams as default queryParams
-  console.log(searchParams);
   const [queryParams, setQueryParams] = useState<speedQueryParams>(
     getQueryParams(searchParams),
   );
@@ -151,6 +153,16 @@ export default function SpeedsList() {
       if (result.status === 200) {
         setCount(result.count);
         setResults(result.results);
+        setApiError({ error: false, errorMessage: "" });
+      } else if (result.status >= 500) {
+        setApiError({ error: true, errorMessage: "Something went wrong." });
+      } else if (result.status >= 400) {
+        setApiError({
+          error: true,
+          errorMessage: result.data
+            ? result.data
+            : "Something went wrong, try again later.",
+        });
       }
     });
   }, [queryParams]);
@@ -163,6 +175,8 @@ export default function SpeedsList() {
   return (
     <>
       <Container>
+        <ApiError apiError={apiError} setApiError={setApiError} />
+
         <Collapse in={filterFormOpen}>
           <Grid container spacing={2}>
             <Grid xs={12} md={8}></Grid>

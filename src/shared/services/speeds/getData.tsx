@@ -34,7 +34,7 @@ async function getSpeeds(
     return { status: response.status, data: responseData };
   } catch (error: any) {
     try {
-      const response = await error.resonse;
+      const response = await error.response;
       const responseData = await response.json();
       return { status: response.status, data: responseData };
     } catch (_error: any) {

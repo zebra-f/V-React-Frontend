@@ -10,7 +10,9 @@ import {
 import { getSpeed } from "../../../shared/services/speeds/getData";
 
 import { speedInterface } from "../../../shared/interfaces/speedInterfaces";
+import { setApiErrorType } from "../../../shared/interfaces/apiInterfaces";
 
+import ApiError from "../../../shared/components/ApiError";
 import AddedBy from "../../../shared/components/speedsTableComponents/AddedBy";
 import TagChip from "../../../shared/components/speedsTableComponents/TagChip";
 import LinkToSpeed from "../../../shared/components/speedsTableComponents/LinkToSpeed";
@@ -44,8 +46,9 @@ interface resultInterface {
 
 interface rowProps {
   rowMainData: veesSpeedDataInterface;
+  setApiError: setApiErrorType;
 }
-function Row({ rowMainData }: rowProps) {
+function Row({ rowMainData, setApiError }: rowProps) {
   const [isAuthenticated] = useIsAuthenticated();
 
   const [, setVeesSpeedData] = useVeesSpeedData();
@@ -74,7 +77,7 @@ function Row({ rowMainData }: rowProps) {
       speed.externalSpeedBasic &&
       speed.externalSpeed
     ) {
-      getSpeed(speed.externalSpeed.id).then((result: resultInterface) => {
+      getSpeed(speed.externalSpeed.id).then((result: any) => {
         if (result.status === 200) {
           setSpeed((prevState: veesSpeedDataInterface) => {
             prevState.externalSpeed = result.data;
@@ -82,9 +85,15 @@ function Row({ rowMainData }: rowProps) {
             return prevState;
           });
           setExternalSpeed(result.data);
-          console.log("aaa");
-        } else if (result.status === 500) {
-        } else {
+        } else if (result.status >= 500) {
+          setApiError({ error: true, errorMessage: "Something went wrong." });
+        } else if (result.status >= 400) {
+          setApiError({
+            error: true,
+            errorMessage: result.data.detail
+              ? result.data.detail
+              : "Something went wrong, try again later.",
+          });
         }
       });
     }
@@ -174,14 +183,14 @@ function Row({ rowMainData }: rowProps) {
                         rowType="regular"
                         speed={externalSpeed}
                         setSpeed={setExternalSpeed}
-                        setApiError={null}
+                        setApiError={setApiError}
                       />
                     )}
                     {externalSpeed && (
                       <Bookmark
                         speed={externalSpeed}
                         setSpeed={setExternalSpeed}
-                        setApiError={null}
+                        setApiError={setApiError}
                       />
                     )}
                   </Box>
@@ -210,9 +219,13 @@ export default function SpeedsTable() {
   const [veesSpeedData] = useVeesSpeedData();
   const [measurementSystem] = useMeasurementSystem();
 
+  const [apiError, setApiError] = useState({ error: false, errorMessage: "" });
+
   return (
     <Slide in={true} direction="up" mountOnEnter unmountOnExit>
       <Box display="flex" justifyContent="center" my={2}>
+        <ApiError apiError={apiError} setApiError={setApiError} />
+
         <TableContainer
           sx={{
             pt: 0.83,
@@ -243,7 +256,11 @@ export default function SpeedsTable() {
             </TableHead>
             <TableBody>
               {veesSpeedData.map((data: veesSpeedDataInterface) => (
-                <Row key={data.localSpeed.id} rowMainData={data} />
+                <Row
+                  key={data.localSpeed.id}
+                  rowMainData={data}
+                  setApiError={setApiError}
+                />
               ))}
             </TableBody>
           </Table>
