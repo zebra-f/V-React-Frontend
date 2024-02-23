@@ -9,12 +9,14 @@ import {
 
 import { useNavigate } from "react-router-dom";
 import { NavLink } from "react-router-dom";
-
 import { useIsAuthenticated } from "../contexts/IsAuthenticated";
 import { useVeesSpeedData } from "../contexts/VeesSpeedData";
 
 import signOut from "../../actions/signOut";
 
+import SovertisLogo from "../../assets/logo/sovertis-550x550-logo-02.svg";
+
+import Icon from "@mui/material/Icon";
 import CssBaseline from "@mui/material/CssBaseline";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -366,23 +368,27 @@ export default function Navbar({
         >
           <Container maxWidth="xl">
             <Toolbar disableGutters>
-              <Typography
-                variant="h6"
-                noWrap
-                component="a"
-                href="/"
-                sx={{
-                  mr: 2,
-                  display: { xs: "none", md: "flex" },
-                  fontFamily: "Montserrat",
-                  letterSpacing: ".4rem",
-                  color: theme.palette.mode === "light" ? "#028090" : "#55B8FF",
-                  textDecoration: "none",
-                }}
-              >
-                SOVERTIS
-              </Typography>
-
+              <Box display="flex">
+                <Typography
+                  variant="h6"
+                  noWrap
+                  component="a"
+                  href="/"
+                  sx={{
+                    mr: 2,
+                    display: { xs: "none", md: "flex" },
+                    letterSpacing: ".4rem",
+                    color:
+                      theme.palette.mode === "light" ? "#028090" : "#55B8FF",
+                    textDecoration: "none",
+                  }}
+                >
+                  SOVERTIS
+                  <Icon>
+                    <img src={SovertisLogo} height={"100%"} width={"100%"} />
+                  </Icon>
+                </Typography>
+              </Box>
               {/* drawer icon */}
               <Box
                 sx={{
@@ -402,23 +408,24 @@ export default function Navbar({
 
               {/* mobile title and logo */}
               <Typography
-                variant="h5"
+                variant="h6"
                 noWrap
                 component="a"
-                href=""
+                href="/"
                 sx={{
                   mr: 2,
                   display: { xs: "flex", md: "none" },
                   flexGrow: 1,
-                  fontFamily: "Montserrat",
                   letterSpacing: ".4rem",
                   color: theme.palette.mode === "light" ? "#028090" : "#55B8FF",
                   textDecoration: "none",
                 }}
               >
                 SOVERTIS
+                <Icon>
+                  <img src={SovertisLogo} height={"100%"} width={"100%"} />
+                </Icon>
               </Typography>
-
               {/* top left */}
               <Box
                 height={70}
