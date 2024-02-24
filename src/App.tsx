@@ -16,6 +16,8 @@ import Data from "./pages/VeesData/Data";
 import SpeedsList from "./pages/VeesData/SpeedsList";
 import SpeedDetail from "./pages/VeesData/SpeedDetail";
 
+import TermsOfService from "./pages/Other/TermsOfService";
+
 import SignIn from "./pages/Authentication/SignIn";
 import SignUp from "./pages/Authentication/SignUp";
 import PasswordReset from "./pages/Authentication/PasswordReset";
@@ -47,7 +49,7 @@ export default function App(props: any) {
     useState(false);
 
   const location = useLocation();
-  const pathsWithoutNavbar = ["openid/googleredirect"];
+  const pathsWithoutNavbar = ["openid/googleredirect", "termsofservice"];
   let renderNavbar = true;
   pathsWithoutNavbar.forEach((path) => {
     const i = location.pathname.indexOf(path);
@@ -143,6 +145,7 @@ export default function App(props: any) {
           <Route path="googlesignup" element={<GoogleSignUp />} />
           {/* Don't render Navbar */}
           <Route path="openid/googleredirect" element={<GoogleRedirect />} />
+          <Route path="termsofservice" element={<TermsOfService />} />
         </Routes>
       </div>
     </AppProvidersProvider>
