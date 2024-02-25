@@ -54,6 +54,8 @@ async function requestGoogleSignUp(data: signUpData) {
 function GoogleSignUp() {
   const theme = useTheme();
 
+  const URL = import.meta.env.VITE_REACT_URL;
+
   const [isAuthenticated, setIsAuthenticated] = useIsAuthenticated();
   useRedirectAuthenticatedUserEffect(isAuthenticated, "/");
 
@@ -238,8 +240,14 @@ function GoogleSignUp() {
   };
 
   const openTermsWindow = (url: string) => {
-    window.open(url, "_blank");
+    const popupWidth = 640;
+    const popupHeight = 480;
+    const leftPosition = (window.screen.width - popupWidth) / 2;
+    const topPosition = (window.screen.height - popupHeight) / 2;
+    const windowFeatures = `width=${popupWidth},height=${popupHeight},left=${leftPosition},top=${topPosition},popup=true`;
+    window.open(url, "popup", windowFeatures);
   };
+
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -358,8 +366,8 @@ function GoogleSignUp() {
                 <span style={{ fontSize: "0.8rem" }}>
                   {"I agree to the "}{" "}
                   <Link
-                    href="#"
-                    onClick={() => openTermsWindow("https://example.com/terms")}
+                    onClick={() => openTermsWindow(URL + "termsofservice")}
+                    onAuxClick={() => openTermsWindow(URL + "termsofservice")}
                     style={{ cursor: "pointer" }}
                   >
                     Terms of Service

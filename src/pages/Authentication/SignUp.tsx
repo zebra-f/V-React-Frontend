@@ -28,14 +28,20 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import useTheme from "@mui/material/styles/useTheme";
 
+import Turnstile from "react-turnstile";
+
 interface signUpData {
   username: string;
   email: string;
   password: string;
+  turnstileToken: string;
 }
 async function requestSignUp(data: signUpData) {
   try {
     const response: any = await kyClient.backendApi.post("users/", {
+      headers: {
+        "Turnstile-Token": data.turnstileToken,
+      },
       json: {
         username: data.username,
         email: data.email,
@@ -64,6 +70,8 @@ function SignUp({
   setGoogleEventListenerActive,
 }: props) {
   const theme = useTheme();
+
+  const URL = import.meta.env.VITE_REACT_URL;
 
   const navigate = useNavigate();
   const navigateHandler = (to: string) => {
@@ -107,6 +115,12 @@ function SignUp({
   const [checkboxChecked, setCheckboxChecked] = useState(false);
   const handleCheckboxChange = (event: any) => {
     setCheckboxChecked(event.target.checked);
+  };
+
+  const siteKey = import.meta.env.VITE_REACT_ClOUDFLARE_TURNSTILE_SITE_KEY;
+  const [turnstileToken, setTurnstileToken] = useState<string>();
+  const turnstileHandler = (token: string) => {
+    setTurnstileToken(token);
   };
 
   const handleSubmit = (event: any) => {
@@ -239,10 +253,20 @@ function SignUp({
       return;
     }
 
+    if (turnstileToken === undefined) {
+      setApiError({
+        error: true,
+        errorMessage:
+          "Cloudflare turnstile token not available, refresh the page and try again.",
+      });
+      return;
+    }
+
     requestSignUp({
       username: username,
       email: email,
       password: password,
+      turnstileToken,
     }).then((result) => {
       if (result.status === 201) {
         (document.getElementById("username") as HTMLInputElement).value = "";
@@ -311,8 +335,14 @@ function SignUp({
   };
 
   const openTermsWindow = (url: string) => {
-    window.open(url, "_blank");
+    const popupWidth = 640;
+    const popupHeight = 480;
+    const leftPosition = (window.screen.width - popupWidth) / 2;
+    const topPosition = (window.screen.height - popupHeight) / 2;
+    const windowFeatures = `width=${popupWidth},height=${popupHeight},left=${leftPosition},top=${topPosition},popup=true`;
+    window.open(url, "popup", windowFeatures);
   };
+
   return (
     <Container component="main" maxWidth="xs">
       <Snackbar
@@ -437,10 +467,8 @@ function SignUp({
                   <span style={{ fontSize: "0.8rem" }}>
                     {"I agree to the "}{" "}
                     <Link
-                      href="#"
-                      onClick={() =>
-                        openTermsWindow("https://example.com/terms")
-                      }
+                      onClick={() => openTermsWindow(URL + "termsofservice")}
+                      onAuxClick={() => openTermsWindow(URL + "termsofservice")}
                       style={{ cursor: "pointer" }}
                     >
                       Terms of Service
@@ -449,11 +477,22 @@ function SignUp({
                 }
               />
             </FormGroup>
+            <Turnstile
+              sitekey={siteKey}
+              onVerify={(token) => {
+                turnstileHandler(token);
+              }}
+              theme={theme.palette.mode === "dark" ? "dark" : "light"}
+              onExpire={() => {
+                setTurnstileToken(undefined);
+              }}
+            />
             <Button
               type="submit"
               variant="contained"
+              disabled={turnstileToken ? false : true}
               fullWidth
-              sx={{ mt: 3, mb: 0 }}
+              sx={{ mt: 0, mb: 0 }}
             >
               Sign Up
             </Button>
