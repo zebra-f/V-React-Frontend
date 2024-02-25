@@ -1,31 +1,27 @@
-import Icon from "@mui/material/Icon";
 import useTheme from "@mui/material/styles/useTheme";
 import SovertisLogo from "../../assets/logo/sovertis-550x550-logo-02.svg";
-import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
-import TextField from "@mui/material/TextField";
-import Link from "@mui/material/Link";
-import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import Alert from "@mui/material/Alert";
-import GoogleIcon from "@mui/icons-material/Google";
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
+import Grow from "@mui/material/Grow";
 
-function About() {
+import { Image } from "mui-image";
+
+export default function About() {
   const theme = useTheme();
   const backgroundColor =
     theme.palette.mode === "dark"
       ? "rgba(9, 10, 15, 0.9)"
-      : "rgba(251, 254, 251, 0.9)";
+      : "rgba(251, 254, 251, 0.0)";
 
   return (
     <Box sx={{ backgroundColor: backgroundColor }}>
-      <Container component="main" maxWidth="md">
+      <Container
+        component="main"
+        maxWidth="md"
+        sx={{ maxHeight: "90vh", overflow: "scroll" }}
+      >
         <CssBaseline />
 
         <Box
@@ -36,17 +32,29 @@ function About() {
             alignItems: "center",
           }}
         >
-          <img src={SovertisLogo} height={150} width={150} />
-          <Typography
-            variant="h4"
-            noWrap
-            sx={{
-              mt: 4,
-              letterSpacing: ".3rem",
-            }}
+          <Grow
+            in={true}
+            style={{ transformOrigin: "0 0 0" }}
+            {...(true ? { timeout: 1400 } : {})}
           >
-            ABOUT SOVERTIS
-          </Typography>
+            <img src={SovertisLogo} height={150} width={150} />
+          </Grow>
+          <Grow
+            in={true}
+            style={{ transformOrigin: "0 0 0" }}
+            {...(true ? { timeout: 1400 } : {})}
+          >
+            <Typography
+              variant="h4"
+              noWrap
+              sx={{
+                mt: 4,
+                letterSpacing: ".3rem",
+              }}
+            >
+              ABOUT
+            </Typography>
+          </Grow>
         </Box>
         <Box>
           <Typography
@@ -82,7 +90,7 @@ function About() {
               letterSpacing: ".3rem",
             }}
           >
-            Data Sources
+            Data
           </Typography>
           <Typography
             variant="subtitle1"
@@ -98,10 +106,72 @@ function About() {
             the reliability of this platform, either by actively voting,
             reporting discrepancies, or adding new objects to the database.
           </Typography>
+          <Typography
+            variant="h5"
+            noWrap
+            sx={{
+              mt: 8,
+              letterSpacing: ".3rem",
+            }}
+          >
+            Open Source
+          </Typography>
+          <Typography
+            variant="subtitle1"
+            sx={{
+              mt: 1,
+            }}
+          >
+            You can freely access and scrutinize the source code behind
+            Soveritis. This commitment to transparency offers several key
+            benefits:
+          </Typography>
+
+          <Typography
+            variant="subtitle1"
+            sx={{
+              mt: 1,
+            }}
+          >
+            • Every line of code is open to inspection, fostering trust and
+            understanding of how the project functions.
+          </Typography>
+
+          <Typography
+            variant="subtitle1"
+            sx={{
+              mt: 1,
+            }}
+          >
+            • Openness promotes accountability and ensures that the project
+            operates ethically and responsibly.
+          </Typography>
+
+          <Typography
+            variant="subtitle1"
+            sx={{
+              mt: 1,
+            }}
+          >
+            • The wider community can actively participate in finding and
+            resolving vulnerabilities, improving the overall security and
+            stability of the project.
+          </Typography>
+
+          <Typography
+            variant="h6"
+            noWrap
+            sx={{
+              mt: 2,
+              mb: 2,
+              letterSpacing: ".3rem",
+            }}
+          >
+            Architecture
+          </Typography>
+          <Image src={"./architecture/sa3.png"} duration={500} />
         </Box>
       </Container>
     </Box>
   );
 }
-
-export default About;
