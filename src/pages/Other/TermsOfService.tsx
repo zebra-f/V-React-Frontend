@@ -7,6 +7,7 @@ import ApiError from "../../shared/components/ApiError";
 import useTheme from "@mui/material/styles/useTheme";
 import CssBaseline from "@mui/material/CssBaseline";
 import Container from "@mui/material/Container";
+import Box from "@mui/material/Box";
 
 export default function TermsOfService() {
   const theme = useTheme();
@@ -33,15 +34,13 @@ export default function TermsOfService() {
 
   return (
     <>
-      <Container
-        component="main"
-        maxWidth="md"
-        sx={{ backgroundColor: backgroundColor }}
-      >
-        <CssBaseline />
-        <ApiError apiError={apiError} setApiError={setApiError} />
-        <Markdown>{tos}</Markdown>
-      </Container>
+      <Box sx={{ backgroundColor: backgroundColor }}>
+        <Container component="main" maxWidth="md">
+          <CssBaseline />
+          <ApiError apiError={apiError} setApiError={setApiError} />
+          <Markdown>{tos}</Markdown>
+        </Container>
+      </Box>
     </>
   );
 }
