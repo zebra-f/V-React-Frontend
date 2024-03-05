@@ -45,7 +45,7 @@ async function getAndPrepareBookmarkData({ page = 1 }: feedbackQueryParams) {
       let tempResult = result.speed;
       let bookmark: userSpeedBookmarkInterface = {
         bookmark_id: result.id,
-        bookmar_category: result.category,
+        bookmark_category: result.category,
       };
       tempResult["user_speed_feedback"] = null;
       tempResult["user_speed_bookmark"] = bookmark;

@@ -69,7 +69,7 @@ function Row({ rowMainData, setApiError }: rowProps) {
   const [, setVeesSpeedData] = useVeesSpeedData();
   const [measurementSystem] = useMeasurementSystem();
 
-  const [speed, setSpeed] = useState(rowMainData);
+  const [speed, setSpeed] = useState<any>(rowMainData);
   const [externalSpeed, setExternalSpeed] = useState(speed.externalSpeed);
 
   const handleDeleteDataFromList = (id: string) => {
