@@ -16,10 +16,11 @@ function openGoogleConsentWindow(
   googleEventListenerActive: boolean,
   setGoogleEventListenerActive: React.Dispatch<React.SetStateAction<boolean>>,
   setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>,
-  navigateHandler: any
+  navigateHandler: any,
 ) {
   initializeAuth()
     .then((url) => {
+      console.log("fkdjfkdjfkd");
       openWindow(url);
     })
     .catch((_error) => {
@@ -32,7 +33,7 @@ function openGoogleConsentWindow(
     const leftPosition = (window.screen.width - popupWidth) / 2;
     const topPosition = (window.screen.height - popupHeight) / 2;
     const windowFeatures = `width=${popupWidth},height=${popupHeight},left=${leftPosition},top=${topPosition},popup=true`;
-    window.open(redirect_url, "popup", windowFeatures);
+    const popupWindow = window.open(redirect_url, "popup", windowFeatures);
 
     const handleMessageEvent = (event: any) => {
       if (
@@ -58,6 +59,14 @@ function openGoogleConsentWindow(
       window.addEventListener("message", handleMessageEvent);
       setGoogleEventListenerActive(true);
     }
+
+    // workaround for Cloudflare's Turnstile rerender problem
+    const interval = setInterval(() => {
+      if (popupWindow && popupWindow.closed) {
+        clearInterval(interval);
+        setGoogleEventListenerActive(false);
+      }
+    }, 400);
   };
 }
 
@@ -65,7 +74,7 @@ async function exchangeCallbackParamsForAccess(queryParams: string) {
   try {
     const response: any = await kyClient.backendApi.get(
       `token/google/callback/${queryParams}/`,
-      { retry: 0 }
+      { retry: 0 },
     );
     const responseData = await response.json();
     return { status: response.status, data: responseData };

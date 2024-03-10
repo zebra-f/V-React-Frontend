@@ -477,16 +477,19 @@ function SignUp({
                 }
               />
             </FormGroup>
-            <Turnstile
-              sitekey={siteKey}
-              onVerify={(token) => {
-                turnstileHandler(token);
-              }}
-              theme={theme.palette.mode === "dark" ? "dark" : "light"}
-              onExpire={() => {
-                setTurnstileToken(undefined);
-              }}
-            />
+            {!googleEventListenerActive && (
+              <Turnstile
+                sitekey={siteKey}
+                onVerify={(token) => {
+                  turnstileHandler(token);
+                }}
+                theme={theme.palette.mode === "dark" ? "dark" : "light"}
+                onExpire={() => {
+                  setTurnstileToken(undefined);
+                }}
+              />
+            )}
+
             <Button
               type="submit"
               variant="contained"
@@ -497,20 +500,19 @@ function SignUp({
               Sign Up
             </Button>
             <Button
-              onClick={() =>
+              onClick={() => {
                 openGoogleConsentWindow(
                   googleEventListenerActive,
                   setGoogleEventListenerActive,
                   setIsAuthenticated,
                   navigateHandler,
-                )
-              }
+                );
+              }}
               variant="outlined"
               sx={{ mt: 1, mb: 3 }}
             >
               <GoogleIcon></GoogleIcon>&nbsp;&nbsp;Sign Up with Google
             </Button>
-
             <Grid container>
               <Grid item xs></Grid>
               <Grid item>
