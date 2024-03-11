@@ -24,6 +24,7 @@ interface speedDisplayProps {
   handleAddIconOpen: () => void;
   handleDistanceIconOpen: () => void;
   handleSettingsIconOpen: () => void;
+  slideAppear: boolean;
 }
 export default function SpeedDisplayPanel(props: speedDisplayProps) {
   const theme = useTheme();
@@ -310,7 +311,13 @@ export default function SpeedDisplayPanel(props: speedDisplayProps) {
   ]);
 
   return (
-    <Slide in={true} direction="right" mountOnEnter unmountOnExit>
+    <Slide
+      appear={props.slideAppear}
+      in={true}
+      direction="right"
+      mountOnEnter
+      unmountOnExit
+    >
       <Box
         my={1}
         display="flex"

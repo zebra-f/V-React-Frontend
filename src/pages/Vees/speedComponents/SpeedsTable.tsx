@@ -228,7 +228,7 @@ function Row({ rowMainData, setApiError }: rowProps) {
   );
 }
 
-export default function SpeedsTable() {
+export default function SpeedsTable({ slideAppear }: { slideAppear: boolean }) {
   const theme = useTheme();
 
   const [veesSpeedData, setVeesSpeedData] = useVeesSpeedData();
@@ -307,7 +307,13 @@ export default function SpeedsTable() {
   };
 
   return (
-    <Slide in={true} direction="up" mountOnEnter unmountOnExit>
+    <Slide
+      appear={slideAppear}
+      in={true}
+      direction="up"
+      mountOnEnter
+      unmountOnExit
+    >
       <Box
         display="flex"
         justifyContent="center"

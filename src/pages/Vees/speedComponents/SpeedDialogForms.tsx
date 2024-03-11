@@ -46,6 +46,8 @@ interface speedDialogFormsProps {
   setOpenSettingsIcon: any;
   alwaysDisplayElapsedTime: boolean;
   setAlwaysDisplayElapsedTime: any;
+  slideAppear: boolean;
+  setSlideAppear: any;
 }
 export default function SpeedDialogForms({
   distance,
@@ -58,6 +60,8 @@ export default function SpeedDialogForms({
   setOpenSettingsIcon,
   alwaysDisplayElapsedTime,
   setAlwaysDisplayElapsedTime,
+  slideAppear,
+  setSlideAppear,
 }: speedDialogFormsProps) {
   const [measurementSystem] = useMeasurementSystem();
 
@@ -247,10 +251,13 @@ export default function SpeedDialogForms({
   ) => {
     setAlwaysDisplayElapsedTime(event.target.checked);
   };
-
+  const handleChangeSlideIn = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSlideAppear(event.target.checked);
+  };
   const handleAddIconClose = () => {
     setOpenAddIcon(false);
   };
+
   const handleDistanceIconClose = () => {
     setOpenDistanceIcon(false);
   };
@@ -398,6 +405,12 @@ export default function SpeedDialogForms({
                 />
               }
               label="Always display elapsed time"
+            />
+            <FormControlLabel
+              control={
+                <Switch checked={slideAppear} onChange={handleChangeSlideIn} />
+              }
+              label="Enable Vees openning slide animation"
             />
           </Box>
           <DialogContentText></DialogContentText>

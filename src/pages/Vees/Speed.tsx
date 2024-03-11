@@ -81,6 +81,12 @@ export default function Speed() {
   const [alwaysDisplayElapsedTime, setAlwaysDisplayElapsedTime] =
     useState<boolean>(false);
 
+  const [slideAppear, setSlideAppear] = useLocalStorageState<true | false>(
+    "slideAppear",
+    {
+      defaultValue: true,
+    },
+  );
   return (
     <Container maxWidth="xl">
       <Grid mt={4} container={true} spacing={2}>
@@ -92,13 +98,20 @@ export default function Speed() {
               handleAddIconOpen={handleAddIconOpen}
               handleDistanceIconOpen={handleDistanceIconOpen}
               handleSettingsIconOpen={handleSettingsIconOpen}
+              slideAppear={slideAppear}
             />
           </Box>
         </Grid>
 
         <Grid xs={12} sm={12} md={4}>
           <Box display="flex" justifyContent="center" my={2}>
-            <Slide in={true} direction="left" mountOnEnter unmountOnExit>
+            <Slide
+              appear={slideAppear}
+              in={true}
+              direction="left"
+              mountOnEnter
+              unmountOnExit
+            >
               <Autocomplete
                 id="asynchronous-demo"
                 sx={{ width: 400 }}
@@ -136,7 +149,7 @@ export default function Speed() {
             </Slide>
           </Box>
 
-          <SpeedsTable />
+          <SpeedsTable slideAppear={slideAppear} />
         </Grid>
       </Grid>
 
@@ -151,6 +164,8 @@ export default function Speed() {
         setOpenSettingsIcon={setOpenSettingsIcon}
         alwaysDisplayElapsedTime={alwaysDisplayElapsedTime}
         setAlwaysDisplayElapsedTime={setAlwaysDisplayElapsedTime}
+        slideAppear={slideAppear}
+        setSlideAppear={setSlideAppear}
       />
     </Container>
   );
