@@ -1,7 +1,7 @@
 import { useState, createContext, useMemo } from "react";
 import useLocalStorageState from "use-local-storage-state";
 
-import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
@@ -20,10 +20,10 @@ export default function ColorModeApp() {
     "themeMode",
     {
       defaultValue: prefersDarkMode ? "dark" : "light",
-    }
+    },
   );
   const [mode, setMode] = useState<"light" | "dark">(
-    sessionThemeMode === "dark" ? "dark" : "light"
+    sessionThemeMode === "dark" ? "dark" : "light",
   );
   const colorMode = useMemo(
     () => ({
@@ -31,7 +31,7 @@ export default function ColorModeApp() {
         setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
       },
     }),
-    []
+    [],
   );
   return (
     <ColorModeContext.Provider value={colorMode}>

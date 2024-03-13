@@ -26,7 +26,7 @@ async function requestResendEmail(data: passwordResetData) {
         json: {
           email: data.email,
         },
-      }
+      },
     );
     const responseData = await response.json();
     return { status: response.status, data: responseData };
@@ -45,8 +45,8 @@ function verifyEmailResendEmail() {
   const [successSnackbarOpen, setSuccessSnackbarOpen] = useState(false);
   const [successAlertMessage, setSuccessAlertMessage] = useState("");
   const handleCloseAlert = (
-    event?: React.SyntheticEvent | Event,
-    reason?: string
+    _: React.SyntheticEvent | Event,
+    reason?: string,
   ) => {
     if (reason === "clickaway") {
       return;
@@ -96,7 +96,7 @@ function verifyEmailResendEmail() {
       if (result.status === 200) {
         setApiError({ error: false, errorMessage: "" });
         setSuccessAlertMessage(
-          "A verification email will be promptly sent to your address."
+          "A verification email will be promptly sent to your address.",
         );
         setSuccessSnackbarOpen(true);
         const emailInput = document.getElementById("email") as HTMLInputElement;

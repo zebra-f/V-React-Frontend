@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 
-import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
@@ -47,9 +45,7 @@ export default function MyAccount() {
         }
         setUserData(jsonResponse);
       })
-      .catch((error: any) => {
-        console.log("Something went wrong.");
-      });
+      .catch((_: any) => {});
   }, []);
   return (
     <>

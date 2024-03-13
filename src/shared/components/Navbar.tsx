@@ -223,7 +223,7 @@ export default function Navbar({
   const [successSignInSnackbarOpen, setSuccessSignInSnackbarOpen] =
     useState(false);
   const handleCloseAlert = (
-    event?: React.SyntheticEvent | Event,
+    _: React.SyntheticEvent | Event,
     reason?: string,
   ) => {
     if (reason === "clickaway") {

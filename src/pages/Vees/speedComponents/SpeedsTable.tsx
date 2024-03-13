@@ -2,7 +2,6 @@ import { useState, useRef } from "react";
 
 import kyClient from "../../../shared/services/ky";
 
-import useLocalStorageState from "use-local-storage-state";
 import { useMeasurementSystem } from "../../../shared/contexts/MeasurementSystem";
 import { useIsAuthenticated } from "../../../shared/contexts/IsAuthenticated";
 import {

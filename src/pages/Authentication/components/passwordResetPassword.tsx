@@ -28,7 +28,7 @@ async function requestPasswordResetPassword(data: passwordResetData) {
         json: {
           new_password: data.newPassword,
         },
-      }
+      },
     );
     const responseData = await response.json();
     return { status: response.status, data: responseData };
@@ -47,8 +47,8 @@ function passwordResetPassword(id: string, token: string) {
   const [successSnackbarOpen, setSuccessSnackbarOpen] = useState(false);
   const [successAlertMessage, setSuccessAlertMessage] = useState("");
   const handleCloseAlert = (
-    event?: React.SyntheticEvent | Event,
-    reason?: string
+    _: React.SyntheticEvent | Event,
+    reason?: string,
   ) => {
     if (reason === "clickaway") {
       return;
@@ -130,14 +130,14 @@ function passwordResetPassword(id: string, token: string) {
       if (result.status === 200) {
         setApiError({ error: false, errorMessage: "" });
         setSuccessAlertMessage(
-          "Your new password has been successfully set. You can now sign in."
+          "Your new password has been successfully set. You can now sign in.",
         );
         setSuccessSnackbarOpen(true);
         const newPasswordInput = document.getElementById(
-          "new-password"
+          "new-password",
         ) as HTMLInputElement;
         const confirmNewPasswordInput = document.getElementById(
-          "confirm-new-password"
+          "confirm-new-password",
         ) as HTMLInputElement;
         newPasswordInput.value = "";
         confirmNewPasswordInput.value = "";

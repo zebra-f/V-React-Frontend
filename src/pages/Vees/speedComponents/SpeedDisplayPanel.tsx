@@ -117,7 +117,8 @@ export default function SpeedDisplayPanel(props: speedDisplayProps) {
           .attr("y", (_, i) => i * 50 + BAR_Y_COORD)
           .attr("x", BAR_X_COORD)
           .style("pointer-events", "visible")
-          .on("click", (e, d) => {
+          .on("click", () => {
+            // two args, (e, d)
             // console.log("clicked");
           });
       } else {

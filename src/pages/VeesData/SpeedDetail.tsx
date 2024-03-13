@@ -53,7 +53,6 @@ export default function SpeedDetail() {
     });
   }, []);
 
-  console.log(speedId);
   const backgroundColor =
     theme.palette.mode === "dark"
       ? "rgba(0, 0, 0, 0.1)"

@@ -128,7 +128,7 @@ export default function SpeedForm({
   const [successSnackbarOpen, setSuccessSnackbarOpen] = useState(false);
   const [speedAddedAlertMessage, setSpeedAddedAlertMessage] = useState("");
   const handleCloseAlert = (
-    event?: React.SyntheticEvent | Event,
+    _: React.SyntheticEvent | Event,
     reason?: string,
   ) => {
     if (reason === "clickaway") {

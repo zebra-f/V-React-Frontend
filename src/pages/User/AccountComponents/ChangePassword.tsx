@@ -20,7 +20,7 @@ import kyClient from "../../../shared/services/ky";
 async function requestPasswordChange(
   id: string,
   password: string,
-  newPassword: string
+  newPassword: string,
 ) {
   try {
     const response = await kyClient.backendApi.patch(`users/${id}/`, {
@@ -46,8 +46,8 @@ export default function ChangePassword() {
   const [successSnackbarOpen, setSuccessSnackbarOpen] = useState(false);
   const [successAlertMessage, setSuccessAlertMessage] = useState("");
   const handleCloseAlert = (
-    event?: React.SyntheticEvent | Event,
-    reason?: string
+    _: React.SyntheticEvent | Event,
+    reason?: string,
   ) => {
     if (reason === "clickaway") {
       return;
@@ -150,20 +150,20 @@ export default function ChangePassword() {
     requestPasswordChange(
       jwt.getUserId(localStorage.access),
       password,
-      newPassword
+      newPassword,
     ).then((result) => {
       if (result.status === 200) {
         setApiError({ error: false, errorMessage: "" });
         setSuccessAlertMessage("Your new password has been successfully set.");
         setSuccessSnackbarOpen(true);
         const passwordInput = document.getElementById(
-          "password"
+          "password",
         ) as HTMLInputElement;
         const newPasswordInput = document.getElementById(
-          "new-password"
+          "new-password",
         ) as HTMLInputElement;
         const confirmNewPasswordInput = document.getElementById(
-          "confirm-new-password"
+          "confirm-new-password",
         ) as HTMLInputElement;
         passwordInput.value = "";
         newPasswordInput.value = "";

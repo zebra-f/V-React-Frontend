@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 import kyClient from "../../../shared/services/ky";
@@ -18,8 +17,8 @@ function verifyEmail(id: string, token: string) {
   const [successSnackbarOpen, setSuccessSnackbarOpen] = useState(false);
   const [successAlertMessage, setSuccessAlertMessage] = useState("");
   const handleCloseAlert = (
-    event?: React.SyntheticEvent | Event,
-    reason?: string
+    _: React.SyntheticEvent | Event,
+    reason?: string,
   ) => {
     if (reason === "clickaway") {
       return;
@@ -34,7 +33,7 @@ function verifyEmail(id: string, token: string) {
       kyClient.backendApi
         .get(
           `users/token-verify-email-activate-user/?id=${id}&token=${token}`,
-          { retry: 0 }
+          { retry: 0 },
         )
         .then((response: any) => {
           if (response.status === 200) {

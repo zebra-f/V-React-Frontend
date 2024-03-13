@@ -44,7 +44,7 @@ export default function DeleteAccount() {
   const [successSnackbarOpen, setSuccessSnackbarOpen] = useState(false);
   const [successAlertMessage, setSuccessAlertMessage] = useState("");
   const handleCloseAlert = (
-    event?: React.SyntheticEvent | Event,
+    _: React.SyntheticEvent | Event,
     reason?: string,
   ) => {
     if (reason === "clickaway") {

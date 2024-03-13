@@ -20,7 +20,7 @@ export default function PublicProfile() {
   const location = useLocation();
   const initialValue = location.pathname.includes("lengths") ? 1 : 0;
   const [value, setValue] = useState(initialValue);
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleChange = (_: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
 

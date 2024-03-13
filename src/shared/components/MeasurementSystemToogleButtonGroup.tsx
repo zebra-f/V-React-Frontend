@@ -8,7 +8,7 @@ export default function MeasurementSystemToogleButtonGroup() {
   const [measurementSystem, setMeasurementSystem] = useMeasurementSystem();
 
   const handleAlignment = (
-    event: React.MouseEvent<HTMLElement>,
+    _: React.MouseEvent<HTMLElement>,
     newAlignment: "metric" | "imperial",
   ) => {
     if (newAlignment !== null) {

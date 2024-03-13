@@ -401,7 +401,7 @@ export default function SpeedsTable({
   const theme = useTheme();
 
   const handleChangePage = (
-    event: React.MouseEvent<HTMLButtonElement> | null,
+    _: React.MouseEvent<HTMLButtonElement> | null,
     newPage: number,
   ) => {
     setQueryParams((prevQueryParams: speedQueryParams) => {

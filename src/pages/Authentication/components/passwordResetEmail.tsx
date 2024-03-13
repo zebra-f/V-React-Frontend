@@ -26,7 +26,7 @@ async function requestPasswordResetEmail(data: passwordResetData) {
         json: {
           email: data.email,
         },
-      }
+      },
     );
     const responseData = await response.json();
     return { status: response.status, data: responseData };
@@ -45,8 +45,8 @@ function passwordResetEmail() {
   const [successSnackbarOpen, setSuccessSnackbarOpen] = useState(false);
   const [successAlertMessage, setSuccessAlertMessage] = useState("");
   const handleCloseAlert = (
-    event?: React.SyntheticEvent | Event,
-    reason?: string
+    _: React.SyntheticEvent | Event,
+    reason?: string,
   ) => {
     if (reason === "clickaway") {
       return;
@@ -96,7 +96,7 @@ function passwordResetEmail() {
       if (result.status === 200) {
         setApiError({ error: false, errorMessage: "" });
         setSuccessAlertMessage(
-          "An email containing the reset link has been sent to your inbox."
+          "An email containing the reset link has been sent to your inbox.",
         );
         setSuccessSnackbarOpen(true);
         const emailInput = document.getElementById("email") as HTMLInputElement;

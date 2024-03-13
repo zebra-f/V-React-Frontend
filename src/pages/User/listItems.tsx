@@ -7,16 +7,10 @@ import KeyIcon from "@mui/icons-material/Key";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import SpeedIcon from "@mui/icons-material/Speed";
 import StraightenIcon from "@mui/icons-material/Straighten";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import { Outlet, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export const mainListItems = (
   <>
-    {/* <Tabs value={value} onChange={handleChange} centered>
-      <Tab sx={{ pt: 5 }} label="Speed" to="/vees" component={Link} />
-      <Tab sx={{ pt: 5 }} label="Length" to="/vees/length" component={Link} />
-    </Tabs> */}
     <ListItem>
       <ListItemIcon></ListItemIcon>
     </ListItem>
