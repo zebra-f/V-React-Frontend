@@ -1,16 +1,13 @@
 import kyClient from "../ky";
 
-import {
-  speedInterface,
-  responseSpeedDataInterface,
-} from "../../interfaces/speedInterfaces";
+import { speedInterface } from "../../interfaces/speedInterfaces";
 
 async function getMeilisearchSpeeds(q: string) {
   try {
     const response = await kyClient.goMeilisearchGateway.get(
       `meilisearch/?q=${q}`,
     );
-    const responseData: responseSpeedDataInterface = await response.json();
+    const responseData = await response.json();
     return { status: response.status, data: responseData };
   } catch (error: any) {
     try {
@@ -37,7 +34,6 @@ async function getAndPrepareMeilisearchSpeedsData(q: string) {
       if (result.user_speed_feedback === undefined) {
         result.user_speed_bookmark = null;
       }
-
       results.push(result);
     });
 

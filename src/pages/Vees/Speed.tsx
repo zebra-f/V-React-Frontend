@@ -1,12 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 
 import { getAndPrepareMeilisearchSpeedsData } from "../../shared/services/speeds/getMeilisearchData";
+import { useVeesSpeedData } from "../../shared/contexts/VeesSpeedData";
 
 import { speedInterface } from "../../shared/interfaces/speedInterfaces";
 
 import useLocalStorageState from "use-local-storage-state";
-
-import { v4 as uuidv4, validate } from "uuid";
 
 import SpeedDisplayPanel from "./speedComponents/SpeedDisplayPanel";
 import SpeedDialogForms from "./speedComponents/SpeedDialogForms";
@@ -20,17 +19,9 @@ import Grid from "@mui/material/Unstable_Grid2";
 import Container from "@mui/material/Container";
 import Slide from "@mui/material/Slide";
 
-interface Film {
-  title: string;
-  year: number;
-}
-function sleep(delay = 0) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, delay);
-  });
-}
-
 export default function Speed() {
+  const [veesSpeedData, setVeesSpeedData] = useVeesSpeedData();
+
   const [openAutocomplete, setOpenAutocomplete] = useState(false);
   const [options, setOptions] = useState<readonly speedInterface[]>([]);
   const [autocompleteValue, setAutocompleteValue] = useState("");
@@ -46,8 +37,6 @@ export default function Speed() {
     }
 
     (() => {
-      // await sleep(200); // For demo purposes.
-
       if (active && autocompleteValue === "") {
         getAndPrepareMeilisearchSpeedsData("").then((response) => {
           if (response.status === 200) {
@@ -93,7 +82,7 @@ export default function Speed() {
       }, wait);
     };
   };
-  const meiliSearch = debounce((event: any, value: any, reason: any) => {
+  const meiliSearch = debounce((_: any, value: any, reason: string) => {
     if (reason !== "input") {
       return;
     }
@@ -172,10 +161,6 @@ export default function Speed() {
                 onClose={() => {
                   setOpenAutocomplete(false);
                 }}
-                // isOptionEqualToValue={(option, value) => {
-                //   console.log("option:", option, "value:", value);
-                //   return option.name === value.name;
-                // }}
                 filterOptions={(options, _) => options}
                 getOptionLabel={(option: any) => {
                   return option.name;
@@ -186,9 +171,32 @@ export default function Speed() {
                   return option.id;
                 }}
                 autoHighlight={true}
-                onChange={(_, value) => {
-                  if (value) {
-                    console.log(value);
+                onChange={(_, value: any) => {
+                  if (value && typeof value === "object") {
+                    const currVeesSpeed = {
+                      local: false, // local only
+                      localSpeed: {
+                        id: value.id,
+                        name: value.name,
+                        kmph: value.kmph,
+                        mph: value.kmph * 0.621371,
+                      },
+                      externalSpeed: value,
+                      externalSpeedBasic: true,
+                    };
+
+                    const veesSpeedAlreadyAdded = veesSpeedData.some(
+                      (speed: any) =>
+                        speed.localSpeed.id === currVeesSpeed.localSpeed.id,
+                    );
+                    if (veesSpeedAlreadyAdded) {
+                      return;
+                    }
+
+                    setVeesSpeedData((prevState: any) => [
+                      ...prevState,
+                      currVeesSpeed,
+                    ]);
                   }
                 }}
                 onInputChange={meiliSearch}
