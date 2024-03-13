@@ -118,6 +118,17 @@ export default function About() {
           </Typography>
           <Typography
             variant="subtitle1"
+            noWrap
+            sx={{
+              mt: 2,
+              mb: 2,
+              letterSpacing: ".3rem",
+            }}
+          >
+            https://github.com/zebra-f/V
+          </Typography>
+          <Typography
+            variant="subtitle1"
             sx={{
               mt: 1,
             }}
@@ -163,13 +174,46 @@ export default function About() {
             noWrap
             sx={{
               mt: 2,
-              mb: 2,
+              mb: 4,
               letterSpacing: ".3rem",
             }}
           >
             Architecture
           </Typography>
-          <Image src={"./architecture/sa3.png"} duration={500} />
+
+          {theme.palette.mode == "dark" ? (
+            <Image
+              src={"./architecture/d1-dark-v4.drawio.png"}
+              duration={500}
+            />
+          ) : (
+            <Image
+              src={"./architecture/d1-light-v4.drawio.png"}
+              duration={500}
+            />
+          )}
+
+          <Typography
+            variant="h5"
+            noWrap
+            sx={{
+              mt: 8,
+              letterSpacing: ".3rem",
+            }}
+          >
+            Contact
+          </Typography>
+          <Typography
+            variant="subtitle1"
+            noWrap
+            sx={{
+              mt: 4,
+              mb: 20,
+              letterSpacing: ".3rem",
+            }}
+          >
+            email: contact@sovertis.com
+          </Typography>
         </Box>
       </Container>
     </Box>
