@@ -1,10 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 import { getAndPrepareMeilisearchSpeedsData } from "../../shared/services/speeds/getMeilisearchData";
 
 import { speedInterface } from "../../shared/interfaces/speedInterfaces";
 
 import useLocalStorageState from "use-local-storage-state";
+
+import { v4 as uuidv4, validate } from "uuid";
 
 import SpeedDisplayPanel from "./speedComponents/SpeedDisplayPanel";
 import SpeedDialogForms from "./speedComponents/SpeedDialogForms";
@@ -29,11 +31,12 @@ function sleep(delay = 0) {
 }
 
 export default function Speed() {
-  // Searching
-
   const [openAutocomplete, setOpenAutocomplete] = useState(false);
   const [options, setOptions] = useState<readonly speedInterface[]>([]);
-  const loading = openAutocomplete && options.length === 0;
+  const [autocompleteValue, setAutocompleteValue] = useState("");
+  const queryMade = useRef(false);
+  const loading =
+    openAutocomplete && options.length === 0 && !queryMade.current;
 
   useEffect(() => {
     let active = true;
@@ -42,30 +45,42 @@ export default function Speed() {
       return undefined;
     }
 
-    (async () => {
-      await sleep(200); // For demo purposes.
+    (() => {
+      // await sleep(200); // For demo purposes.
 
-      if (active) {
+      if (active && autocompleteValue === "") {
         getAndPrepareMeilisearchSpeedsData("").then((response) => {
-          console.log(response);
           if (response.status === 200) {
             setOptions([...response.results]);
+            queryMade.current = true;
           } else {
-            console.log("b");
             setOptions([]);
           }
         });
+      } else if (active) {
+        getAndPrepareMeilisearchSpeedsData(autocompleteValue).then(
+          (response) => {
+            if (response.status === 200) {
+              setOptions([...response.results]);
+              queryMade.current = true;
+            } else {
+              setOptions([]);
+            }
+          },
+        );
       }
     })();
 
     return () => {
       active = false;
+      queryMade.current = false;
     };
   }, [loading]);
 
   useEffect(() => {
     if (!openAutocomplete) {
       setOptions([]);
+      queryMade.current = false;
     }
   }, [openAutocomplete]);
 
@@ -79,15 +94,15 @@ export default function Speed() {
     };
   };
   const meiliSearch = debounce((event: any, value: any, reason: any) => {
-    // Do stuff with the event!
-    if (event._reactName === "onClick") {
+    if (reason !== "input") {
       return;
     }
-    const x = getAndPrepareMeilisearchSpeedsData(value).then((response) => {
+    setAutocompleteValue(value);
+    getAndPrepareMeilisearchSpeedsData(value).then((response) => {
       if (response.status === 200) {
         setOptions(response.results);
-        console.log("options:", options);
       }
+      queryMade.current = true;
     });
   }, 200);
 
@@ -161,15 +176,19 @@ export default function Speed() {
                 //   console.log("option:", option, "value:", value);
                 //   return option.name === value.name;
                 // }}
-                filterOptions={(options, state) => options}
+                filterOptions={(options, _) => options}
                 getOptionLabel={(option: any) => {
                   return option.name;
                 }}
                 options={options}
                 loading={loading}
-                onChange={(e, value) => {
+                getOptionKey={(option: any) => {
+                  return option.id;
+                }}
+                autoHighlight={true}
+                onChange={(_, value) => {
                   if (value) {
-                    console.log("onChange:", value);
+                    console.log(value);
                   }
                 }}
                 onInputChange={meiliSearch}
