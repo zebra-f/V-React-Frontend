@@ -3,7 +3,6 @@ import ky from "ky";
 import { clearVeesSpeedData } from "../../utils/localStorage";
 
 const apiUrl = import.meta.env.VITE_REACT_API_URL;
-
 const baseBackendApi = ky.create({ prefixUrl: apiUrl });
 
 interface refreshDataObject {
@@ -80,5 +79,8 @@ function forceSignOut() {
   window.location.replace(window.location.href);
 }
 
+const goMeilisearchGatewayUrl = import.meta.env.VITE_GO_MEILISEARCH_GATEWAY_URL;
+const goMeilisearchGateway = ky.create({ prefixUrl: goMeilisearchGatewayUrl });
+
 // import as kyClient
-export default { backendApi };
+export default { backendApi, goMeilisearchGateway };

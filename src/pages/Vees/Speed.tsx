@@ -1,5 +1,9 @@
 import { useState, useEffect } from "react";
 
+import { getAndPrepareMeilisearchSpeedsData } from "../../shared/services/speeds/getMeilisearchData";
+
+import { speedInterface } from "../../shared/interfaces/speedInterfaces";
+
 import useLocalStorageState from "use-local-storage-state";
 
 import SpeedDisplayPanel from "./speedComponents/SpeedDisplayPanel";
@@ -27,9 +31,9 @@ function sleep(delay = 0) {
 export default function Speed() {
   // Searching
 
-  const [open, setOpen] = useState(false);
-  const [options, setOptions] = useState<readonly Film[]>([]);
-  const loading = open && options.length === 0;
+  const [openAutocomplete, setOpenAutocomplete] = useState(false);
+  const [options, setOptions] = useState<readonly speedInterface[]>([]);
+  const loading = openAutocomplete && options.length === 0;
 
   useEffect(() => {
     let active = true;
@@ -39,10 +43,18 @@ export default function Speed() {
     }
 
     (async () => {
-      await sleep(1e3); // For demo purposes.
+      await sleep(200); // For demo purposes.
 
       if (active) {
-        setOptions([...topFilms]);
+        getAndPrepareMeilisearchSpeedsData("").then((response) => {
+          console.log(response);
+          if (response.status === 200) {
+            setOptions([...response.results]);
+          } else {
+            console.log("b");
+            setOptions([]);
+          }
+        });
       }
     })();
 
@@ -52,10 +64,32 @@ export default function Speed() {
   }, [loading]);
 
   useEffect(() => {
-    if (!open) {
+    if (!openAutocomplete) {
       setOptions([]);
     }
-  }, [open]);
+  }, [openAutocomplete]);
+
+  const debounce = (callback: any, wait: number) => {
+    let timeoutId: any = null;
+    return (...args: any) => {
+      window.clearTimeout(timeoutId);
+      timeoutId = window.setTimeout(() => {
+        callback(...args);
+      }, wait);
+    };
+  };
+  const meiliSearch = debounce((event: any, value: any, reason: any) => {
+    // Do stuff with the event!
+    if (event._reactName === "onClick") {
+      return;
+    }
+    const x = getAndPrepareMeilisearchSpeedsData(value).then((response) => {
+      if (response.status === 200) {
+        setOptions(response.results);
+        console.log("options:", options);
+      }
+    });
+  }, 200);
 
   // Dialog Forms
 
@@ -113,21 +147,32 @@ export default function Speed() {
               unmountOnExit
             >
               <Autocomplete
-                id="asynchronous-demo"
+                freeSolo
+                id="go-meilisearch"
                 sx={{ width: 400 }}
-                open={open}
+                open={openAutocomplete}
                 onOpen={() => {
-                  setOpen(true);
+                  setOpenAutocomplete(true);
                 }}
                 onClose={() => {
-                  setOpen(false);
+                  setOpenAutocomplete(false);
                 }}
-                isOptionEqualToValue={(option, value) =>
-                  option.title === value.title
-                }
-                getOptionLabel={(option) => option.title}
+                // isOptionEqualToValue={(option, value) => {
+                //   console.log("option:", option, "value:", value);
+                //   return option.name === value.name;
+                // }}
+                filterOptions={(options, state) => options}
+                getOptionLabel={(option: any) => {
+                  return option.name;
+                }}
                 options={options}
                 loading={loading}
+                onChange={(e, value) => {
+                  if (value) {
+                    console.log("onChange:", value);
+                  }
+                }}
+                onInputChange={meiliSearch}
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -170,54 +215,3 @@ export default function Speed() {
     </Container>
   );
 }
-
-// Top films as rated by IMDb users. http://www.imdb.com/chart/top
-const topFilms = [
-  { title: "The Shawshank Redemption", year: 1994 },
-  { title: "The Godfather", year: 1972 },
-  { title: "The Godfather: Part II", year: 1974 },
-  { title: "The Dark Knight", year: 2008 },
-  { title: "12 Angry Men", year: 1957 },
-  { title: "Schindler's List", year: 1993 },
-  { title: "Pulp Fiction", year: 1994 },
-  {
-    title: "The Lord of the Rings: The Return of the King",
-    year: 2003,
-  },
-  { title: "The Good, the Bad and the Ugly", year: 1966 },
-  { title: "Fight Club", year: 1999 },
-  {
-    title: "The Lord of the Rings: The Fellowship of the Ring",
-    year: 2001,
-  },
-  {
-    title: "Star Wars: Episode V - The Empire Strikes Back",
-    year: 1980,
-  },
-  { title: "Forrest Gump", year: 1994 },
-  { title: "Inception", year: 2010 },
-  {
-    title: "The Lord of the Rings: The Two Towers",
-    year: 2002,
-  },
-  { title: "One Flew Over the Cuckoo's Nest", year: 1975 },
-  { title: "Goodfellas", year: 1990 },
-  { title: "The Matrix", year: 1999 },
-  { title: "Seven Samurai", year: 1954 },
-  {
-    title: "Star Wars: Episode IV - A New Hope",
-    year: 1977,
-  },
-  { title: "City of God", year: 2002 },
-  { title: "Se7en", year: 1995 },
-  { title: "The Silence of the Lambs", year: 1991 },
-  { title: "It's a Wonderful Life", year: 1946 },
-  { title: "Life Is Beautiful", year: 1997 },
-  { title: "The Usual Suspects", year: 1995 },
-  { title: "Léon: The Professional", year: 1994 },
-  { title: "Spirited Away", year: 2001 },
-  { title: "Saving Private Ryan", year: 1998 },
-  { title: "Once Upon a Time in the West", year: 1968 },
-  { title: "American History X", year: 1998 },
-  { title: "Interstellar", year: 2014 },
-];
