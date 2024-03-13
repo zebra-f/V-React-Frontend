@@ -1,28 +1,31 @@
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 
 function Home() {
   return (
     <>
       <Container>
-        <div
-          style={
-            {
-              // backgroundImage: `url(${RocketShip})`,
-              // backgroundRepeat: "no-repeat",
-              // backgroundPosition: "top right",
-              // minHeight: "800px",
-              // background: "theme.palette.background.default",
-              // backgroundImage:
-              // "linear-gradient(to top, #051937, #004d7a, #008793, #00bf72, #a8eb12)",
-            }
-          }
-        >
-          <Box mt={20}>
-            <h1>To infinity and beyond!</h1>
-            <p>...at your own pace</p>
-          </Box>
-        </div>
+        <Box mt={20}>
+          <Typography
+            variant="h5"
+            sx={{
+              mt: 4,
+              letterSpacing: ".2rem",
+            }}
+          >
+            Dynamic Object Visualization
+          </Typography>
+          <Typography
+            variant="h6"
+            sx={{
+              mt: 2,
+              letterSpacing: ".1rem",
+            }}
+          >
+            Exploring Movement Through Time and Distance
+          </Typography>
+        </Box>
       </Container>
     </>
   );

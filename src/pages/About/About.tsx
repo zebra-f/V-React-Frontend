@@ -118,7 +118,6 @@ export default function About() {
           </Typography>
           <Typography
             variant="subtitle1"
-            noWrap
             sx={{
               mt: 2,
               mb: 2,
@@ -205,7 +204,6 @@ export default function About() {
           </Typography>
           <Typography
             variant="subtitle1"
-            noWrap
             sx={{
               mt: 4,
               mb: 20,
