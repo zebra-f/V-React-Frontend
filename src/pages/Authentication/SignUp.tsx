@@ -8,6 +8,8 @@ import kyClient from "../../shared/services/ky";
 
 import { openGoogleConsentWindow } from "./services/googleOpenId";
 
+import { v4 as uuidv4 } from "uuid";
+
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -26,6 +28,8 @@ import Snackbar from "@mui/material/Snackbar";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
+import Stack from "@mui/material/Stack";
+import RefreshIcon from "@mui/icons-material/Refresh";
 import useTheme from "@mui/material/styles/useTheme";
 
 import Turnstile from "react-turnstile";
@@ -122,6 +126,8 @@ function SignUp({
   const turnstileHandler = (token: string) => {
     setTurnstileToken(token);
   };
+  // used to reset the token
+  const [turnstileRefreshKey, setTurnstileRefreshKey] = useState(uuidv4());
 
   const handleSubmit = (event: any) => {
     event.preventDefault();
@@ -282,6 +288,9 @@ function SignUp({
         setSuccessSnackbarOpen(true);
         setApiError({ error: false, errorMessage: "" });
       } else {
+        setTurnstileRefreshKey(uuidv4());
+        setTurnstileToken(undefined);
+
         const data = result.data;
 
         if (result.status == 400) {
@@ -478,16 +487,36 @@ function SignUp({
               />
             </FormGroup>
             {!googleEventListenerActive && (
-              <Turnstile
-                sitekey={siteKey}
-                onVerify={(token) => {
-                  turnstileHandler(token);
-                }}
-                theme={theme.palette.mode === "dark" ? "dark" : "light"}
-                onExpire={() => {
-                  setTurnstileToken(undefined);
-                }}
-              />
+              <Stack key={turnstileRefreshKey} direction="row" spacing={0}>
+                <Turnstile
+                  sitekey={siteKey}
+                  onVerify={(token) => {
+                    turnstileHandler(token);
+                  }}
+                  theme={theme.palette.mode === "dark" ? "dark" : "light"}
+                  onExpire={() => {
+                    setTurnstileToken(undefined);
+                  }}
+                />
+                <Box sx={{ mt: 0, pt: 0 }}>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    style={{
+                      minWidth: 40,
+                      minHeight: 65,
+                      background:
+                        theme.palette.mode === "dark" ? "#222222" : "#f9f9f9",
+                    }}
+                    onClick={() => {
+                      setTurnstileRefreshKey(uuidv4());
+                      setTurnstileToken(undefined);
+                    }}
+                  >
+                    <RefreshIcon />
+                  </Button>
+                </Box>
+              </Stack>
             )}
 
             <Button
