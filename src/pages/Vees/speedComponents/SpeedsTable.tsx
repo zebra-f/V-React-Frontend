@@ -117,6 +117,10 @@ function Row({ rowMainData, setApiError }: rowProps) {
     <>
       <TableRow
         sx={{
+          "& .MuiTableCell-root": {
+            height: "49.6px",
+            paddingY: "0",
+          },
           "&:last-child td, &:last-child th": {
             border: 0,
           },
@@ -323,7 +327,7 @@ export default function SpeedsTable({ slideAppear }: { slideAppear: boolean }) {
 
         <TableContainer
           sx={{
-            pt: 0.83,
+            pt: 3.65,
             backgroundColor:
               theme.palette.mode === "light"
                 ? "rgba(251, 254, 251, 0.6)"
