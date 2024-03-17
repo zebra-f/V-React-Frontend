@@ -82,6 +82,7 @@ export default function About() {
             feeling lost in the sea of numbers. This tool makes it easy to see
             and compare how fast things move across any distance.
           </Typography>
+
           <Typography
             variant="h5"
             noWrap
@@ -106,6 +107,28 @@ export default function About() {
             the reliability of this platform, either by actively voting,
             reporting discrepancies, or adding new objects to the database.
           </Typography>
+          <Typography
+            variant="subtitle1"
+            sx={{
+              mt: 2,
+              mb: 2,
+              letterSpacing: ".3rem",
+            }}
+          >
+            Contribute
+          </Typography>
+          <Typography variant="subtitle1">
+            After logging in to your profile, you have the option to input speed
+            data like the average baseball throw by a professional player, top
+            speed of your favorite car or anything you can think of.
+            <br /> Your contribution helps build a richer experience for
+            everyone on our platform.
+            <br /> Remember, it's important to research the correctness of the
+            provided data to ensure accuracy and reliability.
+            <br />
+            <br /> Thanks for being part of our community!
+          </Typography>
+
           <Typography
             variant="h5"
             noWrap
