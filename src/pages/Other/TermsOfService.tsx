@@ -20,7 +20,7 @@ export default function TermsOfService() {
 
   const [tos, setTos] = useState("");
   useEffect(() => {
-    fetch("./md/termsofservice/tos10.md")
+    fetch("/md/termsofservice/tos10.md")
       .then((res) => res.text())
       .then((markdownText) => setTos(markdownText))
       .catch((_: any) => {
