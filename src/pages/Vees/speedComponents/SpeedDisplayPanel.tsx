@@ -299,7 +299,7 @@ export default function SpeedDisplayPanel(props: speedDisplayProps) {
       elapsedRef.current = 0;
       elapsedRestartRef.current = 0;
       setTimer(null);
-      d3.select(".timer").text("00:00:00");
+      d3.select(".timer").text("00:00.000");
     }
   }
   useEffect(() => {
@@ -456,25 +456,25 @@ function getColor(themeMode: string) {
 
 function stopWatch(elapsed: number) {
   let minutes = Math.floor(elapsed / 60000);
-  let seconds = ((elapsed % 60000) / 1000).toFixed(2);
-  let oneHundredth = seconds.slice(-2);
+  let seconds = ((elapsed % 60000) / 1000).toFixed(3);
+  let oneHundredth = seconds.slice(-3);
   seconds = seconds[1] === "." ? seconds[0] : seconds.slice(0, 2);
   return seconds === "60"
     ? minutes < 10
-      ? "0" + minutes + 1 + ":00" + ":" + oneHundredth
-      : minutes + 1 + ":00" + ":" + oneHundredth
+      ? "0" + minutes + 1 + ":00" + "." + oneHundredth
+      : minutes + 1 + ":00" + "." + oneHundredth
     : minutes < 10
       ? "0" +
         minutes +
         ":" +
         (Number(seconds) < 10 ? "0" : "") +
         seconds +
-        ":" +
+        "." +
         oneHundredth
       : minutes +
         ":" +
         (Number(seconds) < 10 ? "0" : "") +
         seconds +
-        ":" +
+        "." +
         oneHundredth;
 }
