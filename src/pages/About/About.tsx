@@ -39,22 +39,6 @@ export default function About() {
           >
             <img src={SovertisLogo} height={150} width={150} />
           </Grow>
-          <Grow
-            in={true}
-            style={{ transformOrigin: "0 0 0" }}
-            {...(true ? { timeout: 1400 } : {})}
-          >
-            <Typography
-              variant="h4"
-              noWrap
-              sx={{
-                mt: 4,
-                letterSpacing: ".3rem",
-              }}
-            >
-              ABOUT
-            </Typography>
-          </Grow>
         </Box>
         <Box>
           <Typography
@@ -205,12 +189,12 @@ export default function About() {
 
           {theme.palette.mode == "dark" ? (
             <Image
-              src={"./architecture/d1-dark-v4.drawio.png"}
+              src={"./architecture/d2-dark-v2.drawio.png"}
               duration={500}
             />
           ) : (
             <Image
-              src={"./architecture/d1-light-v4.drawio.png"}
+              src={"./architecture/d2-light-v2.drawio.png"}
               duration={500}
             />
           )}
