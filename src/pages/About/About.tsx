@@ -189,12 +189,12 @@ export default function About() {
 
           {theme.palette.mode == "dark" ? (
             <Image
-              src={"./architecture/d2-dark-v2.drawio.png"}
+              src={"./architecture/d4-dark-v1.drawio.png"}
               duration={500}
             />
           ) : (
             <Image
-              src={"./architecture/d2-light-v2.drawio.png"}
+              src={"./architecture/d4-light-v1.drawio.png"}
               duration={500}
             />
           )}
