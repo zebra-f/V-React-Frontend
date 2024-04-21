@@ -1,10 +1,12 @@
 import useTheme from "@mui/material/styles/useTheme";
-import SovertisLogo from "../../assets/logo/sovertis-550x550-logo-02.svg";
 import CssBaseline from "@mui/material/CssBaseline";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Grow from "@mui/material/Grow";
+import Link from "@mui/material/Link";
+
+import SovertisLogo from "../../assets/logo/sovertis-550x550-logo-02.svg";
 
 import { Image } from "mui-image";
 
@@ -63,10 +65,28 @@ export default function About() {
             curiosity, truly comprehending the vast range of speeds across the
             universe, from the imperceptible blink of a hummingbird's wing to
             the mind-bending velocity of light, can be daunting and leave us
-            feeling lost in the sea of numbers. This tool makes it easy to see
-            and compare how fast things move across any distance.
+            feeling lost in the sea of numbers.{" "}
           </Typography>
-
+          <Typography
+            variant="subtitle1"
+            sx={{
+              mt: 0,
+            }}
+          ></Typography>
+          This tool makes it easy to see and compare how fast things move across
+          any distance.
+          <Typography
+            variant="subtitle1"
+            sx={{
+              mt: 0,
+            }}
+          >
+            By gaining insights into the velocities that shape our world,
+            including those exhibited by animals and natural phenomena, we
+            deepen our appreciation for the intricacies of the universe and the
+            remarkable feats achieved by humanity's quest for knowledge and
+            progress.{" "}
+          </Typography>
           <Typography
             variant="h5"
             noWrap
@@ -92,11 +112,10 @@ export default function About() {
             reporting discrepancies, or adding new objects to the database.
           </Typography>
           <Typography
-            variant="subtitle1"
+            variant="h6"
             sx={{
               mt: 2,
-              mb: 2,
-              letterSpacing: ".3rem",
+              mb: 0,
             }}
           >
             Contribute
@@ -112,7 +131,6 @@ export default function About() {
             <br />
             <br /> Thanks for being part of our community!
           </Typography>
-
           <Typography
             variant="h5"
             noWrap
@@ -126,24 +144,14 @@ export default function About() {
           <Typography
             variant="subtitle1"
             sx={{
-              mt: 2,
-              mb: 2,
-              letterSpacing: ".3rem",
-            }}
-          >
-            https://github.com/zebra-f/V
-          </Typography>
-          <Typography
-            variant="subtitle1"
-            sx={{
               mt: 1,
             }}
           >
-            You can freely access and scrutinize the source code behind
+            You can freely access and scrutinize the{" "}
+            <Link href="https://github.com/zebra-f/V">Source Code</Link> behind
             Soveritis. This commitment to transparency offers several key
             benefits:
           </Typography>
-
           <Typography
             variant="subtitle1"
             sx={{
@@ -153,7 +161,6 @@ export default function About() {
             • Every line of code is open to inspection, fostering trust and
             understanding of how the project functions.
           </Typography>
-
           <Typography
             variant="subtitle1"
             sx={{
@@ -163,7 +170,6 @@ export default function About() {
             • Openness promotes accountability and ensures that the project
             operates ethically and responsibly.
           </Typography>
-
           <Typography
             variant="subtitle1"
             sx={{
@@ -174,31 +180,27 @@ export default function About() {
             resolving vulnerabilities, improving the overall security and
             stability of the project.
           </Typography>
-
           <Typography
             variant="h6"
             noWrap
             sx={{
               mt: 2,
               mb: 4,
-              letterSpacing: ".3rem",
             }}
           >
             Architecture
           </Typography>
-
           {theme.palette.mode == "dark" ? (
             <Image
-              src={"./architecture/d4-dark-v1.drawio.png"}
+              src={"./architecture/d4-dark-v2.drawio.png"}
               duration={500}
             />
           ) : (
             <Image
-              src={"./architecture/d4-light-v1.drawio.png"}
+              src={"./architecture/d4-light-v2.drawio.png"}
               duration={500}
             />
           )}
-
           <Typography
             variant="h5"
             noWrap
@@ -210,11 +212,10 @@ export default function About() {
             Contact
           </Typography>
           <Typography
-            variant="subtitle1"
+            variant="h6"
             sx={{
-              mt: 4,
+              mt: 2,
               mb: 20,
-              letterSpacing: ".3rem",
             }}
           >
             email: contact@sovertis.com
